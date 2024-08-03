@@ -1,29 +1,4 @@
-#include <stdio.h>              // Standard I/O functions
-#include <stdlib.h>             // Standard library functions
-#include <string.h>             // String manipulation functions
-#include <unistd.h>             // POSIX API functions
-#include <sys/types.h>          // Data types used in system calls
-#include <sys/wait.h>           // Wait for process functions
-#include <readline/readline.h>  // Readline library for input
-#include <readline/history.h>
-
-typedef struct herdoc_s
-{
-    char *str;
-    char *eof;
-}   herdoc_t;
-
-typedef struct cmd_s
-{
-    char *cmd;
-    char *arg;
-    
-    int input;
-    int pipe;
-    int output;
-    int append;
-    struct cmd_s *next;
-}   cmd_t;
+#include "mini.h"
 
 int    parse_quote(char *av)
 {
@@ -274,6 +249,7 @@ int main(int ac, char **av, char **env)
             //cmd = split_cmd(line);
             free(line);
         }
+        free(line);
     }
     free(line);
     return (0);
