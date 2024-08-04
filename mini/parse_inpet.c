@@ -249,7 +249,8 @@ int main(int ac, char **av, char **env)
             cmd = ferst_s(line);
             while (cmd)
             {
-                printf("%s\n", cmd->content);
+                printf("cmd->content = [%s] = ", cmd->content);
+                printf("cmd->type = %c\n", cmd->type);
                 cmd = cmd->next;
             }
             free(line);
