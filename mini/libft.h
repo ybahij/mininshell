@@ -1,0 +1,96 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   libft.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
+/*   Updated: 2023/11/16 23:26:42 by ybahij           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef LIBFT_H
+# define LIBFT_H
+
+# include <stdlib.h>
+# include <unistd.h>
+#include <stdio.h>              // Standard I/O functions
+#include <stdlib.h>             // Standard library functions
+#include <string.h>             // String manipulation functions
+#include <unistd.h>             // POSIX API functions
+#include <sys/types.h>          // Data types used in system calls
+#include <sys/wait.h>           // Wait for process functions
+#include <readline/readline.h>  // Readline library for input
+#include <readline/history.h>
+
+typedef struct lexer_s
+{
+    char *content;
+		int quote;
+		char type;
+    struct lexer_s *next;
+}   lexer_t;
+
+typedef struct append_s
+{
+    char *value;
+    struct append_s *next;
+}   append_t;
+
+typedef struct cmd_s
+{
+    char *cmd;
+    char **arg;
+    char **input;
+    char **output;
+    append_t **append;
+    struct cmd_s *next;
+}   cmd_t;
+
+int		ft_isalpha(int c);
+int		ft_isdigit(int c);
+int		ft_isalnum(int c);
+int		ft_isascii(int c);
+int		ft_isprint(int c);
+size_t	ft_strlen(const char *s);
+void	*ft_memset(void *b, int c, size_t len);
+void	ft_bzero(void *s, size_t n);
+void	*ft_memcpy(void *dst, const void *src, size_t n);
+void	*ft_memmove(void *dst, const void *src, size_t len);
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
+size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
+int		ft_toupper(int c);
+int		ft_tolower(int c);
+char	*ft_strchr(const char *s, int c);
+char	*ft_strrchr(const char *s, int c);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+void	*ft_memchr(const void *s, int c, size_t n);
+int		ft_memcmp(const void *s1, const void *s2, size_t n);
+char	*ft_strnstr(const char *haystack, const char *needle, size_t len);
+int		ft_atoi(const char *str);
+void	*ft_calloc(size_t count, size_t size);
+char	*ft_strdup(const char *s1);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strtrim(char const *s1, char const *set);
+char	**ft_split(char const *s, char c);
+char	*ft_itoa(int n);
+char	*ft_strmapi(char const *s, char (*f) (unsigned int, char));
+void	ft_striteri(char *s, void (*f) (unsigned int, char *));
+void	ft_putchar_fd(char c, int fd);
+void	ft_putstr_fd(char *s, int fd);
+void	ft_putendl_fd(char *s, int fd);
+void	ft_putnbr_fd(int n, int fd);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+char	*ft_strtrim(char const *s1, char const *set);
+
+//------------added functions----------------//
+
+lexer_t *ft_lstlast(lexer_t *lst);
+void	ft_lstadd_back(lexer_t **lst, lexer_t *new);
+lexer_t *lexer(char *input, char type);
+int is_space(char c);
+lexer_t *ferst_s(char *input);
+
+#endif

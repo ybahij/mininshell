@@ -14,14 +14,18 @@ typedef struct lexer_s
     struct lexer_s *next;
 }   lexer_t;
 
+typedef struct append_s
+{
+    char *value;
+    struct append_s *next;
+}   append_t;
+
 typedef struct cmd_s
 {
     char *cmd;
-    char *arg;
-    
-    int input;
-    int pipe;
-    int output;
-    int append;
+    char **arg;
+    char **input;
+    char **output;
+    append_t **append;
     struct cmd_s *next;
 }   cmd_t;

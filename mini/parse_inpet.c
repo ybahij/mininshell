@@ -1,4 +1,4 @@
-#include "mini.h"
+#include "libft.h"
 
 int    parse_quote(char *av)
 {
@@ -8,7 +8,7 @@ int    parse_quote(char *av)
     int l = 0;
 
         while (av[i])
-        { 
+        {
             if (av[i] == '"' )
             {
                 i++;
@@ -74,7 +74,7 @@ int    parse_pipe(char *av)
                 return(printf("Error:syntax error\n"), 0);
             if (!cheak_apipe(av, i))
                 return(printf("Error:syntax error\n"), 0);
-            
+
         }
         i++;
     }
@@ -100,7 +100,7 @@ int    cheak_ar(char *av, int i)
 {
     while (av[i])
     {
-        if ((av[i] != '\t' && av[i] != ' ' && av[i] != '\n' 
+        if ((av[i] != '\t' && av[i] != ' ' && av[i] != '\n'
                 && av[i] != '\v' && av[i] != '\f' && av[i] != '\r'
                     && av[i] != '|' && av[i] != '<' && av[i] != '>'))
             return (1);
@@ -131,7 +131,7 @@ int parse_redirection(char *av)
                 return(printf("Error:syntax error\n"), 0);
             if ((av[i] == '"' && av[i + 1] == '"') || (av[i] == '\'' && av[i + 1] == '\''))
                 return(printf("Error: :No such file or directory\n"), 0);
-            
+
             if (av[i] == '\0')
                 return(printf("Error:syntax error\n"), 0);
             if (av[i] == '|' || av[i] == '<' || av[i] == '>')
@@ -152,7 +152,7 @@ int parse_redirection(char *av)
                 return(printf("Error:syntax error\n"), 0);
             if  ((av[i] == '"' && av[i + 1] == '"') || (av[i] == '\'' && av[i + 1] == '\''))
                 return(printf("Error: :No such file or directory\n"), 0);
-            
+
             if (av[i] == '\0')
                 return(printf("Error:syntax error\n"), 0);
             if (av[i] == '|' || av[i] == '<' || av[i] == '>')
@@ -185,42 +185,42 @@ char *ft_strncpy(char *s1, char *s2, int n)
 	return (s1);
 }
 
-char	**ft_split(char *str, char c)
-{
-	int i = 0;
-	int j = 0;
-	int k = 0;
-	int wc = 0;
-	
-	while (str[i])
-	{
-		while (str[i] && (str[i] == c))
-			i++;
-		if (str[i])
-			wc++;
-		while (str[i] && (str[i] != c))
-			i++;
-	}
-	
-	char **out = (char **)malloc(sizeof(char *) * (wc + 1));
-	i = 0;
-	
-	while (str[i])
-	{
-		while (str[i] && (str[i] == c))
-			i++;
-		j = i;
-		while (str[i] && (str[i] != c))
-			i++;
-		if (i > j)
-		{
-			out[k] = (char *)malloc(sizeof(char) * ((i - j) + 1));
-			ft_strncpy(out[k++], &str[j], i - j);
-		}
-	}
-	out[k] = NULL;
-	return (out);
-}
+// char	**ft_split(char *str, char c)
+// {
+// 	int i = 0;
+// 	int j = 0;
+// 	int k = 0;
+// 	int wc = 0;
+
+// 	while (str[i])
+// 	{
+// 		while (str[i] && (str[i] == c))
+// 			i++;
+// 		if (str[i])
+// 			wc++;
+// 		while (str[i] && (str[i] != c))
+// 			i++;
+// 	}
+
+// 	char **out = (char **)malloc(sizeof(char *) * (wc + 1));
+// 	i = 0;
+
+// 	while (str[i])
+// 	{
+// 		while (str[i] && (str[i] == c))
+// 			i++;
+// 		j = i;
+// 		while (str[i] && (str[i] != c))
+// 			i++;
+// 		if (i > j)
+// 		{
+// 			out[k] = (char *)malloc(sizeof(char) * ((i - j) + 1));
+// 			ft_strncpy(out[k++], &str[j], i - j);
+// 		}
+// 	}
+// 	out[k] = NULL;
+// 	return (out);
+// }
 
 // cmd_t **split_cmd(char *av)
 // {
@@ -236,21 +236,25 @@ char	**ft_split(char *str, char c)
 int main(int ac, char **av, char **env)
 {
     char *line = NULL;
-    cmd_t **cmd = NULL;
+    lexer_t *cmd;
     int i = 0;
-    
+
     while(1)
     {
         line = readline("mysh> ");
         if (!parse_cmd(line))
             i = 1;
-        if (i == 0) 
+        if (i == 0)
         {
-            //cmd = split_cmd(line);
+            printf("test\n");
+            cmd = ferst_s(line);
+            while (cmd)
+            {
+                printf("%s\n", cmd->content);
+                cmd = cmd->next;
+            }
             free(line);
         }
-        free(line);
     }
-    free(line);
     return (0);
 }
