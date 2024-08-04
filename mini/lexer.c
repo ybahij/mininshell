@@ -99,15 +99,17 @@ lexer_t *ferst_s(char *input)
         }
         else
         {
-            j = i;
-            while (input[i] && (is_space(input[i]) || input[i] == '|' || input[i] == '>' || input[i] == '<'))
+            while (is_space(input[i]) && input[i])
                 i++;
-            if (i > j)
+            j = i;
+            while (input[i] && (!is_space(input[i]) && input[i] != '|' && input[i] != '>' && input[i] != '<'))
+                i++;
+            if ((input[i] == '|' || input[i] == '>' || input[i] == '<') && i > j)
                i--;
             tmp = lexer(ft_substr(input, j, i - j), 'w');
             ft_lstadd_back(&head, tmp);
         }
-
     }
+    return (head);
 }
 

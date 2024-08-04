@@ -246,7 +246,6 @@ int main(int ac, char **av, char **env)
             i = 1;
         if (i == 0)
         {
-            printf("test\n");
             cmd = ferst_s(line);
             while (cmd)
             {
