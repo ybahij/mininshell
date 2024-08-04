@@ -15,13 +15,13 @@
 
 # include <stdlib.h>
 # include <unistd.h>
-#include <stdio.h>              // Standard I/O functions
-#include <stdlib.h>             // Standard library functions
-#include <string.h>             // String manipulation functions
-#include <unistd.h>             // POSIX API functions
-#include <sys/types.h>          // Data types used in system calls
-#include <sys/wait.h>           // Wait for process functions
-#include <readline/readline.h>  // Readline library for input
+#include <stdio.h>   
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <readline/readline.h>
 #include <readline/history.h>
 
 typedef struct lexer_s
@@ -44,7 +44,6 @@ typedef struct cmd_s
     char **arg;
     char **input;
     char **output;
-    append_t **append;
     struct cmd_s *next;
 }   cmd_t;
 
