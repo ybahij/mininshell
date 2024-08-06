@@ -243,8 +243,8 @@ int main(int ac, char **av, char **env)
     while(1)
     {
         line = readline("mysh> ");
-        if (!parse_cmd(line))
-            i = 1;
+        // if (!parse_cmd(line))
+        //     i = 1;
         if (i == 0)
         {
             cmd = ferst_s(line);

@@ -36,7 +36,7 @@ lexer_t *lexer(char *input, char type)
 
 int is_space(char c)
 {
-    if (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r')
+    if (c == ' ' || c == '\t' || c == '\v' || c == '\f' || c == '\r')
         return (1);
     return (0);
 }
@@ -50,28 +50,29 @@ int    qoute(int *k, char *input, lexer_t **head)
 
     j = 0;
     i = *k;
-    // printf ("input [i] = %c\n", input[i]);
     if (input[i] == '"' || input[i] == '\'')
         {
             qoute_type = input[i];
             j = i;
-            while (input[++i] && input[i] != qoute_type)
-                ;
-            if (input[i] == qoute_type && (is_space(input[i]) || input[i + 1] == '|' || input[i] == '>' && input[i] == '<'))
-            {
-                tmp = lexer(ft_substr(input, j, i - j), 'w');
-                ft_lstadd_back(head, tmp);
+            i++;
+            while (input[i] && input[i] != qoute_type)
                 i++;
-            }
-            else if (input[i] == qoute_type && input[i + 1] != ' ')
+            if (input[i] == qoute_type && (is_space(input[i + 1]) || input[i + 1] == '|' || input[i + 1] == '>' || input[i + 1] == '<' || !input[i + 1]))
             {
-                while (input[i] && input[i] != ' ')
+                i++;
+                tmp = lexer(ft_substr(input, j, i - j), 'q');
+                ft_lstadd_back(head, tmp);
+            }
+            else if (input[i] == qoute_type && (!is_space(input[i + 1] && input[i + 1] != '|' && input[i + 1] != '>' && input[i + 1] != '<')))
+            {
+                while (input[i] && (!is_space(input[i] && input[i] != '|' && input[i] != '>' && input[i] != '<')))
                     i++;
-                tmp = lexer(ft_substr(input, j, i - j), 'w');
+                tmp = lexer(ft_substr(input, j, i - j), 'q');
                 ft_lstadd_back(head, tmp);
                 i++;
             }
         }
+    *k = i;
     return (i);
 }   
 lexer_t *ferst_s(char *input)
@@ -90,32 +91,12 @@ lexer_t *ferst_s(char *input)
         while (is_space(input[i]) && input[i])
             i++;
         if (input[i] == '"' || input[i] == '\'')
-            i = qoute(&i, input, &head);
-        // if (input[i] == '"' || input[i] == '\'')
-        // {
-        //     qoute_type = input[i];
-        //     j = i;
-        //     while (input[++i] && input[i] != qoute_type)
-        //         ;
-        //     if (input[i] == qoute_type && input[i + 1] == ' ')
-        //     {
-        //         tmp = lexer(ft_substr(input, j, i - j), 'w');
-        //         ft_lstadd_back(&head, tmp);
-        //         i++;
-        //     }
-        //     else if (input[i] == qoute_type && input[i + 1] != ' ')
-        //     {
-        //         while (input[i] && input[i] != ' ')
-        //             i++;
-        //         tmp = lexer(ft_substr(input, j, i - j), 'w');
-        //         ft_lstadd_back(&head, tmp);
-        //         i++;
-        //     }
-        // }
-        else if (input[i] == '|')
+            qoute(&i, input, &head);
+        if (input[i] == '|')
         {
             tmp = lexer("|", '|');
             ft_lstadd_back(&head, tmp);
+            i++;
         }
         else if (input[i] == '>')
         {
@@ -146,18 +127,19 @@ lexer_t *ferst_s(char *input)
                 ft_lstadd_back(&head, tmp);
             }
         }
-        else
+        else if (!is_space(input[i]))
         {
-            while (is_space(input[i]) && input[i])
+            while (is_space(input[i]))
                 i++;
+            if (!input[i])
+                break;
             j = i;
             while (input[i] && (!is_space(input[i]) && input[i] != '|' && input[i] != '>' && input[i] != '<'))
                 i++;
-
             tmp = lexer(ft_substr(input, j, i - j), 'w');
             ft_lstadd_back(&head, tmp);
-            // while (is_space(input[i]) && input[i])
-            //     i++;
+            while (is_space(input[i]) && input[i])
+                i++;
             if ((input[i] == '|' || input[i] == '>' || input[i] == '<'))
                i--;
         }
