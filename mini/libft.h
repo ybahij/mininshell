@@ -24,11 +24,17 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+typedef struct s_tree
+{
+    char *content;
+    struct s_tree *left;
+    struct s_tree *right;
+}   t_tree;
+
 typedef struct lexer_s
 {
     char *content;
-		int quote;
-		char type;
+	char type;
     struct lexer_s *next;
 }   lexer_t;
 

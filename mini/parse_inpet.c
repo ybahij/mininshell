@@ -79,6 +79,67 @@ void    free_(lexer_t *cmd)
     }
 }
 
+int expand_w(lexer_t *cmd, char **env)
+{
+    char *tmp2;
+    char *tmp3;
+    int i = 0;
+    int j = 0;
+    i = 0;
+    while (env[i])
+    {
+        j = 0;
+        while (env[i][j] == cmd->content[j + 1] && env[i][j] && cmd->content[j + 1])
+            j++;
+        if (env[i][j] == '=')
+        {
+            tmp2 = ft_strdup(&cmd->content[j + 1]);
+            tmp3 = ft_strjoin(env[i] + j + 1, tmp2);
+            free(cmd->content);
+            cmd->content = tmp3;
+            free(tmp2);
+            break;
+        }
+        i++;
+    }
+    return (1);
+}
+
+int expand_q(lexer_t *cmd, char **env)
+{
+    char *tmp2;
+    char *tmp3;
+    int i = 0;
+    int j = 0;
+    i = 0;
+    while (env[i])
+    {
+        if 
+    }
+    return (1);
+}
+
+void    expand(lexer_t *cmd, char **env)
+{
+    lexer_t *tmp;
+    int i = 0;
+    int j = 0;
+    char *tmp2;
+    char *tmp3;
+
+    while (cmd)
+    {
+        if (cm_strchr(cmd->content, '$'))
+        {
+            if (cmd->type == 'w')
+                expand_w(cmd, env);
+            if (cmd->type == '"' || cmd->type == '\'')
+                expand_q(cmd, env);
+            }
+        cmd = cmd->next;
+    }
+}
+
 int main(int ac, char **av, char **env)
 {
     char *line = NULL;
@@ -86,6 +147,13 @@ int main(int ac, char **av, char **env)
     lexer_t *tmp;
     int i = 0;
 
+
+    int j = 0;
+    // while (env[j])
+    // {
+    //     printf("%s\n",env[j]);
+    //     j++;
+    // }
     while(1)
     {
         line = readline("mysh> ");
@@ -96,6 +164,7 @@ int main(int ac, char **av, char **env)
             free(line);
             i=1;
         }
+        expand(cmd, env);
         if (!i)
         {
             while (cmd)

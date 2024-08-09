@@ -158,8 +158,8 @@ int n_cmd(char *input, int *j, lexer_t **head)
     {
         if (input[i] == '\'' || input[i] == '\"')
         {
-            t = 'q';
             holder = input[i];
+            t = holder;
             if (input[i + 1])
                 i++;
             while (input[i] && input[i] != holder)
