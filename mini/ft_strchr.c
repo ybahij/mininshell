@@ -10,7 +10,20 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-char	*ft_strchr(const char *s, int c)
+char	*ft_strchr(const char *s, int c, int i)
+{
+	while (*s)
+	{
+		if (*s == (char)c || *s == (char)i)
+			return ((char *)s);
+		s++;
+	}
+	if (*s == (char)c)
+		return ((char *)s);
+	return (0);
+}
+
+char	*cm_strchr(const char *s, int c)
 {
 	while (*s)
 	{
