@@ -19,10 +19,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+
+typedef struct s_append
+{
+    char *value;
+    struct s_append *next;
+}   t_append;
 
 typedef struct s_tree
 {
