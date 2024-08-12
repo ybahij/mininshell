@@ -14,13 +14,15 @@ lexer_t *ft_lstlast(lexer_t *lst)
 
 void ft_lstadd_back(lexer_t **lst, lexer_t *new)
 {
+    lexer_t *last;
+
     if (*lst == NULL)
     {
         *lst = new;
     }
     else
     {
-        lexer_t *last = ft_lstlast(*lst);
+        last = ft_lstlast(*lst);
         last->next = new;
     }
 }

@@ -94,13 +94,13 @@ char *cheak_env(char *str, char **env)
             j++;
         if (env[i][j] == '=' && !str[j])
         {
-            tmp = ft_strdup(env[i] + j + 1);
+            free(str);
+            str = ft_strdup(env[i] + j + 1);
             break;
         }
         i++;
     }
-    free(str);
-    return (tmp);
+    return (str);
 }
 
 int appand_u(int *i, int j, char *content, int fd, char **env)
@@ -111,13 +111,14 @@ int appand_u(int *i, int j, char *content, int fd, char **env)
 
     len = 0;
     k = *i;
-    while (content[k] && ft_isalnum(content[k]) && content[k] != '$')
+    while (content[k] && ft_isalnum(content[k]) && content[k] != '$' && content[k] != '"' && content[k] != '\'')
         k++;
-    tmp2 = ft_substr(content, j, k - j);
-    printf("tmp2 = %s\n", tmp2);
-    tmp2 = cheak_env(tmp2, env);
+    tmp2 = cheak_env(ft_substr(content, j, k - j), env);
     if (tmp2)
+    {    
         len += write(fd, tmp2, ft_strlen(tmp2));
+    }
+    free(tmp2);
     *i = k;
     return (len);
 }
@@ -127,14 +128,20 @@ int appand_in_fille(char *content, int fd, char **env)
 {
     int len;
     int i;
+    char hold;
     int j;
 
     i = 0;
     j = 0;
     len = 0;
+    hold = 0;
     while (content[i])
     {
-        if (content[i] == '$')
+        if ((content[i] == '"' || content[i] == '\'') && hold == 0)
+            hold = content[i];
+        else if (content[i] == hold)
+            hold = 0;
+        if (hold != '\'' && content[i] == '$')
         {
             i++;
             j = i;
@@ -166,129 +173,12 @@ char *expand_w(char *content, char **env)
     close(fd);
     fd = open(fname, O_RDONLY);
     free(content);
-    content = malloc(len + 1);
+    content = malloc(len + 2);
     read(fd, content, len);
     content[len] = '\0';
     close(fd);
     unlink(fname);
     return (content);
-}
-
-int is_insde_q(char *line, char quote)
-{
-    int i = 0;
-
-    while (line[i])
-    {
-        if (line[i] == quote)
-        {
-            while (line[i] && line[i] != quote)
-            {
-                if (line[i] == '$')
-                    return (1);
-                i++;
-            }
-        }
-        if (line[i])
-            i++;
-    }
-    return (0);
-}
-
-int get_q_p(char *content)
-{
-    int i;
-
-    i = 0;
-    while (content[i])
-    {
-        if (content[i] == '$')
-        {
-            while (content[i] && content[i] != '"')
-                i++;
-            return(i);
-        }
-        if (content[i])
-            i++;
-    }
-    return (0);
-}
-
-char *expand_inside_q(char *content, char **env)
-{
-    char *tmp2;
-    char *tmp3;
-    char  *str;  
-    int i = 0;
-    int j = 0;
-    int k = 0;
-    int l = 0;
-    i = 0;
-    while (content[j])
-    {
-        if (content[j] == '$')
-        {   
-            j++;
-            str = ft_substr(content, j, get_q_p(content) - j);
-            printf("str = %s\n", str);
-            // while (env[i])
-            // {
-            //     l = 0;
-            //     while (env[i][l] == str[l] && env[i][l] && str[l])
-            //         l++;
-            //     if (env[i][l] == '=')
-            //     {
-            //         tmp2 = ft_strdup(&content[l + 1]);
-            //         printf("tmp2 = %s\n", tmp2);
-            //         tmp3 = ft_strjoin(env[i] + l + 1, tmp2);
-            //         printf("tmp3 = %s\n", tmp3);
-            //         free(content);
-            //         free(tmp2);
-            //         return (tmp3);
-            //     }
-            //     i++;
-            // }
-        }
-        j++;
-    }
-    return (content);
-}
-
-int is_inside_q(char *line, char quote)
-{
-    int i = 0;
-
-    while (line[i])
-    {
-        if (line[i] == quote)
-        {
-            i++;
-            while (line[i] && line[i] != quote)
-            {
-                if (line[i] == '$')
-                    return (1);
-                i++;
-            }
-        }
-        if (line[i])
-            i++;
-    }
-    return (0);
-}
-
-char *expand_q(lexer_t *cmd, char **env)
-{
-    char *tmp2;
-    char *tmp3;
-    int i = 0;
-    int j = 0;
-    i = 0;
-    if (is_inside_q(cmd->content, cmd->type))
-    {
-        if (cmd->type == '"')
-            return (expand_inside_q(cmd->content, env));
-    }
-    return (cmd->content);
 }
 
 void    expand(lexer_t *cmd, char **env)
@@ -302,12 +192,7 @@ void    expand(lexer_t *cmd, char **env)
     while (cmd)
     {
         if (cm_strchr(cmd->content, '$'))
-        {
-            if (cmd->type == 'w')
-                cmd->content = expand_w(cmd->content, env);
-            if (cmd->type == '"' || cmd->type == '\'')
-                cmd->content = expand_q(cmd, env);
-            }
+            cmd->content = expand_w(cmd->content, env);   
         cmd = cmd->next;
     }
 }
@@ -322,6 +207,8 @@ int main(int ac, char **av, char **env)
     while(1)
     {
         line = readline("mysh> ");
+        if (!line)
+            break;
         if (line)
             add_history(line);
         cmd = ferst_s(line);
@@ -339,6 +226,7 @@ int main(int ac, char **av, char **env)
                 tmp = cmd->next;
                 printf("cmd->content = [%s] = ", cmd->content);
                 printf("cmd->type = %c\n", cmd->type);
+                free(cmd->content);
                 free(cmd);
                 cmd = tmp;
             }
