@@ -96,11 +96,12 @@ char *cheak_env(char *str, char **env)
         {
             free(str);
             str = ft_strdup(env[i] + j + 1);
+            tmp = str;
             break;
         }
         i++;
     }
-    return (str);
+    return (tmp);
 }
 
 int appand_u(int *i, int j, char *content, int fd, char **env)
@@ -165,19 +166,19 @@ char *expand_w(char *content, char **env)
     int rfd;
     int len;
 
-    rfd  = open("/dev/random", O_RDONLY, 0644);
-    read(rfd, &fname, 10);
-    close(rfd);
-    fd = open(fname, O_CREAT | O_RDWR | O_TRUNC, 0644);
+    //rfd  = open("/dev/random", O_RDONLY, 0644);
+    //read(rfd, &fname, 10);
+    //close(rfd);
+    fd = open("fname", O_CREAT | O_RDWR | O_TRUNC, 0644);
     len = appand_in_fille(content, fd, env);
     close(fd);
-    fd = open(fname, O_RDONLY);
+    fd = open("fname", O_RDONLY);
     free(content);
     content = malloc(len + 2);
     read(fd, content, len);
     content[len] = '\0';
     close(fd);
-    unlink(fname);
+    unlink("fname");
     return (content);
 }
 
@@ -197,6 +198,83 @@ void    expand(lexer_t *cmd, char **env)
     }
 }
 
+int ft_line(char *content)
+{
+    int i;
+    int len;
+    char  hold;
+
+    i = 0;
+    len = 0;
+    while (content[i])
+    {
+        if (content[i] == '\'' && content[i] == '"')
+        {
+            hold = content[i];
+            i++;
+            while (content[i] && content[i] != hold)
+            {
+                len++;
+                i++;
+            }
+        }
+        if (content[i])
+        {
+            len++;
+            i++;
+        }
+    }
+    return (len);
+}
+
+int del_quote(lexer_t *cmd)
+{
+    int i;
+    int j;
+    char *tmp;
+    char hold;
+
+    if (cm_strchr("w|><", cmd->type))
+        return (0);
+
+    tmp = malloc(ft_line(cmd->content) + 1);
+    if (!tmp)
+        return (1);
+    hold = 0;
+    while(cmd)
+    {
+        i = 0;
+        j = 0;
+        while (cmd->content[i])
+        {
+            if (cmd->content[i] == '"' || cmd->content[i] == '\'')
+            {
+                hold = cmd->content[i];
+                i++;
+                while (cmd->content[i] && cmd->content[i] != hold)
+                {
+                    tmp[j] = cmd->content[i];
+                    j++;
+                    i++;
+                }
+                if (cmd->content[i])
+                    i++;
+            }
+            if (cmd->content[i] && cmd->content[i] != '"' && cmd->content[i] != '\'')
+            {
+                tmp[j] = cmd->content[i];
+                j++;
+                i++;
+            }
+        }
+        tmp[j] = '\0';
+        free(cmd->content);
+        cmd->content = tmp;
+        cmd = cmd->next;
+        }
+        return (0);
+}
+
 int main(int ac, char **av, char **env)
 {
     char *line = NULL;
@@ -207,9 +285,16 @@ int main(int ac, char **av, char **env)
     while(1)
     {
         line = readline("mysh> ");
-        if (!line)
+        if (!line )
+        {
+            free(line);
             break;
-        if (line)
+        }
+        if (!line[0])
+        {
+            continue;
+        }
+        if (*line)
             add_history(line);
         cmd = ferst_s(line);
         if (cmd_syntax(cmd))
@@ -221,11 +306,17 @@ int main(int ac, char **av, char **env)
         if (!i)
         {
            expand(cmd, env);
+           del_quote(cmd);
+           tmp = cmd;
+            while (tmp)
+            {
+                printf("cmd->content = [%s] = ", tmp->content);
+                printf("cmd->type = %c\n", tmp->type);
+                tmp = tmp->next;
+            }
             while (cmd)
             {
                 tmp = cmd->next;
-                printf("cmd->content = [%s] = ", cmd->content);
-                printf("cmd->type = %c\n", cmd->type);
                 free(cmd->content);
                 free(cmd);
                 cmd = tmp;

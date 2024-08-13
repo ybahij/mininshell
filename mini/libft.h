@@ -25,11 +25,13 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-typedef struct s_append
+typedef struct s_redirections
 {
-    char *value;
-    struct s_append *next;
-}   t_append;
+    int type;
+    char *file;
+    struct s_redirections *next;
+    
+}   t_redirections;
 
 typedef struct s_tree
 {
@@ -40,6 +42,7 @@ typedef struct s_tree
 
 typedef struct lexer_s
 {
+    struct lexer_s *prev;
     char *content;
 	char type;
     struct lexer_s *next;

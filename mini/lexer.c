@@ -24,6 +24,7 @@ void ft_lstadd_back(lexer_t **lst, lexer_t *new)
     {
         last = ft_lstlast(*lst);
         last->next = new;
+        new->prev = last;
     }
 }
 
@@ -36,7 +37,7 @@ lexer_t *lexer(char *input, char type)
     head->content = input;
     head->type = type;
     head->next = NULL;
-
+    head->prev = NULL;
     return (head);
 }
 

@@ -88,6 +88,7 @@ lexer_t *ft_join(char **split, char c)
 		}
 		i++;
 	}
+    return (NULL);
 }
 
 void	free_split(char **split)
