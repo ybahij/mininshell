@@ -122,7 +122,7 @@ int appand_u(int *i, int j, char *content, int fd, char **env)
         *i = k;
         return (write (fd, &content[k - 1], 1));
     }
-    while (content[k] && (ft_isalnum(content[k]) || content[k] == '_') && content[k] != '$' && content[k] != '"' && content[k] != '\'')
+    while (content[k] && (ft_isalnum(content[k]) && content[k] != '$' && content[k] != '"' && content[k] != '\''))
         k++;
     tmp2 = cheak_env(ft_substr(content, j, k - j), env);
     if (tmp2)
@@ -153,10 +153,15 @@ int appand_in_fille(char *content, int fd, char **env)
             hold = content[i];
         else if (content[i] == hold)
             hold = 0;
-        if (hold != '\'' && content[i] == '$' && content[i + 1])
+        if (hold != '\'' && content[i] == '$' && !cm_strchr("!@#$\%^&*()=+\\|[]{};:/?.", content[i + 1]))
         {
             i++;
             j = i;
+            if (ft_isdigit(content[i]))
+            {
+                i++;
+                continue;
+            }
             len += appand_u(&j, i, content, fd, env);
             i = j;
         }
