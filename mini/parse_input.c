@@ -109,16 +109,27 @@ int appand_u(int *i, int j, char *content, int fd, char **env)
     char *tmp2;
     int len;
     int k;
+    int d;
+    int l;
 
     len = 0;
+    l = 0;
+    d = 0;
     k = *i;
-    while (content[k] && ft_isalnum(content[k]) && content[k] != '$' && content[k] != '"' && content[k] != '\'')
+    if (content[k] == '$' || !ft_isalnum(content[k]))
+    {
+        k++;
+        *i = k;
+        return (write (fd, &content[k - 1], 1));
+    }
+    while (content[k] && (ft_isalnum(content[k]) || content[k] == '_') && content[k] != '$' && content[k] != '"' && content[k] != '\'')
         k++;
     tmp2 = cheak_env(ft_substr(content, j, k - j), env);
     if (tmp2)
-    {    
+    {
         len += write(fd, tmp2, ft_strlen(tmp2));
     }
+
     free(tmp2);
     *i = k;
     return (len);
@@ -142,7 +153,7 @@ int appand_in_fille(char *content, int fd, char **env)
             hold = content[i];
         else if (content[i] == hold)
             hold = 0;
-        if (hold != '\'' && content[i] == '$')
+        if (hold != '\'' && content[i] == '$' && content[i + 1])
         {
             i++;
             j = i;
@@ -161,24 +172,22 @@ int appand_in_fille(char *content, int fd, char **env)
 char *expand_w(char *content, char **env)
 {
     char *tmp2;
-    int fd;
+    int fd[2];
     char fname[10];
     int rfd;
     int len;
 
-    //rfd  = open("/dev/random", O_RDONLY, 0644);
-    //read(rfd, &fname, 10);
-    //close(rfd);
-    fd = open("fname", O_CREAT | O_RDWR | O_TRUNC, 0644);
-    len = appand_in_fille(content, fd, env);
-    close(fd);
-    fd = open("fname", O_RDONLY);
+
+    len = 0;
+    pipe(fd);
+    len = appand_in_fille(content, fd[1], env);
+    close(fd[1]);
+    rfd = fd[0];
     free(content);
     content = malloc(len + 2);
-    read(fd, content, len);
+    read(fd[0], content, len);
     content[len] = '\0';
-    close(fd);
-    unlink("fname");
+    close(fd[0]);
     return (content);
 }
 
@@ -193,7 +202,7 @@ void    expand(lexer_t *cmd, char **env)
     while (cmd)
     {
         if (cm_strchr(cmd->content, '$'))
-            cmd->content = expand_w(cmd->content, env);   
+            cmd->content = expand_w(cmd->content, env);
         cmd = cmd->next;
     }
 }
