@@ -36,6 +36,7 @@ lexer_t *lexer(char *input, char type)
         return (NULL);
     head->content = input;
     head->type = type;
+    head->a_s_f = 0;
     head->next = NULL;
     head->prev = NULL;
     return (head);
@@ -127,13 +128,6 @@ int r_pipe(char *input, int *j, lexer_t **head)
     i = *j;
     if (input[i] == '|')
     {
-        if (input[i + 1] == '|')
-        {
-            tmp = lexer(ft_substr(input, i, 2), 'o');
-            ft_lstadd_back(head, tmp);
-            i += 2;
-        }
-        else
         {
             tmp = lexer(ft_substr(input, i, 1), '|');
             ft_lstadd_back(head, tmp);
@@ -162,7 +156,7 @@ int n_cmd(char *input, int *j, lexer_t **head)
         if (input[i] == '\'' || input[i] == '\"')
         {
             holder = input[i];
-            t = holder;
+            t = 'q';
             if (input[i + 1])
                 i++;
             while (input[i] && input[i] != holder)
@@ -206,11 +200,11 @@ lexer_t *ferst_s(char *input)
     {
         while (input[i] && is_space(input[i]))
             i++;
-        if (input[i] == '&' || input[i] == '|')
-            and_or(input, &i, &head);
-        if (input[i] == '|' || input[i] == '<' || input[i] == '>')
+        // if ((input[i] == '&' && input[i + 1] == '&') || (input[i] == '|' && input[i + 1] == '|'))
+        //     and_or(input, &i, &head);
+	    if (input[i] == '|' || input[i] == '<' || input[i] == '>')
             r_pipe(input, &i, &head);
-        if (input[i] && !is_space(input[i]) && input[i] != '\n')
+	    else if (input[i] && !is_space(input[i]) && input[i] != '\n')
             n_cmd(input, &i, &head);
     }
     return (head);

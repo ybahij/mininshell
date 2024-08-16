@@ -10,164 +10,98 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include"libft.h"
 
-#include <stdlib.h>
-
-#include <stdlib.h>
-#include <stdio.h>
-
-static int	ft_count_words(const char *str, char c)
+static size_t	count_words(char const *s, char c)
 {
-    int count;
-    int i;
+	size_t	count;
+	size_t	i;
 
-    count = 0;
-    i = 0;
-    while (str[i])
-    {
-        if (str[i] != c)
-        {
-            count++;
-            while (str[i] && str[i] != c)
-                i++;
-        }
-        else
-        {
-            count++;
-            i++;
-        }
-    }
-    return (count);
-}
-
-static char	*ft_strndup(const char *s1, int n)
-{
-    char	*dup;
-    int		i;
-
-    dup = (char *)malloc(sizeof(char) * (n + 1));
-    if (!dup)
-        return (NULL);
-    i = 0;
-    while (i < n)
-    {
-        dup[i] = s1[i];
-        i++;
-    }
-    dup[i] = '\0';
-    return (dup);
-}
-
-
-lexer_t *ft_join(char **split, char c)
-{
-	int i = 0;
-	int j = 0;
-	int k = 0;
-	lexer_t *new_split;
-	lexer_t *tmp;
-	new_split = NULL;
-	while (split[i])
+	count = 0;
+	i = 0;
+	while (*(s + i))
 	{
-		j = 0;
-		while (split[i][j])
+		if (*(s + i))
 		{
-			if (split[i][j] == c)
-			{
-				tmp = malloc(sizeof(lexer_t));
-				tmp->content = ft_strndup(split[i] + k, j - k);
-				tmp->next = NULL;
-				if (!new_split)
-					new_split = tmp;
-				else
-					ft_lstadd_back(&new_split, tmp);
-				k = j + 1;
-			}
-			j++;
+			count++;
+			while (*(s + i) && !cm_strchr(" \t\v\f\r", *(s + i)))
+				i++;
 		}
-		i++;
+		else if (cm_strchr(" \t\v\f\r", *(s + i)))
+			i++;
 	}
-    return (NULL);
+	return (count);
 }
 
-void	free_split(char **split)
+static size_t	get_word_len(char const *s, char c)
 {
-	int i = 0;
-	while (split[i])
-	{
-		free(split[i]);
-		i++;
-	}
-	free(split);
-}
+	size_t	i;
 
-int ft_lstsize(lexer_t *lst)
-{
-	int i = 0;
-	while (lst)
-	{
+	i = 0;
+	while (*(s + i) && !cm_strchr(" \t\v\f\r", *(s + i)))
 		i++;
-		lst = lst->next;
-	}
 	return (i);
 }
 
-
-char **ft_join_split(lexer_t *new_split)
+static void	free_array(size_t i, char **array)
 {
-	int i = 0;
-	int j = 0;
-	char **split;
-	lexer_t *tmp;
-	split = malloc(sizeof(char *) * (ft_lstsize(new_split) + 1));
-	if (!split)
-		return (NULL);
-	tmp = new_split;
-	while (tmp)
+	size_t	j;
+
+	j = 0;
+	while (j < i)
 	{
-		split[j] = tmp->content;
+		free(*(array + j));
 		j++;
-		tmp = tmp->next;
 	}
-	split[j] = NULL;
-	return (split);
+	free(array);
 }
 
-char		**ft_split(const char *s, char c)
+static char	**split(char const *s, char c, char **array, size_t words_count)
 {
-    char	**split;
-	lexer_t *new_split;
-    int		i;
-    int		j;
-    int		k;
+	size_t	i;
+	size_t	j;
 
-    if (!s)
-        return (NULL);
-    split = (char **)malloc(sizeof(char *) * (ft_count_words(s, c) + 1));
-    if (!split)
-        return (NULL);
-    i = 0;
-    j = 0;
-    while (s[i])
-    {
-        if (s[i] != c)
-        {
-            k = 0;
-            while (s[i + k] && s[i + k] != c)
-                k++;
-            split[j++] = ft_strndup(s + i, k);
-            i += k;
-        }
-        else
-        {
-            split[j++] = ft_strndup(s + i, 1);
-            i++;
-        }
-    }
-    split[j] = NULL;
-	new_split = ft_join(split, c);
-	free_split(split);
-	split = ft_join_split(new_split);
-    return (split);
+	i = 0;
+	j = 0;
+	while (i < words_count)
+	{
+		while (*(s + j) && cm_strchr(" \t\v\f\r", *(s + i)))
+			j++;
+		*(array + i) = ft_substr(s, j, get_word_len(&*(s + j), c));
+		if (!*(array + i))
+		{
+			free_array(i, array);
+			return (NULL);
+		}
+		while (*(s + j) && !cm_strchr(" \t\v\f\r", *(s + i)))
+			j++;
+		i++;
+	}
+	*(array + i) = NULL;
+	return (array);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	char	**array;
+	size_t	words;
+
+	if (!s)
+		return (NULL);
+	words = count_words(s, c);
+	array = (char **)malloc(sizeof(char *) * (words + 1));
+	if (!array)
+		return (NULL);
+	array = split(s, c, array, words);
+	return (array);
+}
+
+int main()
+{
+    char **str = ft_split("  ls | la < lk| ", ' ');
+    int i = 0;
+    while (i)
+    {    
+        printf ("str[%d] = %s\n", i, str[i]);
+        i++;}
 }

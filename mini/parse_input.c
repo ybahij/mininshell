@@ -35,7 +35,7 @@ int pars_(lexer_t *tmp)
         printf("Syntax error near unexpected token `%s'\n", "newline");
         return (0);
     }
-    if (cm_strchr("|<>o&", tmp2->type))
+    if (cm_strchr("|o&", tmp2->type))
     {
         printf("Syntax error near unexpected token '%s'\n", tmp2->content);
         return (0);
@@ -56,7 +56,7 @@ int cmd_syntax(lexer_t *tmp)
             if (!pars_(tmp))
                 return (1);
         }
-        if (tmp->type == '"' || tmp->type == '\'')
+        if (tmp->type == 'q')
         {
             if (!pars_quote(tmp->content))
                 return (1);
@@ -94,17 +94,16 @@ char *cheak_env(char *str, char **env)
             j++;
         if (env[i][j] == '=' && !str[j])
         {
-            free(str);
-            str = ft_strdup(env[i] + j + 1);
-            tmp = str;
+            tmp = ft_strdup(env[i] + j + 1);
             break;
         }
         i++;
     }
+    free(str);
     return (tmp);
 }
 
-int appand_u(int *i, int j, char *content, int fd, char **env)
+int appand_u(int *i, int j, lexer_t *cmd, int fd, char **env)
 {
     char *tmp2;
     int len;
@@ -116,27 +115,24 @@ int appand_u(int *i, int j, char *content, int fd, char **env)
     l = 0;
     d = 0;
     k = *i;
-    if (content[k] == '$' || !ft_isalnum(content[k]))
+    if (cmd->content[k] == '$' || !ft_isalnum(cmd->content[k]))
     {
         k++;
         *i = k;
-        return (write (fd, &content[k - 1], 1));
+        return (write (fd, &cmd->content[k - 1], 1));
     }
-    while (content[k] && (ft_isalnum(content[k]) && content[k] != '$' && content[k] != '"' && content[k] != '\''))
+    while (cmd->content[k] && (ft_isalnum(cmd->content[k]) && !cm_strchr("\"'$", cmd->content[k])))
         k++;
-    tmp2 = cheak_env(ft_substr(content, j, k - j), env);
+    tmp2 = cheak_env(ft_substr(cmd->content, j, k - j), env);
     if (tmp2)
-    {
         len += write(fd, tmp2, ft_strlen(tmp2));
-    }
-
     free(tmp2);
     *i = k;
     return (len);
 }
 
 
-int appand_in_fille(char *content, int fd, char **env)
+int appand_in_fille(lexer_t *cmd, int fd, char **env)
 {
     int len;
     int i;
@@ -147,34 +143,36 @@ int appand_in_fille(char *content, int fd, char **env)
     j = 0;
     len = 0;
     hold = 0;
-    while (content[i])
+    while (cmd->content[i])
     {
-        if ((content[i] == '"' || content[i] == '\'') && hold == 0)
-            hold = content[i];
-        else if (content[i] == hold)
+        if ((cmd->content[i] == '"' || cmd->content[i] == '\'') && hold == 0)
+            hold = cmd->content[i];
+        else if (cmd->content[i] == hold)
             hold = 0;
-        if (hold != '\'' && content[i] == '$' && !cm_strchr("!@#$\%^&*()=+\\|[]{};:/?.", content[i + 1]))
+        if (hold != '\'' && cmd->content[i] == '$' && !cm_strchr("!@#\%^&*()=+\\|[]{};\"\':/?.", cmd->content[i + 1]))
         {
             i++;
             j = i;
-            if (ft_isdigit(content[i]))
+            if (ft_isdigit(cmd->content[i]))
             {
                 i++;
                 continue;
             }
-            len += appand_u(&j, i, content, fd, env);
+            if (hold == '"')
+                cmd->a_s_f = 1;
+            len += appand_u(&j, i, cmd, fd, env);
             i = j;
         }
         else
         {
-            len += write(fd, &content[i], 1);
+            len += write(fd, &cmd->content[i], 1);
             i++;
         }
     }
     return (len);
 }
 
-char *expand_w(char *content, char **env)
+int expand_w(lexer_t *cmd, char **env)
 {
     char *tmp2;
     int fd[2];
@@ -182,18 +180,22 @@ char *expand_w(char *content, char **env)
     int rfd;
     int len;
 
-
+    if (cmd->prev)
+    {
+        if (cmd->prev->type == 'h')
+            return (1);
+    }
     len = 0;
     pipe(fd);
-    len = appand_in_fille(content, fd[1], env);
+    len = appand_in_fille(cmd, fd[1], env);
     close(fd[1]);
     rfd = fd[0];
-    free(content);
-    content = malloc(len + 2);
-    read(fd[0], content, len);
-    content[len] = '\0';
+    free(cmd->content);
+    cmd->content = malloc(len + 2);
+    read(fd[0], cmd->content, len);
+    cmd->content[len] = '\0';
     close(fd[0]);
-    return (content);
+    return (0);
 }
 
 void    expand(lexer_t *cmd, char **env)
@@ -207,38 +209,40 @@ void    expand(lexer_t *cmd, char **env)
     while (cmd)
     {
         if (cm_strchr(cmd->content, '$'))
-            cmd->content = expand_w(cmd->content, env);
+            expand_w(cmd, env);
         cmd = cmd->next;
     }
 }
 
-int ft_line(char *content)
+char *dellt_q(char *line)
 {
     int i;
-    int len;
-    char  hold;
+    char *tmp;
+    char    hold;
+    int     len;
 
     i = 0;
     len = 0;
-    while (content[i])
+    tmp = NULL;
+    while (line[i])
     {
-        if (content[i] == '\'' && content[i] == '"')
+        if (line[i] == '"' || line[i] == '\'')
         {
-            hold = content[i];
+            hold = line[i];
             i++;
-            while (content[i] && content[i] != hold)
-            {
-                len++;
+            while(line[i] && line[i] != hold)
+            {   
+                tmp = ft_strjoin(tmp, ft_substr(line, i, 1));
                 i++;
             }
         }
-        if (content[i])
-        {
-            len++;
+        else  
+            tmp = ft_strjoin(tmp, ft_substr(line, i, 1));
+        if (line[i])
             i++;
-        }
     }
-    return (len);
+    free(line);
+    return (tmp);
 }
 
 int del_quote(lexer_t *cmd)
@@ -251,42 +255,32 @@ int del_quote(lexer_t *cmd)
     if (cm_strchr("w|><", cmd->type))
         return (0);
 
-    tmp = malloc(ft_line(cmd->content) + 1);
-    if (!tmp)
-        return (1);
-    hold = 0;
-    while(cmd)
+    while (cmd)
     {
-        i = 0;
-        j = 0;
-        while (cmd->content[i])
-        {
-            if (cmd->content[i] == '"' || cmd->content[i] == '\'')
-            {
-                hold = cmd->content[i];
-                i++;
-                while (cmd->content[i] && cmd->content[i] != hold)
-                {
-                    tmp[j] = cmd->content[i];
-                    j++;
-                    i++;
-                }
-                if (cmd->content[i])
-                    i++;
-            }
-            if (cmd->content[i] && cmd->content[i] != '"' && cmd->content[i] != '\'')
-            {
-                tmp[j] = cmd->content[i];
-                j++;
-                i++;
-            }
-        }
-        tmp[j] = '\0';
-        free(cmd->content);
-        cmd->content = tmp;
+        cmd->content = dellt_q(cmd->content);
         cmd = cmd->next;
-        }
-        return (0);
+    }
+    return (0);
+}
+
+lexer_t *split_lexer(lexer_t *head)
+{
+    lexer_t *tmp;
+    char **str;
+
+    str = ft_split()
+
+}
+
+int split_cmd(lexer_t *head)
+{
+    lexer_t *tmp;
+
+    while (head)
+    {
+        if (head->a_s_f)
+            head = spit_lexer(head);
+    }
 }
 
 int main(int ac, char **av, char **env)
@@ -320,6 +314,7 @@ int main(int ac, char **av, char **env)
         if (!i)
         {
            expand(cmd, env);
+           //split_cmd(cmd);
            del_quote(cmd);
            tmp = cmd;
             while (tmp)

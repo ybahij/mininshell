@@ -15,53 +15,66 @@
 
 # include <stdlib.h>
 # include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
-typedef struct s_redirections
+# define PIPE 1
+# define REDIRECTION 2
+# define HEREDOC 3
+# define EXEC 4
+
+typedef struct s_cmd
+{
+    int type;
+}   t_cmd;
+
+typedef struct s_redir
 {
     int type;
     char *file;
-    struct s_redirections *next;
-    
-}   t_redirections;
+    int fd;
+    int mode;
+    t_cmd *next;
+}   t_redir;
 
-typedef struct s_tree
+
+typedef struct s_exec
 {
+    int type;
+    char **av;
+}   t_exec;
+
+typedef struct s_pipe
+{
+    int type;
+    t_cmd *left;
+    t_cmd *right;
+}   t_pipe;
+
+typedef struct s_heredoc
+{
+    int type;
     char *content;
-    struct s_tree *left;
-    struct s_tree *right;
-}   t_tree;
+    t_cmd *next;
+}   t_heredoc;
 
 typedef struct lexer_s
 {
     struct lexer_s *prev;
     char *content;
 	char type;
+    int     a_s_f;
     struct lexer_s *next;
 }   lexer_t;
 
-typedef struct append_s
-{
-    char *value;
-    struct append_s *next;
-}   append_t;
 
-typedef struct cmd_s
-{
-    char *cmd;
-    char **arg;
-    char **input;
-    char **output;
-    struct cmd_s *next;
-}   cmd_t;
 
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
@@ -87,7 +100,7 @@ int		ft_atoi(const char *str);
 void	*ft_calloc(size_t count, size_t size);
 char	*ft_strdup(const char *s1);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
-char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strtrim(char const *s1, char const *set);
 char	**ft_split(char const *s, char c);
 char	*ft_itoa(int n);
