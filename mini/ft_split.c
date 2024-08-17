@@ -12,96 +12,66 @@
 
 #include"libft.h"
 
-static size_t	count_words(char const *s, char c)
+int			ft_isspace(char c)
 {
-	size_t	count;
-	size_t	i;
+	return (c == ' ' || c == '\t' || c == '\v' || c == '\f' || c == '\r');
+}
+
+int		count_words(char *str)
+{
+	int	count;
 
 	count = 0;
-	i = 0;
-	while (*(s + i))
+	while (*str)
 	{
-		if (*(s + i))
+		while (*str && ft_isspace(*str))
+			str++;
+		if (*str && !ft_isspace(*str))
 		{
 			count++;
-			while (*(s + i) && !cm_strchr(" \t\v\f\r", *(s + i)))
-				i++;
+			while (*str && !ft_isspace(*str))
+				str++;
 		}
-		else if (cm_strchr(" \t\v\f\r", *(s + i)))
-			i++;
 	}
 	return (count);
 }
 
-static size_t	get_word_len(char const *s, char c)
+char	*malloc_word(char *str)
 {
-	size_t	i;
+	char *word;
+	int	i;
 
 	i = 0;
-	while (*(s + i) && !cm_strchr(" \t\v\f\r", *(s + i)))
+	while (str[i] && !ft_isspace(str[i]))
 		i++;
-	return (i);
-}
-
-static void	free_array(size_t i, char **array)
-{
-	size_t	j;
-
-	j = 0;
-	while (j < i)
-	{
-		free(*(array + j));
-		j++;
-	}
-	free(array);
-}
-
-static char	**split(char const *s, char c, char **array, size_t words_count)
-{
-	size_t	i;
-	size_t	j;
-
+	word = (char *)malloc(sizeof(char) * (i + 1));
 	i = 0;
-	j = 0;
-	while (i < words_count)
+	while (str[i] && !ft_isspace(str[i]))
 	{
-		while (*(s + j) && cm_strchr(" \t\v\f\r", *(s + i)))
-			j++;
-		*(array + i) = ft_substr(s, j, get_word_len(&*(s + j), c));
-		if (!*(array + i))
+		word[i] = str[i];
+		i++;
+	}
+	word[i] = '\0';
+	return (word);
+}
+
+char	**ft_split(char *str)
+{
+	char **arr = (char **)malloc(sizeof(char *) * (count_words(str) + 1));
+
+	int i = 0;
+	while (*str)
+	{
+		while (*str && ft_isspace(*str))
+			str++;
+		if (*str && !ft_isspace(*str))
 		{
-			free_array(i, array);
-			return (NULL);
+			arr[i] = malloc_word(str);
+			i++;
+			while (*str && !ft_isspace(*str))
+				str++;
 		}
-		while (*(s + j) && !cm_strchr(" \t\v\f\r", *(s + i)))
-			j++;
-		i++;
 	}
-	*(array + i) = NULL;
-	return (array);
-}
-
-char	**ft_split(char const *s, char c)
-{
-	char	**array;
-	size_t	words;
-
-	if (!s)
-		return (NULL);
-	words = count_words(s, c);
-	array = (char **)malloc(sizeof(char *) * (words + 1));
-	if (!array)
-		return (NULL);
-	array = split(s, c, array, words);
-	return (array);
-}
-
-int main()
-{
-    char **str = ft_split("  ls | la < lk| ", ' ');
-    int i = 0;
-    while (i)
-    {    
-        printf ("str[%d] = %s\n", i, str[i]);
-        i++;}
+	arr[i] = NULL;
+	return (arr);
 }

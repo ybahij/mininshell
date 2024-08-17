@@ -115,12 +115,12 @@ int appand_u(int *i, int j, lexer_t *cmd, int fd, char **env)
     l = 0;
     d = 0;
     k = *i;
-    if (cmd->content[k] == '$' || !ft_isalnum(cmd->content[k]))
-    {
-        k++;
-        *i = k;
-        return (write (fd, &cmd->content[k - 1], 1));
-    }
+    // if (cmd->content[k] == '$' || !ft_isalnum(cmd->content[k]))
+    // {
+    //     k++;
+    //     *i = k;
+    //     return (write (fd, &cmd->content[k - 1], 1));
+    // }
     while (cmd->content[k] && (ft_isalnum(cmd->content[k]) && !cm_strchr("\"'$", cmd->content[k])))
         k++;
     tmp2 = cheak_env(ft_substr(cmd->content, j, k - j), env);
@@ -130,6 +130,7 @@ int appand_u(int *i, int j, lexer_t *cmd, int fd, char **env)
     *i = k;
     return (len);
 }
+
 
 
 int appand_in_fille(lexer_t *cmd, int fd, char **env)
@@ -149,15 +150,10 @@ int appand_in_fille(lexer_t *cmd, int fd, char **env)
             hold = cmd->content[i];
         else if (cmd->content[i] == hold)
             hold = 0;
-        if (hold != '\'' && cmd->content[i] == '$' && !cm_strchr("!@#\%^&*()=+\\|[]{};\"\':/?.", cmd->content[i + 1]))
+        if (hold != '\'' && cmd->content[i] == '$' && !cm_strchr("!@#\%^&*$()=+\\|[]{};\"\':/?.", cmd->content[i + 1]))
         {
             i++;
             j = i;
-            if (ft_isdigit(cmd->content[i]))
-            {
-                i++;
-                continue;
-            }
             if (hold == '"')
                 cmd->a_s_f = 1;
             len += appand_u(&j, i, cmd, fd, env);
@@ -214,35 +210,32 @@ void    expand(lexer_t *cmd, char **env)
     }
 }
 
-char *dellt_q(char *line)
+char *dellt_q(lexer_t *cmd, int i)
 {
-    int i;
     char *tmp;
     char    hold;
-    int     len;
 
-    i = 0;
-    len = 0;
-    tmp = NULL;
-    while (line[i])
+    tmp = ft_strdup(cmd->content);
+    cmd->content = NULL;
+    while (tmp[i])
     {
-        if (line[i] == '"' || line[i] == '\'')
+        if (tmp[i] == '"' || tmp[i] == '\'')
         {
-            hold = line[i];
+            hold = tmp[i];
             i++;
-            while(line[i] && line[i] != hold)
+            while(tmp[i] && tmp[i] != hold)
             {   
-                tmp = ft_strjoin(tmp, ft_substr(line, i, 1));
+                cmd->content = ft_strjoin(cmd->content, ft_substr(tmp, i, 1));
                 i++;
             }
         }
         else  
-            tmp = ft_strjoin(tmp, ft_substr(line, i, 1));
-        if (line[i])
+            cmd->content = ft_strjoin(cmd->content, ft_substr(tmp, i, 1));
+        if (tmp[i])
             i++;
     }
-    free(line);
-    return (tmp);
+    free(tmp);
+    return (cmd->content);
 }
 
 int del_quote(lexer_t *cmd)
@@ -252,35 +245,61 @@ int del_quote(lexer_t *cmd)
     char *tmp;
     char hold;
 
-    if (cm_strchr("w|><", cmd->type))
-        return (0);
-
     while (cmd)
     {
-        cmd->content = dellt_q(cmd->content);
+        if (cm_strchr("q", cmd->type))
+            cmd->content = dellt_q(cmd, 0);
         cmd = cmd->next;
     }
     return (0);
 }
 
-lexer_t *split_lexer(lexer_t *head)
+lexer_t **spilt_lexer(lexer_t **head, int i)
 {
     lexer_t *tmp;
+    lexer_t *n_head;
+    lexer_t *tmp2;
     char **str;
 
-    str = ft_split()
-
+    n_head = NULL;
+    str = ft_split((*head)->content);
+    while(str[i])
+        i++;
+    if (i > 1)
+    {
+        tmp2 = (*head)->next;
+        i = 0;
+        while (str[i])
+        {
+            tmp = lexer(str[i], 'w');
+            ft_lstadd_back(&n_head, tmp);
+            i++;
+        }
+        tmp = ft_lstlast(n_head);
+        tmp->next = tmp2;
+        if (tmp2)
+            tmp2->prev = tmp;
+        if ((*head)->prev)
+            (*head)->prev->next = n_head;
+        else
+            *head = n_head;
+    }
+    return(&(*head)->next);
 }
 
-int split_cmd(lexer_t *head)
+int split_cmd(lexer_t **head)
 {
-    lexer_t *tmp;
+    lexer_t **tmp;
 
-    while (head)
+    tmp = head;
+    while (*tmp)
     {
-        if (head->a_s_f)
-            head = spit_lexer(head);
+        if (!(*tmp)->a_s_f)
+            tmp = spilt_lexer(tmp, 0);
+        else
+            tmp = &(*tmp)->next;
     }
+    return (0);
 }
 
 int main(int ac, char **av, char **env)
@@ -314,7 +333,7 @@ int main(int ac, char **av, char **env)
         if (!i)
         {
            expand(cmd, env);
-           //split_cmd(cmd);
+           split_cmd(&cmd);
            del_quote(cmd);
            tmp = cmd;
             while (tmp)
