@@ -90,13 +90,15 @@ char *cheak_env(char *str, char **env)
     while (env[i])
     {
         j = 0;
-        while (env[i][j] == str[j] && env[i][j] && str[j])
-            j++;
-        if (env[i][j] == '=' && !str[j])
+        if (ft_strncmp(env[i], str, ft_strlen(str)))
         {
-            tmp = ft_strdup(env[i] + j + 1);
-            break;
+            i++;
+            continue;
         }
+        if (env[i][ft_strlen(str)] == '=')
+            tmp = ft_strdup(&env[i][ft_strlen(str) + 1]);
+        if (tmp)
+            break;
         i++;
     }
     free(str);
@@ -115,12 +117,7 @@ int appand_u(int *i, int j, lexer_t *cmd, int fd, char **env)
     l = 0;
     d = 0;
     k = *i;
-    // if (cmd->content[k] == '$' || !ft_isalnum(cmd->content[k]))
-    // {
-    //     k++;
-    //     *i = k;
-    //     return (write (fd, &cmd->content[k - 1], 1));
-    // }
+
     while (cmd->content[k] && (ft_isalnum(cmd->content[k]) && !cm_strchr("\"'$", cmd->content[k])))
         k++;
     tmp2 = cheak_env(ft_substr(cmd->content, j, k - j), env);
@@ -167,6 +164,19 @@ int appand_in_fille(lexer_t *cmd, int fd, char **env)
     }
     return (len);
 }
+
+void    free_array(char **str)
+{
+    int i = 0;
+
+    while (str[i])
+    {
+        free(str[i]);
+        i++;
+    }
+    free(str);
+}
+
 
 int expand_w(lexer_t *cmd, char **env)
 {
@@ -224,12 +234,12 @@ char *dellt_q(lexer_t *cmd, int i)
             hold = tmp[i];
             i++;
             while(tmp[i] && tmp[i] != hold)
-            {   
+            {
                 cmd->content = ft_strjoin(cmd->content, ft_substr(tmp, i, 1));
                 i++;
             }
         }
-        else  
+        else
             cmd->content = ft_strjoin(cmd->content, ft_substr(tmp, i, 1));
         if (tmp[i])
             i++;
@@ -247,60 +257,63 @@ int del_quote(lexer_t *cmd)
 
     while (cmd)
     {
-        if (cm_strchr("q", cmd->type))
+        if (!cm_strchr("|<>oh+&", cmd->type))
             cmd->content = dellt_q(cmd, 0);
         cmd = cmd->next;
     }
     return (0);
 }
 
-lexer_t **spilt_lexer(lexer_t **head, int i)
-{
-    lexer_t *tmp;
-    lexer_t *n_head;
-    lexer_t *tmp2;
+lexer_t *spilt_(lexer_t *head) {
+    lexer_t *n_head = NULL;
+    lexer_t *tmpl, *tmp = head;
     char **str;
+    int i = 0;
 
-    n_head = NULL;
-    str = ft_split((*head)->content);
-    while(str[i])
-        i++;
+    if (!head || !(str = ft_split(head->content)))
+        return NULL;
+
+    while (str[i])
+            i++;
     if (i > 1)
     {
-        tmp2 = (*head)->next;
-        i = 0;
+        tmp = head->next;
+        head->content = ft_strdup(str[0]);
+        head->next = NULL;
+        i = 1;
         while (str[i])
         {
-            tmp = lexer(str[i], 'w');
-            ft_lstadd_back(&n_head, tmp);
+            tmpl = lexer(ft_strdup(str[i]), 'w');
+            ft_lstadd_back(&head, tmpl);
             i++;
         }
-        tmp = ft_lstlast(n_head);
-        tmp->next = tmp2;
-        if (tmp2)
-            tmp2->prev = tmp;
-        if ((*head)->prev)
-            (*head)->prev->next = n_head;
-        else
-            *head = n_head;
+        free_array(str);
+        tmpl = ft_lstlast(head);
+        tmpl->next = tmp;
+        if (tmp)
+        {
+            free(tmp->prev->content);
+            free(tmp->prev);
+            tmp->prev = tmpl;}
+        return (tmp);
     }
-    return(&(*head)->next);
+    return (head->next);
 }
 
-int split_cmd(lexer_t **head)
-{
-    lexer_t **tmp;
 
-    tmp = head;
-    while (*tmp)
-    {
-        if (!(*tmp)->a_s_f)
-            tmp = spilt_lexer(tmp, 0);
+int split_cmd(lexer_t *head) {
+    lexer_t *tmp = head;
+
+    while (tmp) {
+        if (cm_strchr(tmp->content, ' '))
+            tmp = spilt_(tmp);
         else
-            tmp = &(*tmp)->next;
+            tmp = tmp->next;
     }
-    return (0);
+
+    return 0;
 }
+
 
 int main(int ac, char **av, char **env)
 {
@@ -333,7 +346,7 @@ int main(int ac, char **av, char **env)
         if (!i)
         {
            expand(cmd, env);
-           split_cmd(&cmd);
+           split_cmd(cmd);
            del_quote(cmd);
            tmp = cmd;
             while (tmp)
@@ -355,3 +368,5 @@ int main(int ac, char **av, char **env)
     }
     return (0);
 }
+
+//todo:  crate a function that split the input into tokens after axpanding the env variables
