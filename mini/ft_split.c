@@ -20,7 +20,7 @@ int			ft_isspace(char c)
 	return (0);
 }
 
-int		ft_wordlen(char *str, int len, int *k)
+int		ft_word(char *str, int len, int *k)
 {
 	while (str[len] && ft_isspace(str[len]))
 		len++;
@@ -54,7 +54,7 @@ int		count_words(char *str)
 	while (str[i])
 	{
 
-		i = ft_wordlen(str, i, &k);
+		i = ft_word(str, i, &k);
 		if (k == i)
 			break ;
 		count++;
@@ -80,7 +80,7 @@ char	**ft_split(char *str)
 	k = 0;
 	while (str[i])
 	{
-		i = ft_wordlen(str, i, &k);
+		i = ft_word(str, i, &k);
 		if (k == i)
 			break ;
 		arr[j] = ft_substr(str, k, i - k);
