@@ -105,26 +105,21 @@ char *cheak_env(char *str, char **env)
     return (tmp);
 }
 
-int appand_u(int *i, int j, lexer_t *cmd, int fd, char **env)
+int appand_u(int *j, int i, lexer_t *cmd, int fd, char **env)
 {
     char *tmp2;
     int len;
     int k;
-    int d;
-    int l;
 
     len = 0;
-    l = 0;
-    d = 0;
-    k = *i;
-
+    k = i;
     while (cmd->content[k] && (ft_isalnum(cmd->content[k]) && !cm_strchr("\"'$", cmd->content[k])))
         k++;
-    tmp2 = cheak_env(ft_substr(cmd->content, j, k - j), env);
+    tmp2 = cheak_env(ft_substr(cmd->content, i, k - i), env);
     if (tmp2)
         len += write(fd, tmp2, ft_strlen(tmp2));
     free(tmp2);
-    *i = k;
+    *j = k;
     return (len);
 }
 
@@ -150,17 +145,11 @@ int appand_in_fille(lexer_t *cmd, int fd, char **env)
         if (hold != '\'' && cmd->content[i] == '$' && !cm_strchr("!@#\%^&*$()=+\\|[]{};\"\':/?.", cmd->content[i + 1]))
         {
             i++;
-            j = i;
-            if (hold == '"')
-                cmd->a_s_f = 1;
             len += appand_u(&j, i, cmd, fd, env);
             i = j;
         }
         else
-        {
-            len += write(fd, &cmd->content[i], 1);
-            i++;
-        }
+            len += write(fd, &cmd->content[i++], 1);
     }
     return (len);
 }
@@ -207,16 +196,28 @@ int expand_w(lexer_t *cmd, char **env)
 void    expand(lexer_t *cmd, char **env)
 {
     lexer_t *tmp;
-    int i = 0;
-    int j = 0;
-    char *tmp2;
-    char *tmp3;
+    lexer_t *tmp2;
 
-    while (cmd)
+    tmp = cmd;
+    while (tmp)
     {
-        if (cm_strchr(cmd->content, '$'))
-            expand_w(cmd, env);
-        cmd = cmd->next;
+        if (cm_strchr(tmp->content, '$'))
+        {
+            expand_w(tmp, env);
+            // if (tmp->content[0] == '\0')
+            // {
+            //     tmp2 = tmp->next;
+            //     if (tmp->prev)
+            //         tmp->prev->next = tmp->next;
+            //     if (tmp->next)
+            //         tmp->next->prev = tmp->prev;
+            //     free(tmp->content);
+            //     free(tmp);
+            //     tmp = tmp;
+            //     continue;
+            // }
+        }
+        tmp = tmp->next;
     }
 }
 
@@ -292,9 +293,11 @@ lexer_t *spilt_(lexer_t *head) {
         tmpl->next = tmp;
         if (tmp)
         {
-            free(tmp->prev->content);
+            if (tmp->prev)
+            {free(tmp->prev->content);
             free(tmp->prev);
             tmp->prev = tmpl;}
+        }
         return (tmp);
     }
     return (head->next);
@@ -346,6 +349,12 @@ int main(int ac, char **av, char **env)
         if (!i)
         {
            expand(cmd, env);
+           if (!cmd)
+           {
+            printf("free cmd\n");
+               free(line);
+               continue;
+           }
            split_cmd(cmd);
            del_quote(cmd);
            tmp = cmd;
