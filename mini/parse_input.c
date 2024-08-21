@@ -265,41 +265,42 @@ int del_quote(lexer_t *cmd)
     return (0);
 }
 
-lexer_t *spilt_(lexer_t *head) {
+lexer_t *split_1(lexer_t *head, char **str, int i)
+{
+    lexer_t *tmp;
+    lexer_t *tmpl;
+
+    tmp = head->next;
+    free(head->content);
+    head->content = str[0];
+    head->next = NULL;
+    i = 1;
+    while (str[i])
+    {
+        tmpl = lexer(str[i], 'w');
+        ft_lstadd_back(&head, tmpl);
+        i++;
+    }
+    free(str);
+    tmpl = ft_lstlast(head);
+    tmpl->next = tmp;
+    if (tmp)
+        tmp->prev = tmpl;
+    return (tmp);
+}
+
+lexer_t *spilt_(lexer_t *head) 
+{
     lexer_t *n_head = NULL;
-    lexer_t *tmpl, *tmp = head;
     char **str;
     int i = 0;
 
     if (!head || !(str = ft_split(head->content)))
         return NULL;
-
     while (str[i])
-            i++;
+        i++;
     if (i > 1)
-    {
-        tmp = head->next;
-        head->content = ft_strdup(str[0]);
-        head->next = NULL;
-        i = 1;
-        while (str[i])
-        {
-            tmpl = lexer(ft_strdup(str[i]), 'w');
-            ft_lstadd_back(&head, tmpl);
-            i++;
-        }
-        free_array(str);
-        tmpl = ft_lstlast(head);
-        tmpl->next = tmp;
-        if (tmp)
-        {
-            if (tmp->prev)
-            {free(tmp->prev->content);
-            free(tmp->prev);
-            tmp->prev = tmpl;}
-        }
-        return (tmp);
-    }
+       return (split_1(head, str, i));
     return (head->next);
 }
 
@@ -358,20 +359,17 @@ int main(int ac, char **av, char **env)
            split_cmd(cmd);
            del_quote(cmd);
            tmp = cmd;
-            while (tmp)
-            {
-                printf("cmd->content = [%s] = ", tmp->content);
-                printf("cmd->type = %c\n", tmp->type);
-                tmp = tmp->next;
-            }
             while (cmd)
             {
                 tmp = cmd->next;
+                printf("content: %s\n", cmd->content);
+                printf("type: %c\n", cmd->type);
                 free(cmd->content);
                 free(cmd);
                 cmd = tmp;
             }
             free(line);
+            exit(0);
         }
         i = 0;
     }
