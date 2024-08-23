@@ -34,11 +34,13 @@ lexer_t *lexer(char *input, char type)
     head = malloc(sizeof(lexer_t));
     if (!head)
         return (NULL);
-    head->content = input;
+    head->content = ft_strdup(input);
     head->type = type;
-    head->a_s_f = 0;
+    head->b_appand = NULL;
     head->next = NULL;
     head->prev = NULL;
+    free(input);
+    input = NULL;
     return (head);
 }
 
@@ -128,6 +130,13 @@ int r_pipe(char *input, int *j, lexer_t **head)
     i = *j;
     if (input[i] == '|')
     {
+        if (input[i + 1] && input[i + 1] == '|')
+        {
+            tmp = lexer(ft_substr(input, i, 2), 'o');
+            ft_lstadd_back(head, tmp);
+            i += 2;
+        }
+        else
         {
             tmp = lexer(ft_substr(input, i, 1), '|');
             ft_lstadd_back(head, tmp);
@@ -153,6 +162,8 @@ int n_cmd(char *input, int *j, lexer_t **head)
     t = 'w';
     while (input[i] && !cm_strchr("|<>", input[i]) && !is_space(input[i]))
     {
+        if (input[i] == '&' && input[i + 1] == '&')
+            break;
         if (input[i] == '\'' || input[i] == '\"')
         {
             holder = input[i];
@@ -165,7 +176,8 @@ int n_cmd(char *input, int *j, lexer_t **head)
         if (input[i])
             i++;
     }
-    tmp = lexer(ft_substr(input, *j, i - *j), t);
+    char *str = ft_substr(input, *j, i - *j);
+    tmp = lexer(str, t);
     ft_lstadd_back(head, tmp);
     *j = i;
     return (0);
@@ -174,16 +186,16 @@ int n_cmd(char *input, int *j, lexer_t **head)
 int and_or(char *input, int *i, lexer_t **head)
 {
     lexer_t *tmp;
+    int j;
 
-    if (input[*i] == '&')
+    j = *i;
+    if (input[j] == '&' && input[j + 1] == '&')
     {
-        if (input[*i + 1] == '&')
-        {
-            tmp = lexer(ft_substr(input, *i, 2), '&');
-            ft_lstadd_back(head, tmp);
-            *i += 2;
-        }
+        tmp = lexer(ft_substr(input, j, 2), '&');
+        ft_lstadd_back(head, tmp);
+        j += 2;
     }
+    *i = j;
     return (0);
 }
 
@@ -200,11 +212,11 @@ lexer_t *ferst_s(char *input)
     {
         while (input[i] && is_space(input[i]))
             i++;
-        // if ((input[i] == '&' && input[i + 1] == '&') || (input[i] == '|' && input[i + 1] == '|'))
-        //     and_or(input, &i, &head);
-	    if (input[i] == '|' || input[i] == '<' || input[i] == '>')
+        if ((input[i] == '&' && input[i + 1] == '&'))
+            and_or(input, &i, &head);
+	    else if (input[i] == '|' || input[i] == '<' || input[i] == '>')
             r_pipe(input, &i, &head);
-	    else if (input[i] && !is_space(input[i]) && input[i] != '\n')
+	    else if (input[i] && !is_space(input[i]) && input[i] != '\n' && !cm_strchr("|<>", input[i]))
             n_cmd(input, &i, &head);
     }
     return (head);

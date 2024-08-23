@@ -15,7 +15,7 @@ int pars_quote(char *content)
                 i++;
             if (content[i] != quote)
             {
-                printf("Syntax error unclosed quotes `%c'\n", quote);
+                printf(RED"minishell: syntax error near unexpected token `%c'\n"RESET, quote);
                 return (0);
             }
         }
@@ -30,12 +30,17 @@ int pars_(lexer_t *tmp)
     lexer_t *tmp2;
 
     tmp2 = tmp->next;
-    if (!tmp2)
+    if (!tmp2 )
     {
-        printf("Syntax error near unexpected token `%s'\n", "newline");
+        printf(RED"minishell: syntax error near unexpected token `%s'\n"RESET, tmp->content);
         return (0);
     }
-    if (cm_strchr("|o&", tmp2->type))
+    if (cm_strchr("><+h", tmp2->type) && tmp->type != '|')
+    {
+        printf("Syntax error near unexpected token '%s'\n", tmp2->content);
+        return (0);
+    }
+    if (cm_strchr("|&o", tmp->type) && cm_strchr("|&o", tmp2->type))
     {
         printf("Syntax error near unexpected token '%s'\n", tmp2->content);
         return (0);
@@ -48,7 +53,7 @@ int cmd_syntax(lexer_t *tmp)
     if (!tmp)
         return (0);
     if (cm_strchr("|o&", tmp->type))
-        return (printf("Syntax error near unexpected token '%s'\n", tmp->content), 1);
+        return (printf(RED"minishell: syntax error near unexpected token `%s'\n"RESET, tmp->content), 1);
     while (tmp)
     {
         if (cm_strchr("|<>oh+&", tmp->type))
@@ -182,6 +187,7 @@ int expand_w(lexer_t *cmd, char **env)
     }
     len = 0;
     pipe(fd);
+    cmd->b_appand = ft_strdup(cmd->content);
     len = appand_in_fille(cmd, fd[1], env);
     close(fd[1]);
     rfd = fd[0];
@@ -193,7 +199,23 @@ int expand_w(lexer_t *cmd, char **env)
     return (0);
 }
 
-void    expand(lexer_t *cmd, char **env)
+int     free_list(lexer_t *head)
+{
+    lexer_t *tmp;
+
+    while (head)
+    {
+        tmp = head->next;
+        free(head->content);
+        if (head->b_appand)
+            free(head->b_appand);
+        free(head);
+        head = tmp;
+    }
+    return (0);
+}
+
+int    expand(lexer_t *cmd, char **env)
 {
     lexer_t *tmp;
     lexer_t *tmp2;
@@ -203,22 +225,22 @@ void    expand(lexer_t *cmd, char **env)
     {
         if (cm_strchr(tmp->content, '$'))
         {
+            if (tmp->prev && tmp->prev->type == 'h')
+            {
+                tmp = tmp->next;
+                continue;
+            }
             expand_w(tmp, env);
-            // if (tmp->content[0] == '\0')
-            // {
-            //     tmp2 = tmp->next;
-            //     if (tmp->prev)
-            //         tmp->prev->next = tmp->next;
-            //     if (tmp->next)
-            //         tmp->next->prev = tmp->prev;
-            //     free(tmp->content);
-            //     free(tmp);
-            //     tmp = tmp;
-            //     continue;
-            // }
+
+            if (!tmp->content[0] && tmp->prev && cm_strchr("<>+", tmp->prev->type))
+            {
+                printf(RED"minishell: %s: ambiguous redirect\n"RESET, tmp->b_appand);
+                return (free_list(cmd), 1);
+            }
         }
         tmp = tmp->next;
     }
+    return (0);
 }
 
 char *dellt_q(lexer_t *cmd, int i)
@@ -226,7 +248,7 @@ char *dellt_q(lexer_t *cmd, int i)
     char *tmp;
     char    hold;
 
-    tmp = ft_strdup(cmd->content);
+    tmp = cmd->content;
     cmd->content = NULL;
     while (tmp[i])
     {
@@ -286,13 +308,15 @@ lexer_t *split_1(lexer_t *head, char **str, int i)
     tmpl->next = tmp;
     if (tmp)
         tmp->prev = tmpl;
+
     return (tmp);
 }
 
-lexer_t *spilt_(lexer_t *head) 
+lexer_t *spilt_(lexer_t *head)
 {
     lexer_t *n_head = NULL;
     char **str;
+    char *tmp;
     int i = 0;
 
     if (!head || !(str = ft_split(head->content)))
@@ -300,9 +324,24 @@ lexer_t *spilt_(lexer_t *head)
     while (str[i])
         i++;
     if (i > 1)
-       return (split_1(head, str, i));
+    {
+        if (head->prev && cm_strchr("+><", head->prev->type))
+        {
+            printf(RED"minishell: %s: ambiguous redirect\n"RESET, head->content);
+            free(head->b_appand);
+            head->b_appand = NULL;
+            head->b_appand = ft_strdup("ambiguous redirect");
+            return (free_array(str), head);
+        }
+        return (split_1(head, str, i));
+    }
+    tmp = head->content;
+    head->content = ft_strdup(str[0]);
+    free(tmp);
+    free_array(str);
     return (head->next);
 }
+
 
 
 int split_cmd(lexer_t *head) {
@@ -310,12 +349,20 @@ int split_cmd(lexer_t *head) {
 
     while (tmp) {
         if (cm_strchr(tmp->content, ' '))
+        {
             tmp = spilt_(tmp);
+            if (tmp && !ft_strncmp(tmp->b_appand, "ambiguous redirect", 18))
+            {
+                free(tmp->b_appand);
+                tmp->b_appand = NULL;
+                return (free_list(head), 0);
+            }
+        }
         else
             tmp = tmp->next;
     }
 
-    return 0;
+    return (1);
 }
 
 
@@ -324,15 +371,21 @@ int main(int ac, char **av, char **env)
     char *line = NULL;
     lexer_t *cmd;
     lexer_t *tmp;
+    lexer_t *tmp2;
     int i = 0;
 
     while(1)
     {
-        line = readline("mysh> ");
+        line = readline("minishell$ ");
         if (!line )
         {
             free(line);
             break;
+        }
+        if (line[0] == '\0')
+        {
+            free(line);
+            continue;
         }
         if (!line[0])
         {
@@ -343,37 +396,41 @@ int main(int ac, char **av, char **env)
         cmd = ferst_s(line);
         if (cmd_syntax(cmd))
         {
-            free_(cmd);
+            free_list(cmd);
             free(line);
-            i=1;
+            continue;
         }
         if (!i)
         {
-           expand(cmd, env);
+           if (expand(cmd, env))
+              {
+                free(line);
+                continue;
+              }
            if (!cmd)
            {
-            printf("free cmd\n");
                free(line);
                continue;
            }
-           split_cmd(cmd);
+           if (!split_cmd(cmd))
+           {
+               free(line);
+               continue;
+           }
            del_quote(cmd);
-           tmp = cmd;
-            while (cmd)
-            {
-                tmp = cmd->next;
-                printf("content: %s\n", cmd->content);
-                printf("type: %c\n", cmd->type);
-                free(cmd->content);
-                free(cmd);
-                cmd = tmp;
-            }
-            free(line);
-            exit(0);
+           tmp2 = cmd;
+            // while (cmd)
+            // {
+            //     printf("content:[%s] - ", cmd->content);
+            //     printf("type: [%c]\n", cmd->type);
+            //     cmd = cmd->next;
+            // }
+            print_tree(parse_pipe(tmp2));
         }
+        free(line);
         i = 0;
     }
     return (0);
 }
 
-//todo:  crate a function that split the input into tokens after axpanding the env variables
+//TODO  fix the single quote tokenzation 'ls  -ls'ls take it as [ls] [-ls] [ls] instead of [ls -lsls]

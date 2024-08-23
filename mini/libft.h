@@ -70,11 +70,18 @@ typedef struct lexer_s
     struct lexer_s *prev;
     char *content;
 	char type;
-    int     a_s_f;
+    char    *b_appand;
     struct lexer_s *next;
 }   lexer_t;
 
-
+#define RED "\033[0;31m"
+#define GREEN "\033[0;32m"
+#define YELLOW "\033[0;33m"
+#define BLUE "\033[0;34m"
+#define MAGENTA "\033[0;35m"
+#define CYAN "\033[0;36m"
+#define WHITE "\033[0;37m"
+#define RESET "\033[0m"
 
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
@@ -121,5 +128,8 @@ void	ft_lstadd_back(lexer_t **lst, lexer_t *new);
 lexer_t *lexer(char *input, char type);
 int is_space(char c);
 lexer_t *ferst_s(char *input);
+int     free_list(lexer_t *head);
+t_cmd *parse_pipe(lexer_t *head);
+void print_tree(t_cmd *tree);
 
 #endif

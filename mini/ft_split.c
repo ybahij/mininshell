@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include"libft.h"
-#include <string.h>
 
 int			ft_isspace(char c)
 {
@@ -22,20 +21,22 @@ int			ft_isspace(char c)
 
 int		ft_word(char *str, int len, int *k)
 {
+	char hold;
 	while (str[len] && ft_isspace(str[len]))
 		len++;
 	if (str[len] && !ft_isspace(str[len]))
 		*k = len;
 	while (str[len] && !ft_isspace(str[len]))
 	{
-		while (str[len] && (!ft_isspace(str[len]) && str[len] != '"'))
+		while (str[len] && (!ft_isspace(str[len]) && (str[len] != '"' && str[len] != '\'')))
 			len++;
-		if (str[len] == '"')
+		if (str[len] == '"' || str[len] == '\'')
 		{
+			hold = str[len];
 			len++;
-			while (str[len] && str[len] != '"')
+			while (str[len] && str[len] != hold)
 				len++;
-			if (str[len] == '"')
+			if (str[len] == hold)
 				len++;
 		}
 	}

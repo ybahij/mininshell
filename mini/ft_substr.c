@@ -22,11 +22,11 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		return (NULL);
 	while (s[i])
 		i++;
-	if (start >= i)
-		return ((char *)ft_calloc(1, sizeof(char)));
+	// if (start >= i)
+	// 	return ((char *)ft_calloc(1, sizeof(char)));
 	if (i - start < len)
 		len = i - start;
-	substr = (char *) malloc(sizeof(char) * len + 1);
+	substr = malloc(sizeof(char) * len + 1);
 	if (!substr)
 		return (NULL);
 	i = 0;
