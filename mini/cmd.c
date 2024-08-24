@@ -1,4 +1,4 @@
-#include"libft.h"
+#include "minishell.h"
 
 lexer_t *peek(lexer_t *head, char type)
 {
@@ -22,7 +22,7 @@ char **get_cmd_args(lexer_t *token)
   tmp = token;
   while (tmp)
   {
-    if (tmp->type == 'w')
+    if (tmp->type == 'w' || tmp->type == 'q')
       len++;
     tmp = tmp->next;
   }
@@ -33,7 +33,7 @@ char **get_cmd_args(lexer_t *token)
   i = 0;
   while (tmp)
   {
-    if (tmp->type == 'w')
+    if (tmp->type == 'w' || tmp->type == 'q')
     {
       str[i] = ft_strdup(tmp->content);
       i++;

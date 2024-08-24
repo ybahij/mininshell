@@ -1,4 +1,5 @@
-#include "libft.h"
+
+#include "minishell.h"
 
 int pars_quote(char *content)
 {

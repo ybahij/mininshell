@@ -1,4 +1,5 @@
-#include "libft.h"
+
+#include "minishell.h"
 
 void print_tree(t_cmd *tree)
 {

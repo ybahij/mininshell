@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"libft.h"
+#include "minishell.h"
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
@@ -22,8 +22,6 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		return (NULL);
 	while (s[i])
 		i++;
-	// if (start >= i)
-	// 	return ((char *)ft_calloc(1, sizeof(char)));
 	if (i - start < len)
 		len = i - start;
 	substr = malloc(sizeof(char) * len + 1);

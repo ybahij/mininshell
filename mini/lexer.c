@@ -1,5 +1,5 @@
 
-#include "libft.h"
+#include "minishell.h"
 
 lexer_t *ft_lstlast(lexer_t *lst)
 {
