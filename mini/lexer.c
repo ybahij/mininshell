@@ -72,6 +72,44 @@ int    qoute(int *k, char *input, lexer_t **head)
     return (0);
 }
 
+void    free_digit(char *input, int k, int j, lexer_t **g_head)
+{
+    char *str;
+
+    str = ft_substr(input, k, j - k);
+    free_list(*g_head);
+    printf(RED"minishell: syntax error near  `%s'\n"RESET, str);
+    free(str);
+    free(input);
+}
+
+int cheak_digit(char *input, int *i , lexer_t **g_head)
+{
+    int j;
+    int k;
+    char hold;
+
+    j = *i;
+    hold = input[j];
+    j++;
+    if (input[j] == hold)
+        j++;
+    while (input[j] && is_space(input[j]))
+        j++;
+    k = j;
+    if (input[j] && ft_isdigit(input[j]))
+    {
+        while (input[j] && ft_isdigit(input[j]))
+            j++;
+        if (input[j] && cm_strchr("<>", input[j]))
+        {
+            free_digit(input, k, j, g_head);
+            return (1);
+        }
+    }
+    return (0);
+}
+
 int redir_o(char *input, int *j, lexer_t **head)
 {
     lexer_t *tmp;
@@ -82,12 +120,16 @@ int redir_o(char *input, int *j, lexer_t **head)
     {
         if (input[i + 1] == '>')
         {
+            if (cheak_digit(input, &i, head))
+                return (1);
             tmp = lexer(ft_substr(input, i, 2), '+');
             ft_lstadd_back(head, tmp);
             i += 2;
         }
         else
         {
+            if (cheak_digit(input, &i, head))
+                return (1);
             tmp = lexer(ft_substr(input, i, 1), '>');
             ft_lstadd_back(head, tmp);
             i++;
@@ -107,18 +149,41 @@ int redir_i(char *input, int *j, lexer_t **head)
     {
         if (input[i + 1] == '<')
         {
+            if (cheak_digit(input, &i, head))
+                return (1);
             tmp = lexer(ft_substr(input, i, 2), 'h');
             ft_lstadd_back(head, tmp);
             i += 2;
         }
         else
         {
+            if (cheak_digit(input, &i, head))
+                return (1);
             tmp = lexer(ft_substr(input, i, 1), '<');
             ft_lstadd_back(head, tmp);
             i++;
         }
     }
     *j = i;
+    return (0);
+}
+
+int  redir(char *input, int *i, lexer_t **head)
+{
+    int j;
+
+    j = *i;
+    if (input[j] == '<')
+    {
+        if (redir_i(input, &j, head))
+            return (1);
+    }
+    if (input[j] == '>')
+    {
+        if (redir_o(input, &j, head))
+            return (1);
+    }
+    *i = j;
     return (0);
 }
 
@@ -130,23 +195,26 @@ int r_pipe(char *input, int *j, lexer_t **head)
     i = *j;
     if (input[i] == '|')
     {
-        if (input[i + 1] && input[i + 1] == '|')
-        {
-            tmp = lexer(ft_substr(input, i, 2), 'o');
-            ft_lstadd_back(head, tmp);
-            i += 2;
-        }
-        else
-        {
-            tmp = lexer(ft_substr(input, i, 1), '|');
-            ft_lstadd_back(head, tmp);
-            i++;
-        }
+        tmp = lexer(ft_substr(input, i, 1), '|');
+        ft_lstadd_back(head, tmp);
+        i++;
     }
-    if (input[i] == '<')
-        redir_i(input, &i, head);
-    if (input[i] == '>')
-        redir_o(input, &i, head);
+    if (input[i] == '<' || input[i] == '>')
+    {
+        if (redir(input, &i, head))
+            return (1);
+    }
+    *j = i;
+    return (0);
+}
+
+int cmd_lexer(char *input, int *j, lexer_t **head, char t, int i)
+{
+    lexer_t *tmp;
+
+    char *str = ft_substr(input, *j, i - *j);
+    tmp = lexer(str, t);
+    ft_lstadd_back(head, tmp);
     *j = i;
     return (0);
 }
@@ -176,11 +244,7 @@ int n_cmd(char *input, int *j, lexer_t **head)
         if (input[i])
             i++;
     }
-    char *str = ft_substr(input, *j, i - *j);
-    tmp = lexer(str, t);
-    ft_lstadd_back(head, tmp);
-    *j = i;
-    return (0);
+    return (cmd_lexer(input, j, head, t, i));
 }
 
 int and_or(char *input, int *i, lexer_t **head)
@@ -189,6 +253,12 @@ int and_or(char *input, int *i, lexer_t **head)
     int j;
 
     j = *i;
+    if (input[j] == '|' && input[j + 1] == '|')
+    {
+        tmp = lexer(ft_substr(input, j, 2), 'o');
+        ft_lstadd_back(head, tmp);
+        j += 2;
+    }
     if (input[j] == '&' && input[j + 1] == '&')
     {
         tmp = lexer(ft_substr(input, j, 2), '&');
@@ -212,10 +282,13 @@ lexer_t *ferst_s(char *input)
     {
         while (input[i] && is_space(input[i]))
             i++;
-        if ((input[i] == '&' && input[i + 1] == '&'))
+        if ((input[i] == '&' && input[i + 1] == '&') || (input[i] == '|' && input[i + 1] == '|'))
             and_or(input, &i, &head);
 	    else if (input[i] == '|' || input[i] == '<' || input[i] == '>')
-            r_pipe(input, &i, &head);
+        {
+            if (r_pipe(input, &i, &head))
+                return (NULL);
+        }
 	    else if (input[i] && !is_space(input[i]) && input[i] != '\n' && !cm_strchr("|<>", input[i]))
             n_cmd(input, &i, &head);
     }

@@ -131,5 +131,6 @@ lexer_t *ferst_s(char *input);
 int     free_list(lexer_t *head);
 t_cmd *parse_pipe(lexer_t *head);
 void print_tree(t_cmd *tree);
+char *dellt_q_char(char *tmp);
 
 #endif

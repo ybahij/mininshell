@@ -49,20 +49,88 @@ int pars_(lexer_t *tmp)
     return (1);
 }
 
+void count_herdoc(lexer_t *tmp)
+{
+    int i;
+    lexer_t *tmp2;
+
+    i = 0;
+    tmp2 = tmp;
+    while (tmp)
+    {
+        if (tmp->type == 'h')
+        {
+            if (!tmp->next || tmp->next->type != 'w')
+                return;
+            i++;
+        }
+        tmp = tmp->next;
+    }
+    if (i > 16)
+    {
+        free_list(tmp);
+        exit(1);
+    }
+}
+
+char *quote_(char *content)
+{
+    char *str;
+
+    str = content;
+    content = dellt_q_char(content);
+    free(str);
+    return (content);
+}
+void heandal_herdoc(lexer_t *tmp)
+{
+    char *str;
+    char *content;
+
+    if (tmp->next->type != 'q')
+        tmp->next->content = quote_(tmp->next->content);
+    content = NULL;
+    while (1)
+    {
+        str = readline(">");
+        if (!str)
+        {
+            free_list(tmp);
+            exit(1);
+        }
+        if (!ft_strncmp(str, tmp->next->content, ft_strlen(str)))
+        {
+            free(str);
+            break;
+        }
+        str = ft_strjoin(str, ft_strdup("\n"));
+        content = ft_strjoin(content, str);
+    }
+    free(tmp->next->content);
+    tmp->next->content = content;
+}
+
 int cmd_syntax(lexer_t *tmp)
 {
     if (!tmp)
         return (0);
     if (cm_strchr("|o&", tmp->type))
         return (printf(RED"minishell: syntax error near unexpected token `%s'\n"RESET, tmp->content), 1);
+    count_herdoc(tmp);
     while (tmp)
     {
-        if (cm_strchr("|<>oh+&", tmp->type))
+
+        if (tmp->type == 'h' && tmp->next && (tmp->next->type == 'w' || tmp->next->type == 'q'))
+        {
+            heandal_herdoc(tmp);
+            tmp = tmp->next;
+        }
+        else if (cm_strchr("|<>oh+&", tmp->type))
         {
             if (!pars_(tmp))
                 return (1);
         }
-        if (tmp->type == 'q')
+        else if (tmp->type == 'q')
         {
             if (!pars_quote(tmp->content))
                 return (1);
@@ -183,8 +251,8 @@ int expand_w(lexer_t *cmd, char **env)
 
     if (cmd->prev)
     {
-        if (cmd->prev->type == 'h')
-            return (1);
+        if (cmd->prev->type == 'h' && cmd->type == 'q')
+            return (0);
     }
     len = 0;
     pipe(fd);
@@ -226,7 +294,7 @@ int    expand(lexer_t *cmd, char **env)
     {
         if (cm_strchr(tmp->content, '$'))
         {
-            if (tmp->prev && tmp->prev->type == 'h')
+            if (tmp->prev && tmp->prev->type == 'h' && tmp->type == 'q')
             {
                 tmp = tmp->next;
                 continue;
@@ -244,13 +312,14 @@ int    expand(lexer_t *cmd, char **env)
     return (0);
 }
 
-char *dellt_q(lexer_t *cmd, int i)
+char *dellt_q_char(char *tmp)
 {
-    char *tmp;
-    char    hold;
+    int i;
+    char *str;
+    char hold;
 
-    tmp = cmd->content;
-    cmd->content = NULL;
+    i = 0;
+    str = NULL;
     while (tmp[i])
     {
         if (tmp[i] == '"' || tmp[i] == '\'')
@@ -259,15 +328,43 @@ char *dellt_q(lexer_t *cmd, int i)
             i++;
             while(tmp[i] && tmp[i] != hold)
             {
-                cmd->content = ft_strjoin(cmd->content, ft_substr(tmp, i, 1));
+                str = ft_strjoin(str, ft_substr(tmp, i, 1));
                 i++;
             }
         }
         else
-            cmd->content = ft_strjoin(cmd->content, ft_substr(tmp, i, 1));
+            str = ft_strjoin(str, ft_substr(tmp, i, 1));
         if (tmp[i])
             i++;
     }
+    return (str);
+}
+
+char *dellt_q(lexer_t *cmd, int i)
+{
+    char *tmp;
+    char    hold;
+
+    tmp = cmd->content;
+    cmd->content = NULL;
+    cmd->content = dellt_q_char(tmp);
+    // while (tmp[i])
+    // {
+    //     if (tmp[i] == '"' || tmp[i] == '\'')
+    //     {
+    //         hold = tmp[i];
+    //         i++;
+    //         while(tmp[i] && tmp[i] != hold)
+    //         {
+    //             cmd->content = ft_strjoin(cmd->content, ft_substr(tmp, i, 1));
+    //             i++;
+    //         }
+    //     }
+    //     else
+    //         cmd->content = ft_strjoin(cmd->content, ft_substr(tmp, i, 1));
+    //     if (tmp[i])
+    //         i++;
+    // }
     free(tmp);
     return (cmd->content);
 }
@@ -395,6 +492,8 @@ int main(int ac, char **av, char **env)
         if (*line)
             add_history(line);
         cmd = ferst_s(line);
+        if (!cmd)
+            continue;
         if (cmd_syntax(cmd))
         {
             free_list(cmd);
@@ -420,13 +519,14 @@ int main(int ac, char **av, char **env)
            }
            del_quote(cmd);
            tmp2 = cmd;
-            // while (cmd)
-            // {
-            //     printf("content:[%s] - ", cmd->content);
-            //     printf("type: [%c]\n", cmd->type);
-            //     cmd = cmd->next;
-            // }
-            print_tree(parse_pipe(tmp2));
+              while (tmp2)
+                {
+                    printf("[%s] ->", tmp2->content);
+                    printf("[%c]\n", tmp2->type);
+                    tmp2 = tmp2->next;
+                }
+                free_list(cmd);
+            //print_tree(parse_pipe(tmp2));
         }
         free(line);
         i = 0;
