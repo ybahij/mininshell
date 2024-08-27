@@ -27,6 +27,8 @@ char	*ft_strchr(const char *s, int c, int i)
 
 char	*cm_strchr(const char *s, int c)
 {
+	if (!s)
+		return (0);
 	while (*s)
 	{
 		if (*s == (char)c)

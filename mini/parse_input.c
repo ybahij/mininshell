@@ -82,7 +82,46 @@ char *quote_(char *content)
     free(str);
     return (content);
 }
-void heandal_herdoc(lexer_t *tmp)
+
+char *herdoc_appand(char *content, char type, char **g_env)
+
+{
+    char *tmp;
+    char *str;
+    int i;
+    int j;
+
+    i = 0;
+    j = 0;
+    str = NULL;
+    if (type != 'w' || !cm_strchr(content, '$'))
+        return (content);
+    while (content[i])
+    {
+        if (content[i] == '$' && !cm_strchr("!@#\%^&*$()=+\\|[]{};\"\':/?.", content[i + 1]))
+        {
+            i++;
+            j = i;
+            while (content[j] && (ft_isalnum(content[j]) && !cm_strchr("\"'$", content[j])))
+                j++;
+            tmp = cheak_env(ft_substr(content, i, j - i), g_env);
+            if (tmp)
+                str = ft_strjoin(str, tmp);
+            i = j;
+        }
+        else
+        {
+            str = ft_strjoin(str, ft_substr(content, i, 1));
+            i++;
+        }
+    }
+    free(content);
+    return (str);
+}
+
+
+
+void heandal_herdoc(lexer_t *tmp, char **g_env)
 {
     char *str;
     char *content;
@@ -107,10 +146,10 @@ void heandal_herdoc(lexer_t *tmp)
         content = ft_strjoin(content, str);
     }
     free(tmp->next->content);
-    tmp->next->content = content;
+    tmp->next->content = herdoc_appand(content, tmp->next->type, g_env);
 }
 
-int cmd_syntax(lexer_t *tmp)
+int cmd_syntax(lexer_t *tmp, char **g_env)
 {
     if (!tmp)
         return (0);
@@ -119,10 +158,12 @@ int cmd_syntax(lexer_t *tmp)
     count_herdoc(tmp);
     while (tmp)
     {
+        if (tmp->prev && tmp->prev->type == 'h' && (tmp->type == 'w' || tmp->type == 'q'))
+            tmp = tmp->next;
 
-        if (tmp->type == 'h' && tmp->next && (tmp->next->type == 'w' || tmp->next->type == 'q'))
+        else if (tmp->type == 'h' && tmp->next && (tmp->next->type == 'w' || tmp->next->type == 'q'))
         {
-            heandal_herdoc(tmp);
+            heandal_herdoc(tmp, g_env);
             tmp = tmp->next;
         }
         else if (cm_strchr("|<>oh+&", tmp->type))
@@ -292,7 +333,7 @@ int    expand(lexer_t *cmd, char **env)
     tmp = cmd;
     while (tmp)
     {
-        if (cm_strchr(tmp->content, '$'))
+        if (tmp->content && cm_strchr(tmp->content, '$'))
         {
             if (tmp->prev && tmp->prev->type == 'h' && tmp->type == 'q')
             {
@@ -345,26 +386,11 @@ char *dellt_q(lexer_t *cmd, int i)
     char *tmp;
     char    hold;
 
+    if (!cmd->content)
+        return (NULL);
     tmp = cmd->content;
     cmd->content = NULL;
     cmd->content = dellt_q_char(tmp);
-    // while (tmp[i])
-    // {
-    //     if (tmp[i] == '"' || tmp[i] == '\'')
-    //     {
-    //         hold = tmp[i];
-    //         i++;
-    //         while(tmp[i] && tmp[i] != hold)
-    //         {
-    //             cmd->content = ft_strjoin(cmd->content, ft_substr(tmp, i, 1));
-    //             i++;
-    //         }
-    //     }
-    //     else
-    //         cmd->content = ft_strjoin(cmd->content, ft_substr(tmp, i, 1));
-    //     if (tmp[i])
-    //         i++;
-    // }
     free(tmp);
     return (cmd->content);
 }
@@ -378,7 +404,7 @@ int del_quote(lexer_t *cmd)
 
     while (cmd)
     {
-        if (!cm_strchr("|<>oh+&", cmd->type))
+        if (!cm_strchr("|<>oh+&", cmd->type) && cmd->prev && cmd->prev->type != 'h')
             cmd->content = dellt_q(cmd, 0);
         cmd = cmd->next;
     }
@@ -412,13 +438,13 @@ lexer_t *split_1(lexer_t *head, char **str, int i)
 
 lexer_t *spilt_(lexer_t *head)
 {
-    lexer_t *n_head = NULL;
     char **str;
     char *tmp;
-    int i = 0;
+    int i;
 
+    i = 0;
     if (!head || !(str = ft_split(head->content)))
-        return NULL;
+        return (free_list(head), NULL);
     while (str[i])
         i++;
     if (i > 1)
@@ -436,17 +462,17 @@ lexer_t *spilt_(lexer_t *head)
     tmp = head->content;
     head->content = ft_strdup(str[0]);
     free(tmp);
-    free_array(str);
-    return (head->next);
+    return (free_array(str), head->next);
 }
 
 
 
-int split_cmd(lexer_t *head) {
+int  split_cmd(lexer_t *head)
+{
     lexer_t *tmp = head;
 
     while (tmp) {
-        if (cm_strchr(tmp->content, ' '))
+        if (tmp->content && cm_strchr(tmp->content, ' ') && tmp->prev && tmp->prev->type != 'h')
         {
             tmp = spilt_(tmp);
             if (tmp && !ft_strncmp(tmp->b_appand, "ambiguous redirect", 18))
@@ -459,7 +485,6 @@ int split_cmd(lexer_t *head) {
         else
             tmp = tmp->next;
     }
-
     return (1);
 }
 
@@ -494,7 +519,7 @@ int main(int ac, char **av, char **env)
         cmd = ferst_s(line);
         if (!cmd)
             continue;
-        if (cmd_syntax(cmd))
+        if (cmd_syntax(cmd, env))
         {
             free_list(cmd);
             free(line);
@@ -518,20 +543,11 @@ int main(int ac, char **av, char **env)
                continue;
            }
            del_quote(cmd);
-           tmp2 = cmd;
-              while (tmp2)
-                {
-                    printf("[%s] ->", tmp2->content);
-                    printf("[%c]\n", tmp2->type);
-                    tmp2 = tmp2->next;
-                }
-                free_list(cmd);
-            //print_tree(parse_pipe(tmp2));
+            tmp2 = cmd;
+            print_tree(parse_and(cmd));
         }
         free(line);
         i = 0;
     }
     return (0);
 }
-
-//TODO  fix the single quote tokenzation 'ls  -ls'ls take it as [ls] [-ls] [ls] instead of [ls -lsls]

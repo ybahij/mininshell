@@ -29,6 +29,8 @@
 # define REDIRECTION 2
 # define HEREDOC 3
 # define EXEC 4
+# define AND 5
+# define OR 6
 
 typedef struct s_cmd
 {
@@ -64,6 +66,20 @@ typedef struct s_heredoc
     char *content;
     t_cmd *next;
 }   t_heredoc;
+
+typedef struct s_and
+{
+    int type;
+    t_cmd *left;
+    t_cmd *right;
+}   t_and;
+
+typedef struct s_or
+{
+    int type;
+    t_cmd *left;
+    t_cmd *right;
+}   t_or;
 
 typedef struct lexer_s
 {
@@ -132,5 +148,42 @@ int     free_list(lexer_t *head);
 t_cmd *parse_pipe(lexer_t *head);
 void print_tree(t_cmd *tree);
 char *dellt_q_char(char *tmp);
+char *cheak_env(char *str, char **env);
+t_cmd *parse_or(lexer_t *head);
+t_cmd *parse_and(lexer_t *head);
+lexer_t *ft_lstlast(lexer_t *lst);
+void ft_lstadd_back(lexer_t **lst, lexer_t *new);
+int is_space(char c);
+int    qoute(int *k, char *input, lexer_t **head);
+void    free_digit(char *input, int k, int j, lexer_t **g_head);
+int cheak_digit(char *input, int *i , lexer_t **g_head);
+int redir_o(char *input, int *j, lexer_t **head);
+int redir_i(char *input, int *j, lexer_t **head);
+int  redir(char *input, int *i, lexer_t **head);
+int r_pipe(char *input, int *j, lexer_t **head);
+int cmd_lexer(char *input, int *j, lexer_t **head, char t, int i);
+int n_cmd(char *input, int *j, lexer_t **head);
+int and_or(char *input, int *i, lexer_t **head);
+lexer_t *ferst_s(char *input);
+int pars_quote(char *content);
+int pars_(lexer_t *tmp);
+void count_herdoc(lexer_t *tmp);
+char *quote_(char *content);
+char *herdoc_appand(char *content, char type, char **g_env);
+void heandal_herdoc(lexer_t *tmp, char **g_env);
+int cmd_syntax(lexer_t *tmp, char **g_env);
+void    free_(lexer_t *cmd);
+char *cheak_env(char *str, char **env);
+int appand_in_fille(lexer_t *cmd, int fd, char **env);
+void    free_array(char **str);
+int expand_w(lexer_t *cmd, char **env);
+int     free_list(lexer_t *head);
+int    expand(lexer_t *cmd, char **env);
+char *dellt_q_char(char *tmp);
+char *dellt_q(lexer_t *cmd, int i);
+int del_quote(lexer_t *cmd);
+lexer_t *split_1(lexer_t *head, char **str, int i);
+lexer_t *spilt_(lexer_t *head);
+int  split_cmd(lexer_t *head);
 
 #endif

@@ -8,7 +8,26 @@ void print_tree(t_cmd *tree)
   t_redir *redir;
   t_heredoc *heredoc;
 
-    if (tree->type == PIPE)
+
+    if (tree->type == AND)
+    {
+      t_and *and = (t_and *)tree;
+      printf("AND\n");
+      printf("________LEFT\n");
+      print_tree(and->left);
+      printf("________RIGHT\n");
+      print_tree(and->right);
+    }
+    else if (tree->type == OR)
+    {
+      t_or *or = (t_or *)tree;
+      printf("OR\n");
+      printf("________LEFT\n");
+      print_tree(or->left);
+      printf("________RIGHT\n");
+      print_tree(or->right);
+    }
+    else if (tree->type == PIPE)
     {
       pipe = (t_pipe *)tree;
       printf("PIPE\n");
