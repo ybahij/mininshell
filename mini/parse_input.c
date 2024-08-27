@@ -85,32 +85,38 @@ char *quote_(char *content)
     return (content);
 }
 
+char    *herdoc_appand1(char *content, char **g_env, char *str, int *i)
+{
+    int j;
+    char *tmp2;
+    int k;
+
+    j = *i;
+    j++;
+    k = j;
+    while (content[j] && (ft_isalnum(content[j])))
+        j++;
+    tmp2 = cheak_env(ft_substr(content, k, j - k), g_env);
+    if (tmp2)
+        str = ft_strjoin(str, tmp2);
+    *i = j;
+    return (str);
+}
+
 char *herdoc_appand(char *content, char type, char **g_env)
 
 {
-    char *tmp;
     char *str;
     int i;
-    int j;
 
     i = 0;
-    j = 0;
     str = NULL;
     if (type != 'w' || !cm_strchr(content, '$'))
         return (content);
     while (content[i])
     {
         if (content[i] == '$' && !cm_strchr("!@#\%^&*$()=+\\|[]{};\"\':/?.", content[i + 1]))
-        {
-            i++;
-            j = i;
-            while (content[j] && (ft_isalnum(content[j]) && !cm_strchr("\"'$", content[j])))
-                j++;
-            tmp = cheak_env(ft_substr(content, i, j - i), g_env);
-            if (tmp)
-                str = ft_strjoin(str, tmp);
-            i = j;
-        }
+            str = herdoc_appand1(content, g_env, str, &i);
         else
         {
             str = ft_strjoin(str, ft_substr(content, i, 1));
@@ -120,7 +126,6 @@ char *herdoc_appand(char *content, char type, char **g_env)
     free(content);
     return (str);
 }
-
 
 void heandal_herdoc(lexer_t *tmp, char **g_env)
 {
@@ -405,8 +410,11 @@ int del_quote(lexer_t *cmd)
 
     while (cmd)
     {
-        if (!cm_strchr("|<>oh+&", cmd->type) || (cmd->prev && cmd->prev->type != 'h'))
-            cmd->content = dellt_q(cmd, 0);
+        if (!cm_strchr("|<>oh+&", cmd->type))
+        {
+            if ((cmd->prev && cmd->prev->type != 'h') || !cmd->prev)
+                cmd->content = dellt_q(cmd, 0);
+        }
         cmd = cmd->next;
     }
     return (0);
