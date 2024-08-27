@@ -1,18 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_bzero.c                                         :+:      :+:    :+:   */
+/*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/03 23:42:10 by ybahij            #+#    #+#             */
-/*   Updated: 2023/11/25 09:55:21 by ybahij           ###   ########.fr       */
+/*   Created: 2023/11/05 18:16:32 by ybahij            #+#    #+#             */
+/*   Updated: 2023/11/11 03:22:33 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-void	ft_bzero(void *s, size_t n)
+char	*cm_strchr(const char *s, int c)
 {
-	ft_memset(s, 0, n);
+	if (!s)
+		return (0);
+	while (*s)
+	{
+		if (*s == (char)c)
+			return ((char *)s);
+		s++;
+	}
+	if (*s == (char)c)
+		return ((char *)s);
+	return (0);
 }

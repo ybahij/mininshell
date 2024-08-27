@@ -1,41 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strchr.c                                        :+:      :+:    :+:   */
+/*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/05 18:16:32 by ybahij            #+#    #+#             */
-/*   Updated: 2023/11/11 03:22:33 by ybahij           ###   ########.fr       */
+/*   Created: 2023/11/07 00:25:35 by ybahij            #+#    #+#             */
+/*   Updated: 2023/11/24 21:33:55 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-char	*ft_strchr(const char *s, int c, int i)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	while (*s)
-	{
-		if (*s == (char)c || *s == (char)i)
-			return ((char *)s);
-		s++;
-	}
-	if (*s == (char)c)
-		return ((char *)s);
-	return (0);
-}
+	size_t	i;
+	char	*substr;
 
-char	*cm_strchr(const char *s, int c)
-{
+	i = 0;
 	if (!s)
-		return (0);
-	while (*s)
-	{
-		if (*s == (char)c)
-			return ((char *)s);
-		s++;
-	}
-	if (*s == (char)c)
-		return ((char *)s);
-	return (0);
+		return (NULL);
+	while (s[i])
+		i++;
+	if (i - start < len)
+		len = i - start;
+	substr = malloc(sizeof(char) * len + 1);
+	if (!substr)
+		return (NULL);
+	i = 0;
+	while (i < len && s[start])
+		substr[i++] = s[start++];
+	substr[i] = '\0';
+	return (substr);
 }

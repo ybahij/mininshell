@@ -1,35 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_substr.c                                        :+:      :+:    :+:   */
+/*   ft_strncmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/07 00:25:35 by ybahij            #+#    #+#             */
-/*   Updated: 2023/11/24 21:33:55 by ybahij           ###   ########.fr       */
+/*   Created: 2023/11/05 18:45:48 by ybahij            #+#    #+#             */
+/*   Updated: 2023/11/25 20:20:07 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	size_t	i;
-	char	*substr;
+	size_t			i;
+	unsigned char	*ps1;
+	unsigned char	*ps2;
 
+	ps1 = (unsigned char *)s1;
+	ps2 = (unsigned char *)s2;
 	i = 0;
-	if (!s)
-		return (NULL);
-	while (s[i])
+	if (n == 0)
+		n = 1;
+	if (s1 == NULL && s2 == NULL)
+		return (0);
+	if (s1 == NULL || s2 == NULL)
+		return (1);
+	while (i < n && (*ps1 || *ps2))
+	{
+		if (*ps1 != *ps2)
+			return (*ps1 - *ps2);
+		ps1++;
+		ps2++;
 		i++;
-	if (i - start < len)
-		len = i - start;
-	substr = malloc(sizeof(char) * len + 1);
-	if (!substr)
-		return (NULL);
-	i = 0;
-	while (i < len && s[start])
-		substr[i++] = s[start++];
-	substr[i] = '\0';
-	return (substr);
+	}
+	return (0);
 }

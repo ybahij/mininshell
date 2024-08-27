@@ -33,7 +33,7 @@ int pars_(lexer_t *tmp)
     tmp2 = tmp->next;
     if (!tmp2 )
     {
-        printf(RED"minishell: syntax error near unexpected token `%s'\n"RESET, tmp->content);
+        printf(RED"minishell: syntax error near unexpected token `%s'\n"RESET, "newline");
         return (0);
     }
     if (cm_strchr("><+h", tmp2->type) && tmp->type != '|')
@@ -80,6 +80,8 @@ char *quote_(char *content)
     str = content;
     content = dellt_q_char(content);
     free(str);
+    if (!content)
+        return (ft_strdup(""));
     return (content);
 }
 
@@ -120,13 +122,12 @@ char *herdoc_appand(char *content, char type, char **g_env)
 }
 
 
-
 void heandal_herdoc(lexer_t *tmp, char **g_env)
 {
     char *str;
     char *content;
 
-    if (tmp->next->type != 'q')
+    if (tmp->next->type == 'q')
         tmp->next->content = quote_(tmp->next->content);
     content = NULL;
     while (1)
@@ -404,7 +405,7 @@ int del_quote(lexer_t *cmd)
 
     while (cmd)
     {
-        if (!cm_strchr("|<>oh+&", cmd->type) && cmd->prev && cmd->prev->type != 'h')
+        if (!cm_strchr("|<>oh+&", cmd->type) || (cmd->prev && cmd->prev->type != 'h'))
             cmd->content = dellt_q(cmd, 0);
         cmd = cmd->next;
     }

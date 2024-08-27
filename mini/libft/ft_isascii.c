@@ -1,26 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_calloc.c                                        :+:      :+:    :+:   */
+/*   ft_isascii.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/06 21:42:53 by ybahij            #+#    #+#             */
-/*   Updated: 2023/11/17 17:01:20 by ybahij           ###   ########.fr       */
+/*   Created: 2023/11/02 18:11:03 by ybahij            #+#    #+#             */
+/*   Updated: 2023/11/02 18:15:37 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-void	*ft_calloc(size_t count, size_t size)
+int	ft_isascii(int c)
 {
-	size_t	total_size;
-	void	*src;
-
-	total_size = count * size;
-	src = malloc(total_size);
-	if (src == NULL)
-		return (NULL);
-	ft_bzero(src, total_size);
-	return (src);
+	if (c >= 0 && c <= 127)
+		return (1);
+	return (0);
 }

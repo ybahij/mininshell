@@ -1,20 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_isalpha.c                                       :+:      :+:    :+:   */
+/*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/02 16:11:59 by ybahij            #+#    #+#             */
-/*   Updated: 2023/11/02 18:07:18 by ybahij           ###   ########.fr       */
+/*   Created: 2023/11/03 23:34:54 by ybahij            #+#    #+#             */
+/*   Updated: 2023/11/25 17:15:57 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-int	ft_isalpha(int c)
+void	*ft_memset(void *s, int c, size_t n)
 {
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
-		return (1);
-	return (0);
+	size_t			i;
+	unsigned char	*tab;
+
+	i = 0;
+	tab = (unsigned char *)s;
+	while (i < n)
+	{
+		tab[i] = (unsigned char)c;
+		i++;
+	}
+	return (s);
 }

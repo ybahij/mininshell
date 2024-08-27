@@ -1,33 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strrchr.c                                       :+:      :+:    :+:   */
+/*   ft_isdigit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/05 18:39:14 by ybahij            #+#    #+#             */
-/*   Updated: 2023/11/11 07:03:26 by ybahij           ###   ########.fr       */
+/*   Created: 2023/11/02 16:35:15 by ybahij            #+#    #+#             */
+/*   Updated: 2023/11/22 21:08:13 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-char	*ft_strrchr(const char *s, int c)
+int	ft_isdigit(int c)
 {
-	int	i;
-	int	len;
-
-	len = 0;
-	while (s[len])
-		len++;
-	if ((char)c == '\0')
-		return ((char *)s + len);
-	i = len - 1;
-	while (i >= 0)
-	{
-		if (s[i] == (char) c)
-			return ((char *)s + i);
-		i--;
-	}
+	if (c >= '0' && c <= '9')
+		return (1);
 	return (0);
 }

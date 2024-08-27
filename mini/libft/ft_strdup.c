@@ -1,28 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memset.c                                        :+:      :+:    :+:   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ybahij <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/03 23:34:54 by ybahij            #+#    #+#             */
-/*   Updated: 2023/11/25 17:15:57 by ybahij           ###   ########.fr       */
+/*   Created: 2023/11/06 23:24:17 by ybahij            #+#    #+#             */
+/*   Updated: 2023/11/06 23:24:29 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-void	*ft_memset(void *s, int c, size_t n)
+char	*ft_strdup(const char *s1)
 {
-	size_t			i;
-	unsigned char	*tab;
+	int		i;
+	char	*dest;
 
+	if (!s1)
+		return (ft_strdup(""));
+	dest = malloc ((ft_strlen(s1) + 1) * 1);
+	if (dest == NULL)
+		return (NULL);
 	i = 0;
-	tab = (unsigned char *)s;
-	while (i < n)
+	while (s1[i] != '\0')
 	{
-		tab[i] = (unsigned char)c;
+		dest [i] = s1[i];
 		i++;
 	}
-	return (s);
+	dest[i] = '\0';
+	return (dest);
 }
