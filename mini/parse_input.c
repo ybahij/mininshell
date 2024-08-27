@@ -31,19 +31,19 @@ int pars_(lexer_t *tmp)
     lexer_t *tmp2;
 
     tmp2 = tmp->next;
-    if (!tmp2 )
+    if (!tmp2)
     {
         printf(RED"minishell: syntax error near unexpected token `%s'\n"RESET, "newline");
         return (0);
     }
-    if (cm_strchr("><+h", tmp2->type) && tmp->type != '|')
+    if (cm_strchr("><+h|&o", tmp2->type))
     {
-        printf("Syntax error near unexpected token '%s'\n", tmp2->content);
+        printf(RED"minishell: syntax error near unexpected token `%s'\n"RESET, tmp2->content);
         return (0);
     }
     if (cm_strchr("|&o", tmp->type) && cm_strchr("|&o", tmp2->type))
     {
-        printf("Syntax error near unexpected token '%s'\n", tmp2->content);
+        printf(RED"minishell: syntax error near unexpected token `%s'\n"RESET, tmp2->content);
         return (0);
     }
     return (1);
@@ -155,8 +155,63 @@ void heandal_herdoc(lexer_t *tmp, char **g_env)
     tmp->next->content = herdoc_appand(content, tmp->next->type, g_env);
 }
 
+lexer_t *syntax_error(lexer_t *tmp, char **g_env)
+{
+    if (tmp->prev && tmp->prev->type == 'h')
+    {
+        if (tmp->type == 'w' || tmp->type == 'q')
+            return (tmp->next);
+    }
+    else if (tmp->type == 'h' && tmp->next)
+    {
+        if (tmp->next->type == 'w' || tmp->next->type == 'q')
+        {
+            heandal_herdoc(tmp, g_env);
+            return (tmp = tmp->next);
+        }
+    }
+    return (tmp);
+}
+
+int pars_pipe_(lexer_t *tmp)
+{
+    if (!tmp->next)
+    {
+        printf(RED"minishell: syntax error near unexpected token `%s'\n"RESET, "newline");
+        return (0);
+    }
+    if (cm_strchr("|&o", tmp->next->type))
+    {
+        printf(RED"minishell: syntax error near unexpected token `%s'\n"RESET, tmp->next->content);
+        return (0);
+    }
+    return (1);
+}
+
+int     syntax_error_(lexer_t *tmp, char **g_env)
+{
+    if (cm_strchr("<>oh+&", tmp->type))
+    {
+        if (!pars_(tmp))
+            return (1);
+    }
+    if (tmp->type == '|')
+    {
+        if (!pars_pipe_(tmp))
+            return (1);
+    }
+    else if (tmp->type == 'q')
+    {
+        if (!pars_quote(tmp->content))
+            return (1);
+    }
+    return (0);
+}
+
 int cmd_syntax(lexer_t *tmp, char **g_env)
 {
+    lexer_t *tmp2;
+
     if (!tmp)
         return (0);
     if (cm_strchr("|o&", tmp->type))
@@ -164,24 +219,12 @@ int cmd_syntax(lexer_t *tmp, char **g_env)
     count_herdoc(tmp);
     while (tmp)
     {
-        if (tmp->prev && tmp->prev->type == 'h' && (tmp->type == 'w' || tmp->type == 'q'))
-            tmp = tmp->next;
-
-        else if (tmp->type == 'h' && tmp->next && (tmp->next->type == 'w' || tmp->next->type == 'q'))
-        {
-            heandal_herdoc(tmp, g_env);
-            tmp = tmp->next;
-        }
-        else if (cm_strchr("|<>oh+&", tmp->type))
-        {
-            if (!pars_(tmp))
-                return (1);
-        }
-        else if (tmp->type == 'q')
-        {
-            if (!pars_quote(tmp->content))
-                return (1);
-        }
+        tmp2 = tmp;
+        tmp = syntax_error(tmp, g_env);
+        if (tmp != tmp2)
+            continue;
+        else if (syntax_error_(tmp, g_env))
+            return (1);
         tmp = tmp->next;
     }
     return (0);
@@ -245,7 +288,6 @@ int appand_u(int *j, int i, lexer_t *cmd, int fd, char **env)
 }
 
 
-
 int appand_in_fille(lexer_t *cmd, int fd, char **env)
 {
     int len;
@@ -263,7 +305,7 @@ int appand_in_fille(lexer_t *cmd, int fd, char **env)
             hold = cmd->content[i];
         else if (cmd->content[i] == hold)
             hold = 0;
-        if (hold != '\'' && cmd->content[i] == '$' && !cm_strchr("!@#\%^&*$()=+\\|[]{};\"\':/?.", cmd->content[i + 1]))
+        if (hold != '\'' && cmd->content[i] == '$' && ft_isalnum(cmd->content[i + 1]))
         {
             i++;
             len += appand_u(&j, i, cmd, fd, env);
