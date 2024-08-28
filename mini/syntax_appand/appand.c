@@ -1,0 +1,147 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   appand.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/28 16:52:24 by youssef           #+#    #+#             */
+/*   Updated: 2024/08/28 17:05:48 by youssef          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../minishell.h"
+
+int	expand(lexer_t *cmd, char **env)
+{
+	lexer_t	*tmp;
+	lexer_t	*tmp2;
+
+	tmp = cmd;
+	while (tmp)
+	{
+		if (tmp->content && cm_strchr(tmp->content, '$'))
+		{
+			if (tmp->prev && tmp->prev->type == 'h' && tmp->type == 'q')
+			{
+				tmp = tmp->next;
+				continue ;
+			}
+			expand_w(tmp, env);
+			if (!tmp->content[0] && tmp->prev && cm_strchr("<>+",
+					tmp->prev->type))
+			{
+				printf(RED "minishell: %s: ambiguous redirect\n" RESET,
+					tmp->b_appand);
+				return (free_list(cmd), 1);
+			}
+		}
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+int	expand_w(lexer_t *cmd, char **env)
+{
+	char	*tmp2;
+	int		fd[2];
+	char	fname[10];
+	int		rfd;
+	int		len;
+	char	hold;
+
+	if (cmd->prev)
+	{
+		if (cmd->prev->type == 'h' && cmd->type == 'q')
+			return (0);
+	}
+	len = 0;
+	pipe(fd);
+	cmd->b_appand = ft_strdup(cmd->content);
+	len = appand_in_fille(cmd, fd[1], env, hold);
+	close(fd[1]);
+	rfd = fd[0];
+	free(cmd->content);
+	cmd->content = malloc(len + 2);
+	read(fd[0], cmd->content, len);
+	cmd->content[len] = '\0';
+	close(fd[0]);
+	return (0);
+}
+
+int	appand_u(int *j, int i, lexer_t *cmd, int fd, char **env)
+{
+	char	*tmp2;
+	int		len;
+	int		k;
+
+	len = 0;
+	k = i;
+	while (cmd->content[k] && (ft_isalnum(cmd->content[k]) && !cm_strchr("\"'$",
+				cmd->content[k])))
+		k++;
+	tmp2 = cheak_env(ft_substr(cmd->content, i, k - i), env);
+	if (tmp2)
+		len += write(fd, tmp2, ft_strlen(tmp2));
+	free(tmp2);
+	*j = k;
+	return (len);
+}
+
+int	appand_in_fille(lexer_t *cmd, int fd, char **env, char hold)
+{
+	int	len;
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	len = 0;
+	hold = 0;
+	while (cmd->content[i])
+	{
+		if ((cmd->content[i] == '"' || cmd->content[i] == '\'') && hold == 0)
+			hold = cmd->content[i];
+		else if (cmd->content[i] == hold)
+			hold = 0;
+		if (hold != '\'' && cmd->content[i] == '$' && ft_isalnum(cmd->content[i
+			+ 1]))
+		{
+			i++;
+			len += appand_u(&j, i, cmd, fd, env);
+			i = j;
+		}
+		else
+			len += write(fd, &cmd->content[i++], 1);
+	}
+	return (len);
+}
+
+char	*cheak_env(char *str, char **env)
+{
+	int		i;
+	int		j;
+	int		k;
+	char	*tmp;
+
+	i = 0;
+	j = 0;
+	k = 0;
+	tmp = NULL;
+	while (env[i])
+	{
+		j = 0;
+		if (ft_strncmp(env[i], str, ft_strlen(str)))
+		{
+			i++;
+			continue ;
+		}
+		if (env[i][ft_strlen(str)] == '=')
+			tmp = ft_strdup(&env[i][ft_strlen(str) + 1]);
+		if (tmp)
+			break ;
+		i++;
+	}
+	free(str);
+	return (tmp);
+}
