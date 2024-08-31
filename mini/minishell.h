@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/08/31 19:07:24 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/31 21:56:16 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,12 +142,12 @@ int						cmd_lexer(char *input, int *j, lexer_t **head, char t,
 int						n_cmd(char *input, int *j, lexer_t **head);
 int						and_or(char *input, int *i, lexer_t **head);
 int						pars_quote(char *content);
-int						pars_(lexer_t *tmp);
+int						pars_(lexer_t *tmp, char *newline);
 void					count_herdoc(lexer_t *tmp);
 char					*quote_(char *content);
 char					*herdoc_appand(char *content, char type, char **g_env);
-void					heandal_herdoc(lexer_t *tmp, char **g_env);
-int						cmd_syntax(lexer_t *tmp, char **g_env);
+int						heandal_herdoc(lexer_t *tmp, char **g_env);
+int						cmd_syntax(lexer_t *tmp, char **g_env, char *newline);
 void					free_(lexer_t *cmd);
 int						appand_in_fille(lexer_t *cmd, int fd, char **env,
 							char hold);
@@ -176,9 +176,10 @@ int						appand_u(int *j, int i, lexer_t *cmd, int fd,
 							char **env);
 char					*herdoc_appand1(char *content, char **g_env, char *str,
 							int *i);
-int						syntax_error_(lexer_t *tmp, char **g_env);
+int						syntax_error_(lexer_t *tmp, char **g_env,
+							char *newline);
 lexer_t					*syntax_error(lexer_t *tmp, char **g_env);
-int						pars_pipe_(lexer_t *tmp);
+int						pars_pipe_(lexer_t *tmp, char *newline);
 int						parenthesis(char *input, int *i, lexer_t **head);
 void					free_garbage(void);
 void					add_garbage(void *content);
@@ -186,6 +187,8 @@ void					*ft_malloc(size_t size);
 void					free_g(t_garbage *head);
 int						pars_parenthesis(lexer_t *tmp, char **g_env);
 t_cmd					*parenthesis_c(lexer_t *head, char **env);
-int						token_cmd(char *line, lexer_t **cmd, char **env);
+int						token_cmd(char *line, lexer_t **cmd, char **env,
+							char *newline);
+char					*remaove_parenthesis(char *content);
 
 #endif

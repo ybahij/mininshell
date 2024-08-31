@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/30 17:04:14 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/31 22:11:43 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ void	count_herdoc(lexer_t *tmp)
 
 char	*herdoc_appand(char *content, char type, char **g_env)
 {
-	char *str;
-	int i;
+	char	*str;
+	int		i;
 
 	i = 0;
 	str = NULL;
@@ -76,10 +76,10 @@ char	*herdoc_appand(char *content, char type, char **g_env)
 	return (str);
 }
 
-void	heandal_herdoc(lexer_t *tmp, char **g_env)
+int	heandal_herdoc(lexer_t *tmp, char **g_env)
 {
-	char *str;
-	char *content;
+	char	*str;
+	char	*content;
 
 	if (tmp->next->type == 'q')
 		tmp->next->content = quote_(tmp->next->content);
@@ -99,4 +99,5 @@ void	heandal_herdoc(lexer_t *tmp, char **g_env)
 		content = ft_strjoin(content, str);
 	}
 	tmp->next->content = herdoc_appand(content, tmp->next->type, g_env);
+	return (1);
 }

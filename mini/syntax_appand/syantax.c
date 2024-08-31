@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:49:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/31 17:37:53 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/31 22:11:16 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	pars_quote(char *content)
 	return (1);
 }
 
-int	pars_(lexer_t *tmp)
+int	pars_(lexer_t *tmp, char *newline)
 {
 	lexer_t	*tmp2;
 
@@ -48,7 +48,7 @@ int	pars_(lexer_t *tmp)
 	if (!tmp2)
 	{
 		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
-			"newline");
+			newline);
 		return (0);
 	}
 	if (cm_strchr("><+h|&o", tmp2->type) && !cm_strchr("&o", tmp->type))
@@ -66,16 +66,16 @@ int	pars_(lexer_t *tmp)
 	return (1);
 }
 
-int	syntax_error_(lexer_t *tmp, char **g_env)
+int	syntax_error_(lexer_t *tmp, char **g_env, char *newline)
 {
 	if (cm_strchr("<>oh+&", tmp->type))
 	{
-		if (!pars_(tmp))
+		if (!pars_(tmp, newline))
 			return (1);
 	}
 	if (tmp->type == '|')
 	{
-		if (!pars_pipe_(tmp))
+		if (!pars_pipe_(tmp, newline))
 			return (1);
 	}
 	else if (tmp->type == 'q')
@@ -104,6 +104,11 @@ char	*quote_(char *content)
 
 lexer_t	*syntax_error(lexer_t *tmp, char **g_env)
 {
+	if (tmp->next && tmp->next->type == 'q')
+	{
+		if (!pars_quote(tmp->next->content))
+			return (NULL);
+	}
 	if (tmp->prev && tmp->prev->type == 'h')
 	{
 		if (tmp->type == 'w' || tmp->type == 'q')
@@ -114,7 +119,6 @@ lexer_t	*syntax_error(lexer_t *tmp, char **g_env)
 		if (tmp->next->type == 'w' || tmp->next->type == 'q')
 		{
 			heandal_herdoc(tmp, g_env);
-			return (tmp = tmp->next);
 		}
 	}
 	return (tmp);

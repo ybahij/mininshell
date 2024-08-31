@@ -6,18 +6,18 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/31 18:54:04 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/31 22:09:17 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	pars_pipe_(lexer_t *tmp)
+int	pars_pipe_(lexer_t *tmp, char *newline)
 {
 	if (!tmp->next)
 	{
 		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
-			"newline");
+			newline);
 		return (0);
 	}
 	if (cm_strchr("|&o", tmp->next->type))
@@ -29,7 +29,7 @@ int	pars_pipe_(lexer_t *tmp)
 	return (1);
 }
 
-int	cmd_syntax(lexer_t *tmp, char **g_env)
+int	cmd_syntax(lexer_t *tmp, char **g_env, char *newline)
 {
 	lexer_t	*tmp2;
 
@@ -43,9 +43,11 @@ int	cmd_syntax(lexer_t *tmp, char **g_env)
 	{
 		tmp2 = tmp;
 		tmp = syntax_error(tmp, g_env);
+		if (!tmp)
+			return (1);
 		if (tmp != tmp2)
 			continue ;
-		else if (syntax_error_(tmp, g_env))
+		else if (syntax_error_(tmp, g_env, newline))
 			return (1);
 		tmp = tmp->next;
 	}
