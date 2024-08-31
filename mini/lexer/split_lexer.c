@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/29 20:05:15 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/30 17:03:47 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/31 17:33:52 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,9 @@ int	parenthesis(char *input, int *i, lexer_t **head)
 	j++;
 	while (input[j] && !cm_strchr("()", input[j]))
 		j++;
-	// if (input[j] && cm_strchr("()", input[j]))
-	// 	j++;
-	str = ft_substr(input, *i, j - *i + 1);
+	if (input[j] && cm_strchr("()", input[j]))
+		j++;
+	str = ft_substr(input, *i, j - *i);
 	tmp = lexer(str, '(');
 	ft_lstadd_back(head, tmp);
 	*i = j;

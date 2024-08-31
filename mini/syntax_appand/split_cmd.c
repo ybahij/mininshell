@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:56:18 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/30 17:04:53 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/31 18:55:25 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ lexer_t	*spilt_(lexer_t *head, int i)
 
 	i = 0;
 	if (!head || !(str = ft_split(head->content)))
-		return ( NULL);
+		return (NULL);
 	while (str[i])
 		i++;
 	if (i > 1)
@@ -63,12 +63,13 @@ lexer_t	*spilt_(lexer_t *head, int i)
 
 int	split_cmd(lexer_t *head)
 {
-	lexer_t *tmp = head;
+	lexer_t	*tmp;
 
+	tmp = head;
 	while (tmp)
 	{
 		if (tmp->content && cm_strchr(tmp->content, ' ') && tmp->prev
-			&& tmp->prev->type != 'h')
+			&& tmp->prev->type != 'h' && tmp->type != '(')
 		{
 			tmp = spilt_(tmp, 0);
 			if (tmp && !ft_strncmp(tmp->b_appand, "ambiguous redirect", 18))
@@ -79,6 +80,32 @@ int	split_cmd(lexer_t *head)
 		}
 		else
 			tmp = tmp->next;
+	}
+	return (1);
+}
+
+int	pars_parenthesis(lexer_t *tmp, char **g_env)
+{
+	int	i;
+
+	i = 0;
+	if (tmp->content[0] != '(')
+	{
+		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,
+			tmp->content[0]);
+		return (0);
+	}
+	if (tmp->content[ft_strlen(tmp->content) - 1] != ')')
+	{
+		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,
+			tmp->content[0]);
+		return (0);
+	}
+	if (tmp->prev && !cm_strchr("|&o", tmp->prev->type))
+	{
+		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,
+			tmp->content[0]);
+		return (0);
 	}
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/08/30 16:56:02 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/31 19:07:24 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,12 +127,9 @@ lexer_t					*lexer(char *input, char type);
 int						is_space(char c);
 lexer_t					*ferst_s(char *input);
 int						free_list(lexer_t *head);
-t_cmd					*parse_pipe(lexer_t *head);
 void					print_tree(t_cmd *tree);
 char					*dellt_q_char(char *tmp);
 char					*cheak_env(char *str, char **env);
-t_cmd					*parse_or(lexer_t *head);
-t_cmd					*parse_and(lexer_t *head);
 int						qoute(int *k, char *input, lexer_t **head);
 void					free_digit(char *input, int k, int j, lexer_t **g_head);
 int						cheak_digit(char *input, int *i, lexer_t **g_head);
@@ -166,12 +163,14 @@ int						get_cmd_len(lexer_t *token);
 char					**get_cmd_args(lexer_t *token);
 t_cmd					*parse_cmd(lexer_t *token);
 void					handle_redirection(t_redir *redir, lexer_t *token);
-t_cmd					*herdoc_construct(lexer_t *token);
-t_cmd					*redir_construct(lexer_t *token, lexer_t *head);
-t_cmd					*parse_redir(lexer_t *head);
-t_cmd					*parse_pipe(lexer_t *head);
-t_cmd					*parse_or(lexer_t *head);
-t_cmd					*parse_and(lexer_t *head);
+t_cmd					*herdoc_construct(lexer_t *token, lexer_t *head,
+							char **env);
+t_cmd					*redir_construct(lexer_t *token, lexer_t *head,
+							char **env);
+t_cmd					*parse_redir(lexer_t *head, char **env);
+t_cmd					*parse_pipe(lexer_t *head, char **env);
+t_cmd					*parse_or(lexer_t *head, char **env);
+t_cmd					*parse_and(lexer_t *head, char **env);
 lexer_t					*peek(lexer_t *head, char type);
 int						appand_u(int *j, int i, lexer_t *cmd, int fd,
 							char **env);
@@ -185,5 +184,8 @@ void					free_garbage(void);
 void					add_garbage(void *content);
 void					*ft_malloc(size_t size);
 void					free_g(t_garbage *head);
+int						pars_parenthesis(lexer_t *tmp, char **g_env);
+t_cmd					*parenthesis_c(lexer_t *head, char **env);
+int						token_cmd(char *line, lexer_t **cmd, char **env);
 
 #endif

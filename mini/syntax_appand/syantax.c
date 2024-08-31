@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:49:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/30 17:02:24 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/31 17:37:53 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,11 @@ int	syntax_error_(lexer_t *tmp, char **g_env)
 	else if (tmp->type == 'q')
 	{
 		if (!pars_quote(tmp->content))
+			return (1);
+	}
+	if (tmp->type == '(')
+	{
+		if (!pars_parenthesis(tmp, g_env))
 			return (1);
 	}
 	return (0);

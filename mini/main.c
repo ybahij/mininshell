@@ -3,8 +3,6 @@
 
 int	token_cmd(char *line, lexer_t **cmd, char **env)
 {
-	if (*line)
-		add_history(line);
 	*cmd = ferst_s(line);
 	if (!(*cmd))
 		return (free_garbage(), 1);
@@ -36,7 +34,7 @@ int	main(int ac, char **av, char **env)
 			add_history(line);
 		if (token_cmd(line, &cmd, env))
 			continue ;
-		print_tree(parse_and(cmd));
+		print_tree(parse_and(cmd, env));
 		free_garbage();
 	}
 	return (0);

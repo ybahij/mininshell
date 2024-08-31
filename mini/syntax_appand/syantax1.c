@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/30 17:02:31 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/31 18:54:04 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ int	del_quote(lexer_t *cmd)
 
 	while (cmd)
 	{
-		if (!cm_strchr("|<>oh+&", cmd->type))
+		if (!cm_strchr("|<>oh+&(", cmd->type))
 		{
 			if ((cmd->prev && cmd->prev->type != 'h') || !cmd->prev)
 				cmd->content = dellt_q(cmd, 0);

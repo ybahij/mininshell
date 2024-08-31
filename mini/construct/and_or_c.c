@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:44:31 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/30 17:00:35 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/31 18:32:24 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ lexer_t *peek(lexer_t *head, char type)
     return (NULL);
 }
 
-t_cmd *parse_or(lexer_t *head)
+t_cmd *parse_or(lexer_t *head, char **env)
 {
     lexer_t *token;
     t_or    *or;
@@ -37,15 +37,15 @@ t_cmd *parse_or(lexer_t *head)
         or->type = OR;
         token->prev->next = NULL;
         token->next->prev = NULL;
-        or->left = parse_pipe(head);
-        or->right = parse_or(token->next);
+        or->left = parse_pipe(head, env);
+        or->right = parse_or(token->next, env);
         return((t_cmd *)or);
     }
     else
-        return(parse_pipe(head));
+        return(parse_pipe(head, env));
 }
 
-t_cmd *parse_and(lexer_t *head)
+t_cmd *parse_and(lexer_t *head, char **env)
 {
     lexer_t *token;
     t_and   *and;
@@ -59,10 +59,10 @@ t_cmd *parse_and(lexer_t *head)
         and->type = AND;
         token->prev->next = NULL;
         token->next->prev = NULL;
-        and->left = parse_or(head);
-        and->right = parse_and(token->next);
+        and->left = parse_or(head, env);
+        and->right = parse_and(token->next, env);
         return((t_cmd *)and);
     }
     else
-        return(parse_or(head));
+        return(parse_or(head, env));
 }
