@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/28 17:05:41 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/30 17:04:14 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ void	count_herdoc(lexer_t *tmp)
 	}
 	if (i > 16)
 	{
-		free_list(tmp);
 		exit(1);
 	}
 }
@@ -74,7 +73,6 @@ char	*herdoc_appand(char *content, char type, char **g_env)
 			i++;
 		}
 	}
-	free(content);
 	return (str);
 }
 
@@ -91,17 +89,14 @@ void	heandal_herdoc(lexer_t *tmp, char **g_env)
 		str = readline(">");
 		if (!str)
 		{
-			free_list(tmp);
 			exit(1);
 		}
 		if (!ft_strncmp(str, tmp->next->content, ft_strlen(str)))
 		{
-			free(str);
 			break ;
 		}
 		str = ft_strjoin(str, ft_strdup("\n"));
 		content = ft_strjoin(content, str);
 	}
-	free(tmp->next->content);
 	tmp->next->content = herdoc_appand(content, tmp->next->type, g_env);
 }

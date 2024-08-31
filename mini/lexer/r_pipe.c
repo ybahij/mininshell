@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:48:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/28 14:49:28 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/30 17:03:37 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ int	cheak_digit(char *input, int *i, lexer_t **g_head)
 			j++;
 		if (input[j] && cm_strchr("<>", input[j]))
 		{
-			free_digit(input, k, j, g_head);
 			return (1);
 		}
 	}

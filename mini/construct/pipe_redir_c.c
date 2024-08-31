@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:46:23 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/28 17:25:36 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/30 17:00:41 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void handle_redirection(t_redir *redir, lexer_t *token)
 t_cmd   *herdoc_construct(lexer_t *token)
 {
     t_heredoc *heredoc;
-    heredoc = malloc(sizeof(t_redir));
+    heredoc = ft_malloc(sizeof(t_redir));
     heredoc->type = HEREDOC;
     heredoc->content = ft_strdup(token->next->content);
     token->type = 'p';
@@ -47,7 +47,7 @@ t_cmd *redir_construct(lexer_t *token, lexer_t *head)
 {
     t_redir *redir;
 
-    redir = malloc(sizeof(t_redir));
+    redir = ft_malloc(sizeof(t_redir));
     redir->type = REDIRECTION;
     redir->file = ft_strdup(token->next->content);
     handle_redirection(redir, token);
@@ -85,7 +85,7 @@ t_cmd *parse_pipe(lexer_t *head)
     token = peek(head, '|');
     if (token)
     {
-        pipe = malloc(sizeof(t_pipe));
+        pipe = ft_malloc(sizeof(t_pipe));
         if (!pipe)
             return (NULL);
         pipe->type = PIPE;
@@ -93,8 +93,6 @@ t_cmd *parse_pipe(lexer_t *head)
         token->next->prev = NULL;
         pipe->left = parse_redir(head);
         pipe->right = parse_pipe(token->next);
-        free(token->content);
-        free(token);
         return((t_cmd *)pipe);
     }
     else

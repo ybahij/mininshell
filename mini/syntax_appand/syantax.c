@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:49:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/28 17:27:45 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/30 17:02:24 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	pars_(lexer_t *tmp)
 			"newline");
 		return (0);
 	}
-	if (cm_strchr("><+h|&o", tmp2->type))
+	if (cm_strchr("><+h|&o", tmp2->type) && !cm_strchr("&o", tmp->type))
 	{
 		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
 			tmp2->content);
@@ -92,7 +92,6 @@ char	*quote_(char *content)
 
 	str = content;
 	content = dellt_q_char(content);
-	free(str);
 	if (!content)
 		return (ft_strdup(""));
 	return (content);

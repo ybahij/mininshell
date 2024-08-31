@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:47:48 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/28 17:25:29 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/30 17:03:31 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ char **get_cmd_args(lexer_t *token)
 
   len = 0;
   len = get_cmd_len(token);
-  str = malloc(sizeof(char *) * (len + 1));
+  str = ft_malloc(sizeof(char *) * (len + 1));
   if (!str)
     return (NULL);
   tmp = token;
@@ -59,10 +59,9 @@ t_cmd *parse_cmd(lexer_t *token)
 {
     t_exec  *cmd;
 
-    cmd = malloc(sizeof(t_exec));
+    cmd = ft_malloc(sizeof(t_exec));
     cmd->type = EXEC;
     cmd->av = get_cmd_args(token);
-    free_list(token);
     return ((t_cmd *)cmd);
 }
 

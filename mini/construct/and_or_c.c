@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:44:31 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/28 17:25:25 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/30 17:00:35 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_cmd *parse_or(lexer_t *head)
     token = peek(head, 'o');
     if (token)
     {
-        or = malloc(sizeof(t_or));
+        or = ft_malloc(sizeof(t_or));
         if (!or)
             return (NULL);
         or->type = OR;
@@ -39,8 +39,6 @@ t_cmd *parse_or(lexer_t *head)
         token->next->prev = NULL;
         or->left = parse_pipe(head);
         or->right = parse_or(token->next);
-        free(token->content);
-        free(token);
         return((t_cmd *)or);
     }
     else
@@ -55,7 +53,7 @@ t_cmd *parse_and(lexer_t *head)
     token = peek(head, '&');
     if (token)
     {
-        and = malloc(sizeof(t_and));
+        and = ft_malloc(sizeof(t_and));
         if (!and)
             return (NULL);
         and->type = AND;
@@ -63,8 +61,6 @@ t_cmd *parse_and(lexer_t *head)
         token->next->prev = NULL;
         and->left = parse_or(head);
         and->right = parse_and(token->next);
-        free(token->content);
-        free(token);
         return((t_cmd *)and);
     }
     else

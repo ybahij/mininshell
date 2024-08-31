@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:52:24 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/28 17:05:48 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/30 17:04:02 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	expand(lexer_t *cmd, char **env)
 			{
 				printf(RED "minishell: %s: ambiguous redirect\n" RESET,
 					tmp->b_appand);
-				return (free_list(cmd), 1);
+				return (1);
 			}
 		}
 		tmp = tmp->next;
@@ -61,8 +61,7 @@ int	expand_w(lexer_t *cmd, char **env)
 	len = appand_in_fille(cmd, fd[1], env, hold);
 	close(fd[1]);
 	rfd = fd[0];
-	free(cmd->content);
-	cmd->content = malloc(len + 2);
+	cmd->content = ft_malloc(len + 2);
 	read(fd[0], cmd->content, len);
 	cmd->content[len] = '\0';
 	close(fd[0]);
@@ -83,7 +82,6 @@ int	appand_u(int *j, int i, lexer_t *cmd, int fd, char **env)
 	tmp2 = cheak_env(ft_substr(cmd->content, i, k - i), env);
 	if (tmp2)
 		len += write(fd, tmp2, ft_strlen(tmp2));
-	free(tmp2);
 	*j = k;
 	return (len);
 }
@@ -142,6 +140,5 @@ char	*cheak_env(char *str, char **env)
 			break ;
 		i++;
 	}
-	free(str);
 	return (tmp);
 }

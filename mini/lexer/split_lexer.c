@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   split_cmd.c                                        :+:      :+:    :+:   */
+/*   split_lexer.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/28 14:50:34 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/28 14:52:35 by youssef          ###   ########.fr       */
+/*   Created: 2024/08/29 20:05:15 by youssef           #+#    #+#             */
+/*   Updated: 2024/08/30 17:03:47 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,7 @@ void	free_digit(char *input, int k, int j, lexer_t **g_head)
 	char	*str;
 
 	str = ft_substr(input, k, j - k);
-	free_list(*g_head);
 	printf(RED "minishell: syntax error near  `%s'\n" RESET, str);
-	free(str);
-	free(input);
 }
 
 int	cmd_lexer(char *input, int *j, lexer_t **head, char t, int i)
@@ -44,7 +41,7 @@ int	n_cmd(char *input, int *j, lexer_t **head)
 
 	i = *j;
 	t = 'w';
-	while (input[i] && !cm_strchr("|<>", input[i]) && !is_space(input[i]))
+	while (input[i] && !cm_strchr("|<>()", input[i]) && !is_space(input[i]))
 	{
 		if (input[i] == '&' && input[i + 1] == '&')
 			break ;
@@ -63,6 +60,25 @@ int	n_cmd(char *input, int *j, lexer_t **head)
 	return (cmd_lexer(input, j, head, t, i));
 }
 
+int	parenthesis(char *input, int *i, lexer_t **head)
+{
+	lexer_t	*tmp;
+	char	*str;
+	int		j;
+
+	j = *i;
+	j++;
+	while (input[j] && !cm_strchr("()", input[j]))
+		j++;
+	// if (input[j] && cm_strchr("()", input[j]))
+	// 	j++;
+	str = ft_substr(input, *i, j - *i + 1);
+	tmp = lexer(str, '(');
+	ft_lstadd_back(head, tmp);
+	*i = j;
+
+}
+
 lexer_t	*ferst_s(char *input)
 {
 	lexer_t	*head;
@@ -77,7 +93,7 @@ lexer_t	*ferst_s(char *input)
 		while (input[i] && is_space(input[i]))
 			i++;
 		if ((input[i] == '&' && input[i + 1] == '&') || (input[i] == '|'
-				&& input[i + 1] == '|'))
+				&& input[i + 1] == '|') || (input[i] == '(') || (input[i] == ')'))
 			and_or(input, &i, &head);
 		else if (input[i] == '|' || input[i] == '<' || input[i] == '>')
 		{

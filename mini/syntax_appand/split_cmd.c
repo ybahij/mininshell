@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:56:18 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/28 17:29:31 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/30 17:04:53 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ lexer_t	*split_1(lexer_t *head, char **str, int i)
 	lexer_t	*tmpl;
 
 	tmp = head->next;
-	free(head->content);
 	head->content = str[0];
 	head->next = NULL;
 	i = 1;
@@ -28,7 +27,6 @@ lexer_t	*split_1(lexer_t *head, char **str, int i)
 		ft_lstadd_back(&head, tmpl);
 		i++;
 	}
-	free(str);
 	tmpl = ft_lstlast(head);
 	tmpl->next = tmp;
 	if (tmp)
@@ -43,7 +41,7 @@ lexer_t	*spilt_(lexer_t *head, int i)
 
 	i = 0;
 	if (!head || !(str = ft_split(head->content)))
-		return (free_list(head), NULL);
+		return ( NULL);
 	while (str[i])
 		i++;
 	if (i > 1)
@@ -52,17 +50,15 @@ lexer_t	*spilt_(lexer_t *head, int i)
 		{
 			printf(RED "minishell: %s: ambiguous redirect\n" RESET,
 				head->b_appand);
-			free(head->b_appand);
 			head->b_appand = NULL;
 			head->b_appand = ft_strdup("ambiguous redirect");
-			return (free_array(str), head);
+			return (head);
 		}
 		return (split_1(head, str, i));
 	}
 	tmp = head->content;
 	head->content = ft_strdup(str[0]);
-	free(tmp);
-	return (free_array(str), head->next);
+	return (head->next);
 }
 
 int	split_cmd(lexer_t *head)
@@ -77,9 +73,8 @@ int	split_cmd(lexer_t *head)
 			tmp = spilt_(tmp, 0);
 			if (tmp && !ft_strncmp(tmp->b_appand, "ambiguous redirect", 18))
 			{
-				free(tmp->b_appand);
 				tmp->b_appand = NULL;
-				return (free_list(head), 0);
+				return (0);
 			}
 		}
 		else

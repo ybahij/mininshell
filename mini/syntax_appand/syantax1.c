@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/28 17:02:22 by youssef          ###   ########.fr       */
+/*   Updated: 2024/08/30 17:02:31 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ char	*dellt_q(lexer_t *cmd, int i)
 	tmp = cmd->content;
 	cmd->content = NULL;
 	cmd->content = dellt_q_char(tmp);
-	free(tmp);
 	return (cmd->content);
 }
 
