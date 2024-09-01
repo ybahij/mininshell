@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 18:03:24 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/31 21:05:39 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/01 02:17:11 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ t_cmd   *parenthesis_c(lexer_t *head, char **env)
     if (token)
     {
       head->content = remaove_parenthesis(head->content);
-      token_cmd(head->content, &tok, env);
+      token_cmd(head->content, &tok, env, "newline");
       return (parse_and(tok, env));
     }
     else

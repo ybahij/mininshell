@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:49:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/31 22:11:16 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/01 16:45:26 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,11 +104,6 @@ char	*quote_(char *content)
 
 lexer_t	*syntax_error(lexer_t *tmp, char **g_env)
 {
-	if (tmp->next && tmp->next->type == 'q')
-	{
-		if (!pars_quote(tmp->next->content))
-			return (NULL);
-	}
 	if (tmp->prev && tmp->prev->type == 'h')
 	{
 		if (tmp->type == 'w' || tmp->type == 'q')
@@ -119,6 +114,7 @@ lexer_t	*syntax_error(lexer_t *tmp, char **g_env)
 		if (tmp->next->type == 'w' || tmp->next->type == 'q')
 		{
 			heandal_herdoc(tmp, g_env);
+			return (tmp);
 		}
 	}
 	return (tmp);

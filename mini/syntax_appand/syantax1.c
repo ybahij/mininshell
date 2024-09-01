@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/31 22:09:17 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/01 16:49:03 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,12 @@ int	cmd_syntax(lexer_t *tmp, char **g_env, char *newline)
 	while (tmp)
 	{
 		tmp2 = tmp;
+		if (tmp->next && tmp->next->type == 'q')
+		{
+			if (!pars_quote(tmp->next->content))
+				return (1);
+		}
 		tmp = syntax_error(tmp, g_env);
-		if (!tmp)
-			return (1);
 		if (tmp != tmp2)
 			continue ;
 		else if (syntax_error_(tmp, g_env, newline))
