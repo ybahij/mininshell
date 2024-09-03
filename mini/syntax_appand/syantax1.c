@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/01 16:49:03 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/03 13:52:56 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,8 @@ int	pars_pipe_(lexer_t *tmp, char *newline)
 	return (1);
 }
 
-int	cmd_syntax(lexer_t *tmp, char **g_env, char *newline)
+int	cmd_syntax(lexer_t *tmp, char **g_env, char *newline, lexer_t	*tmp2)
 {
-	lexer_t	*tmp2;
-
 	if (!tmp)
 		return (0);
 	if (cm_strchr("|o&", tmp->type))
@@ -47,9 +45,11 @@ int	cmd_syntax(lexer_t *tmp, char **g_env, char *newline)
 			if (!pars_quote(tmp->next->content))
 				return (1);
 		}
-		tmp = syntax_error(tmp, g_env);
+		tmp = syntax_error(tmp, g_env, newline);
 		if (tmp != tmp2)
 			continue ;
+		if (tmp && !ft_strncmp(tmp->b_appand, "end_of_file", 11))
+			return (1);
 		else if (syntax_error_(tmp, g_env, newline))
 			return (1);
 		tmp = tmp->next;

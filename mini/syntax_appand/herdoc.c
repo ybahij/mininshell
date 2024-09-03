@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/01 16:32:56 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/03 13:51:33 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,10 @@ int	heandal_herdoc(lexer_t *tmp, char **g_env)
 		str = readline(">");
 		if (!str)
 		{
-			exit(1);
+			free(str);
+			printf("bash: warning: here-document at line 1 delimited by end-of-file (wanted `%s')\n",
+				tmp->next->content);
+			return (0);
 		}
 		if (!ft_strncmp(str, tmp->next->content, ft_strlen(str)))
 		{

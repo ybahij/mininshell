@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/29 20:05:15 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/31 17:33:52 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/03 02:27:48 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,27 +20,11 @@ void	free_digit(char *input, int k, int j, lexer_t **g_head)
 	printf(RED "minishell: syntax error near  `%s'\n" RESET, str);
 }
 
-int	cmd_lexer(char *input, int *j, lexer_t **head, char t, int i)
+void	cmd__(int *j, char *input, char *t, char holder)
 {
-	lexer_t	*tmp;
-	char	*str;
-
-	str = ft_substr(input, *j, i - *j);
-	tmp = lexer(str, t);
-	ft_lstadd_back(head, tmp);
-	*j = i;
-	return (0);
-}
-
-int	n_cmd(char *input, int *j, lexer_t **head)
-{
-	lexer_t	*tmp;
-	char	t;
-	int		i;
-	char	holder;
+	int	i;
 
 	i = *j;
-	t = 'w';
 	while (input[i] && !cm_strchr("|<>()", input[i]) && !is_space(input[i]))
 	{
 		if (input[i] == '&' && input[i + 1] == '&')
@@ -48,7 +32,7 @@ int	n_cmd(char *input, int *j, lexer_t **head)
 		if (input[i] == '\'' || input[i] == '\"')
 		{
 			holder = input[i];
-			t = 'q';
+			*t = 'q';
 			if (input[i + 1])
 				i++;
 			while (input[i] && input[i] != holder)
@@ -57,7 +41,25 @@ int	n_cmd(char *input, int *j, lexer_t **head)
 		if (input[i])
 			i++;
 	}
-	return (cmd_lexer(input, j, head, t, i));
+	*j = i;
+}
+
+int	n_cmd(char *input, int *j, lexer_t **head)
+{
+	lexer_t	*tmp;
+	char	t;
+	int		i;
+	char	holder;
+	char	*str;
+
+	i = *j;
+	t = 'w';
+	cmd__(&i, input, &t, holder);
+	str = ft_substr(input, *j, i - *j);
+	tmp = lexer(str, t);
+	ft_lstadd_back(head, tmp);
+	*j = i;
+	return (0);
 }
 
 int	parenthesis(char *input, int *i, lexer_t **head)
@@ -76,7 +78,7 @@ int	parenthesis(char *input, int *i, lexer_t **head)
 	tmp = lexer(str, '(');
 	ft_lstadd_back(head, tmp);
 	*i = j;
-
+	return (0);
 }
 
 lexer_t	*ferst_s(char *input)
@@ -93,7 +95,8 @@ lexer_t	*ferst_s(char *input)
 		while (input[i] && is_space(input[i]))
 			i++;
 		if ((input[i] == '&' && input[i + 1] == '&') || (input[i] == '|'
-				&& input[i + 1] == '|') || (input[i] == '(') || (input[i] == ')'))
+				&& input[i + 1] == '|') || (input[i] == '(')
+			|| (input[i] == ')'))
 			and_or(input, &i, &head);
 		else if (input[i] == '|' || input[i] == '<' || input[i] == '>')
 		{

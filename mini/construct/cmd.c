@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:47:48 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/30 17:03:31 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/03 14:22:28 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ char **get_cmd_args(lexer_t *token)
     if (tmp->type == 'w' || tmp->type == 'q')
     {
       str[i] = ft_strdup(tmp->content);
+      printf("str[%d] = %s\n", i, str[i]);
       i++;
     }
     tmp = tmp->next;

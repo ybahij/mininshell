@@ -1,6 +1,6 @@
 NAME = minishell
 CC = cc
-CFALGS =  -Wall -Wextra -Werror -g3 -fsanitize=address
+CFALGS =  -Wall -Wextra -Werror #-g3 -fsanitize=address
 
 SRC = $(wildcard *.c) $(wildcard */*.c)
 OBJ = $(SRC:.c=.o)

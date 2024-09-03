@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/08/31 21:56:16 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/03 13:53:38 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,8 @@ void					count_herdoc(lexer_t *tmp);
 char					*quote_(char *content);
 char					*herdoc_appand(char *content, char type, char **g_env);
 int						heandal_herdoc(lexer_t *tmp, char **g_env);
-int						cmd_syntax(lexer_t *tmp, char **g_env, char *newline);
+int						cmd_syntax(lexer_t *tmp, char **g_env, char *newline,
+							lexer_t *tmp2);
 void					free_(lexer_t *cmd);
 int						appand_in_fille(lexer_t *cmd, int fd, char **env,
 							char hold);
@@ -178,7 +179,8 @@ char					*herdoc_appand1(char *content, char **g_env, char *str,
 							int *i);
 int						syntax_error_(lexer_t *tmp, char **g_env,
 							char *newline);
-lexer_t					*syntax_error(lexer_t *tmp, char **g_env);
+lexer_t					*syntax_error(lexer_t *tmp, char **g_env,
+							char *newline);
 int						pars_pipe_(lexer_t *tmp, char *newline);
 int						parenthesis(char *input, int *i, lexer_t **head);
 void					free_garbage(void);

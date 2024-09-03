@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:49:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/01 16:45:26 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/03 15:20:31 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ char	*quote_(char *content)
 	return (content);
 }
 
-lexer_t	*syntax_error(lexer_t *tmp, char **g_env)
+lexer_t	*syntax_error(lexer_t *tmp, char **g_env, char *newline)
 {
 	if (tmp->prev && tmp->prev->type == 'h')
 	{
@@ -111,9 +111,12 @@ lexer_t	*syntax_error(lexer_t *tmp, char **g_env)
 	}
 	else if (tmp->type == 'h' && tmp->next)
 	{
-		if (tmp->next->type == 'w' || tmp->next->type == 'q')
+		if ((tmp->next->type == 'w' || tmp->next->type == 'q') && ft_strncmp(newline, "(", 1))
 		{
-			heandal_herdoc(tmp, g_env);
+			if (!heandal_herdoc(tmp, g_env))
+			{
+				tmp->b_appand = ft_strdup("end_of_file");
+			}
 			return (tmp);
 		}
 	}
