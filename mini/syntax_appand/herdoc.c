@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/06 17:03:23 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 23:03:12 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,22 +74,47 @@ char	*herdoc_appand(char *content, char type, char **g_env)
 	return (str);
 }
 
-int	heandal_herdoc(lexer_t *tmp, char **g_env)
+int	herdoc_pipe(int	fd, char *end)
 {
 	char	*str;
-	char	*content;
 
-	if (tmp->next->type == 'q')
-		tmp->next->content = quote_(tmp->next->content);
-	content = NULL;
+	signal(SIGINT, handel_herdoc_segnal);
 	while (1)
 	{
 		str = readline(">");
 		if (!str)
 		{
+			//free(str);
+			return (0);
+		}
+		if (!ft_strncmp(str, end, ft_strlen(str)))
+			break ;
+		write(fd, str, ft_strlen(str));
+		write(fd, "\n", 1);
+		free(str);
+	}
+	exit (1);
+}
+
+int	heandal_herdoc(lexer_t *tmp, char **g_env)
+{
+	char	*str;
+	char	*content;
+	int		fd[2];
+
+	if (tmp->next->type == 'q')
+		tmp->next->content = quote_(tmp->next->content);
+	content = NULL;
+	pipe(fd);
+	dup2(0, fd[0]);
+	while (1)
+	{
+		signal(SIGINT, handel_herdoc_segnal);
+		str = readline(">");
+		if (!str)
+		{
 			free(str);
-			printf("minishell: warning: here-document delimited by end-of-file (wanted `%s')\n",
-				tmp->next->content);
+			dup2(fd[0], 0);
 			return (0);
 		}
 		add_garbage(str);
@@ -98,6 +123,7 @@ int	heandal_herdoc(lexer_t *tmp, char **g_env)
 		str = ft_strjoin(str, ft_strdup("\n"));
 		content = ft_strjoin(content, str);
 	}
+
 	tmp->next->content = herdoc_appand(content, tmp->next->type, g_env);
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/06 15:34:59 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 21:18:16 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <fcntl.h>
 # include <readline/history.h>
 # include <readline/readline.h>
+# include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -192,5 +193,8 @@ t_cmd					*parenthesis_c(lexer_t *head, char **env);
 int						token_cmd(char *line, lexer_t **cmd, char **env,
 							char *newline);
 char					*remaove_parenthesis(char *content);
+void					handle_signal(int sig);
+void					handel_herdoc_segnal(int sig);
+void					handel_signal_(void);
 
 #endif

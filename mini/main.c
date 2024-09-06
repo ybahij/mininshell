@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/06 15:16:24 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 23:25:38 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,10 @@ int	main(int ac, char **av, char **env)
 	line = NULL;
 	while (1)
 	{
+		signal(SIGINT, handle_signal);
 		line = readline("minishell$ ");
 		if (!line)
-		{
-			free(line);
-			break ;
-		}
+			exit(0) ;
 		add_garbage(line);
 		if (*line)
 			add_history(line);
