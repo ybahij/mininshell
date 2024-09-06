@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/03 13:52:56 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 16:16:05 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,8 @@ char	*dellt_q_char(char *tmp)
 char	*dellt_q(lexer_t *cmd, int i)
 {
 	char	*tmp;
-	char	hold;
 
+	(void)i;
 	if (!cmd->content)
 		return (NULL);
 	tmp = cmd->content;
@@ -100,11 +100,6 @@ char	*dellt_q(lexer_t *cmd, int i)
 
 int	del_quote(lexer_t *cmd)
 {
-	int		i;
-	int		j;
-	char	*tmp;
-	char	hold;
-
 	while (cmd)
 	{
 		if (!cm_strchr("|<>oh+&(", cmd->type))

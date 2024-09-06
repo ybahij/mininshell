@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:52:24 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/30 17:04:02 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 15:59:27 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 int	expand(lexer_t *cmd, char **env)
 {
 	lexer_t	*tmp;
-	lexer_t	*tmp2;
 
 	tmp = cmd;
 	while (tmp)
@@ -43,10 +42,7 @@ int	expand(lexer_t *cmd, char **env)
 
 int	expand_w(lexer_t *cmd, char **env)
 {
-	char	*tmp2;
 	int		fd[2];
-	char	fname[10];
-	int		rfd;
 	int		len;
 	char	hold;
 
@@ -56,11 +52,11 @@ int	expand_w(lexer_t *cmd, char **env)
 			return (0);
 	}
 	len = 0;
+	hold = 0;
 	pipe(fd);
 	cmd->b_appand = ft_strdup(cmd->content);
 	len = appand_in_fille(cmd, fd[1], env, hold);
 	close(fd[1]);
-	rfd = fd[0];
 	cmd->content = ft_malloc(len + 2);
 	read(fd[0], cmd->content, len);
 	cmd->content[len] = '\0';
@@ -118,17 +114,12 @@ int	appand_in_fille(lexer_t *cmd, int fd, char **env, char hold)
 char	*cheak_env(char *str, char **env)
 {
 	int		i;
-	int		j;
-	int		k;
 	char	*tmp;
 
 	i = 0;
-	j = 0;
-	k = 0;
 	tmp = NULL;
 	while (env[i])
 	{
-		j = 0;
 		if (ft_strncmp(env[i], str, ft_strlen(str)))
 		{
 			i++;

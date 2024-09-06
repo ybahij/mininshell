@@ -6,16 +6,15 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:48:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/30 17:03:37 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 15:35:39 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	cheak_digit(char *input, int *i, lexer_t **g_head)
+int	cheak_digit(char *input, int *i)
 {
 	int		j;
-	int		k;
 	char	hold;
 
 	j = *i;
@@ -25,7 +24,6 @@ int	cheak_digit(char *input, int *i, lexer_t **g_head)
 		j++;
 	while (input[j] && is_space(input[j]))
 		j++;
-	k = j;
 	if (input[j] && ft_isdigit(input[j]))
 	{
 		while (input[j] && ft_isdigit(input[j]))
@@ -48,7 +46,7 @@ int	redir_o(char *input, int *j, lexer_t **head)
 	{
 		if (input[i + 1] == '>')
 		{
-			if (cheak_digit(input, &i, head))
+			if (cheak_digit(input, &i))
 				return (1);
 			tmp = lexer(ft_substr(input, i, 2), '+');
 			ft_lstadd_back(head, tmp);
@@ -56,7 +54,7 @@ int	redir_o(char *input, int *j, lexer_t **head)
 		}
 		else
 		{
-			if (cheak_digit(input, &i, head))
+			if (cheak_digit(input, &i))
 				return (1);
 			tmp = lexer(ft_substr(input, i, 1), '>');
 			ft_lstadd_back(head, tmp);
@@ -77,7 +75,7 @@ int	redir_i(char *input, int *j, lexer_t **head)
 	{
 		if (input[i + 1] == '<')
 		{
-			if (cheak_digit(input, &i, head))
+			if (cheak_digit(input, &i))
 				return (1);
 			tmp = lexer(ft_substr(input, i, 2), 'h');
 			ft_lstadd_back(head, tmp);
@@ -85,7 +83,7 @@ int	redir_i(char *input, int *j, lexer_t **head)
 		}
 		else
 		{
-			if (cheak_digit(input, &i, head))
+			if (cheak_digit(input, &i))
 				return (1);
 			tmp = lexer(ft_substr(input, i, 1), '<');
 			ft_lstadd_back(head, tmp);

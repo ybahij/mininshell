@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/03 13:53:38 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 15:34:59 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ char					*dellt_q_char(char *tmp);
 char					*cheak_env(char *str, char **env);
 int						qoute(int *k, char *input, lexer_t **head);
 void					free_digit(char *input, int k, int j, lexer_t **g_head);
-int						cheak_digit(char *input, int *i, lexer_t **g_head);
+int						cheak_digit(char *input, int *i);
 int						redir_o(char *input, int *j, lexer_t **head);
 int						redir_i(char *input, int *j, lexer_t **head);
 int						redir(char *input, int *i, lexer_t **head);

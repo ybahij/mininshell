@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 18:03:24 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/01 02:17:11 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 15:29:32 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,8 @@
 
 char  *remaove_parenthesis(char *content)
 {
-    int i;
-    int j;
     char *str;
 
-    i = 0;
-    j = 0;
     str = ft_substr(content, 1, ft_strlen(content) - 2);
     return (str);
 }

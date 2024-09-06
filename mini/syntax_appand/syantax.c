@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:49:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/03 15:20:31 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 16:16:49 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,6 @@ int	syntax_error_(lexer_t *tmp, char **g_env, char *newline)
 
 char	*quote_(char *content)
 {
-	char	*str;
-
-	str = content;
 	content = dellt_q_char(content);
 	if (!content)
 		return (ft_strdup(""));

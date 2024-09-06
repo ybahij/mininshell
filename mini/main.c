@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/03 15:27:03 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 15:16:24 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ int	paranthesis_syntax(lexer_t *cmd, char **env)
 {
 	lexer_t	*tmp;
 	lexer_t	*tmp2;
-	int		i;
 
 	tmp = cmd;
 	while (tmp)
@@ -53,6 +52,7 @@ int	token_cmd(char *line, lexer_t **cmd, char **env, char *newline)
 {
 	lexer_t	*tmp;
 
+	tmp = NULL;
 	*cmd = ferst_s(line);
 	if (!(*cmd))
 		return (free_garbage(), 1);
@@ -77,6 +77,8 @@ int	main(int ac, char **av, char **env)
 	char	*line;
 	lexer_t	*cmd;
 
+	(void)ac;
+	(void)av;
 	line = NULL;
 	while (1)
 	{

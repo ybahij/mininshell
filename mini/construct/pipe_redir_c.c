@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:46:23 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/01 16:49:54 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 15:30:48 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,7 @@ t_cmd *redir_construct(lexer_t *token, lexer_t *head, char **env)
 t_cmd *parse_redir(lexer_t *head, char **env)
 {
     lexer_t *token;
-    t_redir *redir;
-
+    
     token = head;
     while (token)
     {

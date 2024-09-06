@@ -6,19 +6,11 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/29 20:05:15 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/03 02:27:48 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 15:41:39 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-void	free_digit(char *input, int k, int j, lexer_t **g_head)
-{
-	char	*str;
-
-	str = ft_substr(input, k, j - k);
-	printf(RED "minishell: syntax error near  `%s'\n" RESET, str);
-}
 
 void	cmd__(int *j, char *input, char *t, char holder)
 {
@@ -54,6 +46,7 @@ int	n_cmd(char *input, int *j, lexer_t **head)
 
 	i = *j;
 	t = 'w';
+	holder = 0;
 	cmd__(&i, input, &t, holder);
 	str = ft_substr(input, *j, i - *j);
 	tmp = lexer(str, t);
@@ -85,8 +78,6 @@ lexer_t	*ferst_s(char *input)
 {
 	lexer_t	*head;
 	int		i;
-	int		j;
-	lexer_t	*tmp;
 
 	i = 0;
 	head = NULL;

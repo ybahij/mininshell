@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:56:18 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/31 18:55:25 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 16:01:53 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ lexer_t	*split_1(lexer_t *head, char **str, int i)
 lexer_t	*spilt_(lexer_t *head, int i)
 {
 	char	**str;
-	char	*tmp;
 
 	i = 0;
 	if (!head || !(str = ft_split(head->content)))
@@ -56,7 +55,6 @@ lexer_t	*spilt_(lexer_t *head, int i)
 		}
 		return (split_1(head, str, i));
 	}
-	tmp = head->content;
 	head->content = ft_strdup(str[0]);
 	return (head->next);
 }
@@ -86,9 +84,7 @@ int	split_cmd(lexer_t *head)
 
 int	pars_parenthesis(lexer_t *tmp, char **g_env)
 {
-	int	i;
-
-	i = 0;
+	(void)g_env;
 	if (tmp->content[0] != '(')
 	{
 		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,

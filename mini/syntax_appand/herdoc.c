@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/03 13:51:33 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/06 17:03:23 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,8 @@ char	*herdoc_appand1(char *content, char **g_env, char *str, int *i)
 void	count_herdoc(lexer_t *tmp)
 {
 	int		i;
-	lexer_t	*tmp2;
 
 	i = 0;
-	tmp2 = tmp;
 	while (tmp)
 	{
 		if (tmp->type == 'h')
@@ -90,14 +88,13 @@ int	heandal_herdoc(lexer_t *tmp, char **g_env)
 		if (!str)
 		{
 			free(str);
-			printf("bash: warning: here-document at line 1 delimited by end-of-file (wanted `%s')\n",
+			printf("minishell: warning: here-document delimited by end-of-file (wanted `%s')\n",
 				tmp->next->content);
 			return (0);
 		}
+		add_garbage(str);
 		if (!ft_strncmp(str, tmp->next->content, ft_strlen(str)))
-		{
 			break ;
-		}
 		str = ft_strjoin(str, ft_strdup("\n"));
 		content = ft_strjoin(content, str);
 	}

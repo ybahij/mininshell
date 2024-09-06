@@ -1,6 +1,6 @@
 NAME = minishell
 CC = cc
-CFALGS =  -Wall -Wextra -Werror #-g3 -fsanitize=address
+CFLAGS =  -Wall -Wextra -Werror -g3 -fsanitize=address
 
 SRC = $(wildcard *.c) $(wildcard */*.c)
 OBJ = $(SRC:.c=.o)
@@ -8,7 +8,7 @@ OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFALGS) -o $(NAME) $(OBJ) -lreadline
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -lreadline
 
 clean:
 	rm -f $(OBJ)
