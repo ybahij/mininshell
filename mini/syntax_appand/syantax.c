@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:49:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/06 20:35:33 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/07 21:53:32 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ lexer_t	*syntax_error(lexer_t *tmp, char **g_env, char *newline)
 	{
 		if ((tmp->next->type == 'w' || tmp->next->type == 'q') && ft_strncmp(newline, "(", 1))
 		{
-			if (!heandal_herdoc(tmp, g_env))
+			if (!handle_heredoc(tmp, g_env))
 			{
 				tmp->b_appand = ft_strdup("end_of_file");
 			}

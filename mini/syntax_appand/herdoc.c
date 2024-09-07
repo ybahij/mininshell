@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/06 23:03:12 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/07 21:53:08 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,56 +74,125 @@ char	*herdoc_appand(char *content, char type, char **g_env)
 	return (str);
 }
 
-int	herdoc_pipe(int	fd, char *end)
+void	read_herdoc(int fd, char *delim)
 {
 	char	*str;
 
-	signal(SIGINT, handel_herdoc_segnal);
+	str = NULL;
+	signal(SIGINT, handle_heredoc_signal);
 	while (1)
 	{
-		str = readline(">");
-		if (!str)
-		{
-			//free(str);
-			return (0);
-		}
-		if (!ft_strncmp(str, end, ft_strlen(str)))
-			break ;
-		write(fd, str, ft_strlen(str));
-		write(fd, "\n", 1);
-		free(str);
-	}
-	exit (1);
-}
-
-int	heandal_herdoc(lexer_t *tmp, char **g_env)
-{
-	char	*str;
-	char	*content;
-	int		fd[2];
-
-	if (tmp->next->type == 'q')
-		tmp->next->content = quote_(tmp->next->content);
-	content = NULL;
-	pipe(fd);
-	dup2(0, fd[0]);
-	while (1)
-	{
-		signal(SIGINT, handel_herdoc_segnal);
 		str = readline(">");
 		if (!str)
 		{
 			free(str);
-			dup2(fd[0], 0);
-			return (0);
+			close(fd);
+			exit(0);
 		}
-		add_garbage(str);
-		if (!ft_strncmp(str, tmp->next->content, ft_strlen(str)))
-			break ;
-		str = ft_strjoin(str, ft_strdup("\n"));
-		content = ft_strjoin(content, str);
+		if (!ft_strncmp(str, delim, ft_strlen(str)))
+			break;
+		write(fd, str, ft_strlen(str));
+		write(fd, "\n", 1);
+		free(str);
 	}
+	close(fd);
+	exit(0);
+}
 
-	tmp->next->content = herdoc_appand(content, tmp->next->type, g_env);
+char *read_file(char *fname)
+{
+	int fd;
+	char *content;
+	char str[2];
+	char *tmp;
+	int r;
+
+	fd = open(fname, O_RDWR);
+	content = NULL;
+	while (1)
+	{
+		r = read(fd, str, 1);
+		if (r == 0)
+			break;
+		str[r] = '\0';
+		tmp = ft_strdup(str);
+		content = ft_strjoin(content, tmp);
+	}
+	close(fd);
+	return (content);
+}
+
+int	handle_heredoc(lexer_t *tmp, char **env)
+{
+	char fname[11];
+	char *content;
+	int	status;
+	int pid;
+	int fd;
+	int	r;
+	int ex_status;
+
+	if (tmp->next->type == 'q')
+		tmp->next->content = quote_(tmp->next->content);
+	fd = open("/dev/random", O_RDWR);
+	r = read(fd, fname, 10);
+	fname[r] = '\0';
+	close(fd);
+	fd = open(fname, O_RDWR | O_CREAT | O_TRUNC, 0644);
+	signal(SIGINT, SIG_IGN);
+	pid = fork();
+	if (pid == 0)
+		read_herdoc(fd, tmp->next->content);
+	waitpid(-1, &status, 0);
+	ex_status = (status >> 8) & 0xFF;
+	if (ex_status == 1)
+	{
+		close(fd);
+		unlink(fname);
+		return (0);
+	}
+	content = read_file(fname);
+	tmp->next->content = herdoc_appand(content, tmp->next->type, env);
+	close(fd);
+	unlink(fname);
 	return (1);
 }
+
+// int	handle_heredoc(lexer_t *tmp, char **g_env)
+// {
+// 	char	*str;
+// 	char	*content;
+// 	int fd[2];
+
+// 	if (tmp->next->type == 'q')
+// 		tmp->next->content = quote_(tmp->next->content);
+// 	pipe(fd);
+// 	dup2(fd[0], STDIN_FILENO);
+// 	signal(SIGINT, handle_heredoc_signal);
+// 	content = NULL;
+// 	while (1)
+// 	{
+// 		str = readline(">");
+// 		if (!str)
+// 		{
+// 			free(str);
+// 			close(fd[1]);
+// 			close(fd[0]);
+// 			dup2(fd[0], STDIN_FILENO);
+// 			return (0);
+// 		}
+// 		add_garbage(str);
+// 		if (!ft_strncmp(str, tmp->next->content, ft_strlen(str)))
+// 			break;
+// 		str = ft_strjoin(str, ft_strdup("\n"));
+// 		content = ft_strjoin(content, str);
+// 	}
+
+// 	close(fd[1]);
+// 	close(fd[0]);
+// 	signal(SIGINT, handle_signal);
+// 	tmp->next->content = herdoc_appand(content, tmp->next->type, g_env);
+
+// 	return (1);
+// }
+

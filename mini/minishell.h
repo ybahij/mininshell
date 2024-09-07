@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/06 21:18:16 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/07 21:51:03 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,9 @@ int						token_cmd(char *line, lexer_t **cmd, char **env,
 							char *newline);
 char					*remaove_parenthesis(char *content);
 void					handle_signal(int sig);
-void					handel_herdoc_segnal(int sig);
+void					handle_heredoc_signal(int sig);
 void					handel_signal_(void);
+int						handle_heredoc(lexer_t *tmp, char **g_env);
+void					handle_signal2(int sig);
 
 #endif
