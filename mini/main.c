@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/06 23:25:38 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/10 21:43:16 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,40 @@ int	paranthesis_syntax(lexer_t *cmd, char **env)
 	return (0);
 }
 
+int	cheak_dollar_p(char *input)
+{
+	int	i;
+
+	i = 0;
+	while (input[i] && input[i] != '=')
+	{
+		if (input[i] == '$')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+void	cheak_for_equal(lexer_t *cmd)
+{
+	lexer_t	*tmp;
+
+	tmp = cmd;
+	while (tmp)
+	{
+		if (tmp->type == 'w' && cm_strchr(tmp->content, '=')
+			&& cm_strchr(tmp->content, '$'))
+		{
+			if (cheak_dollar_p(tmp->content))
+			{
+				tmp->content = ft_strjoin("\"", tmp->content);
+				tmp->content = ft_strjoin(tmp->content, "\"");
+			}
+		}
+		tmp = tmp->next;
+	}
+}
+
 int	token_cmd(char *line, lexer_t **cmd, char **env, char *newline)
 {
 	lexer_t	*tmp;
@@ -62,6 +96,7 @@ int	token_cmd(char *line, lexer_t **cmd, char **env, char *newline)
 		return (free_garbage(), 1);
 	if (paranthesis_syntax(*cmd, env))
 		return (free_garbage(), 1);
+	cheak_for_equal(*cmd);
 	if (expand(*cmd, env))
 		return (free_garbage(), 1);
 	if (!(*cmd))
@@ -85,7 +120,11 @@ int	main(int ac, char **av, char **env)
 		signal(SIGINT, handle_signal);
 		line = readline("minishell$ ");
 		if (!line)
-			exit(0) ;
+		{
+			printf("exit\n");
+			free_garbage();
+			exit(0);
+		}
 		add_garbage(line);
 		if (*line)
 			add_history(line);

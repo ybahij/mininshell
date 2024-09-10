@@ -6,11 +6,28 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:48:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/06 15:35:39 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/10 06:07:05 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	print_error(char *input)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (input[i] && !ft_isdigit(input[i]))
+		i++;
+	j = i;
+	while (input[i] && ft_isdigit(input[i]))
+		i++;
+	i--;
+	printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
+		ft_substr(input, j, i - j + 1));
+}
 
 int	cheak_digit(char *input, int *i)
 {
@@ -30,6 +47,7 @@ int	cheak_digit(char *input, int *i)
 			j++;
 		if (input[j] && cm_strchr("<>", input[j]))
 		{
+			print_error(input);
 			return (1);
 		}
 	}
@@ -115,8 +133,8 @@ int	redir(char *input, int *i, lexer_t **head)
 
 int	r_pipe(char *input, int *j, lexer_t **head)
 {
-	lexer_t	*tmp;
-	int		i;
+	lexer_t *tmp;
+	int i;
 
 	i = *j;
 	if (input[i] == '|')

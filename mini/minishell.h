@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/10 03:30:21 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/10 18:55:27 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ typedef struct lexer_s
 	char				*content;
 	char				type;
 	char				*b_appand;
+	int					j;
 	struct lexer_s		*next;
 }						lexer_t;
 
