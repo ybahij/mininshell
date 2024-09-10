@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/07 21:53:08 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/10 02:46:17 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,41 +158,4 @@ int	handle_heredoc(lexer_t *tmp, char **env)
 	return (1);
 }
 
-// int	handle_heredoc(lexer_t *tmp, char **g_env)
-// {
-// 	char	*str;
-// 	char	*content;
-// 	int fd[2];
-
-// 	if (tmp->next->type == 'q')
-// 		tmp->next->content = quote_(tmp->next->content);
-// 	pipe(fd);
-// 	dup2(fd[0], STDIN_FILENO);
-// 	signal(SIGINT, handle_heredoc_signal);
-// 	content = NULL;
-// 	while (1)
-// 	{
-// 		str = readline(">");
-// 		if (!str)
-// 		{
-// 			free(str);
-// 			close(fd[1]);
-// 			close(fd[0]);
-// 			dup2(fd[0], STDIN_FILENO);
-// 			return (0);
-// 		}
-// 		add_garbage(str);
-// 		if (!ft_strncmp(str, tmp->next->content, ft_strlen(str)))
-// 			break;
-// 		str = ft_strjoin(str, ft_strdup("\n"));
-// 		content = ft_strjoin(content, str);
-// 	}
-
-// 	close(fd[1]);
-// 	close(fd[0]);
-// 	signal(SIGINT, handle_signal);
-// 	tmp->next->content = herdoc_appand(content, tmp->next->type, g_env);
-
-// 	return (1);
-// }
 
