@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:56:18 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/06 16:01:53 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/10 04:34:29 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,8 @@ lexer_t	*spilt_(lexer_t *head, int i)
 	if (!head || !(str = ft_split(head->content)))
 		return (NULL);
 	while (str[i])
-		i++;
+	{
+		i++;}
 	if (i > 1)
 	{
 		if (head->prev && cm_strchr("+><", head->prev->type))
@@ -66,8 +67,7 @@ int	split_cmd(lexer_t *head)
 	tmp = head;
 	while (tmp)
 	{
-		if (tmp->content && cm_strchr(tmp->content, ' ') && tmp->prev
-			&& tmp->prev->type != 'h' && tmp->type != '(')
+		if (tmp->content && cm_strchr(tmp->content, ' ') && tmp->type != '(')
 		{
 			tmp = spilt_(tmp, 0);
 			if (tmp && !ft_strncmp(tmp->b_appand, "ambiguous redirect", 18))

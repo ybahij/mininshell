@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:52:24 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/06 15:59:27 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/10 03:37:59 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,14 @@ int	appand_u(int *j, int i, lexer_t *cmd, int fd, char **env)
 	int		k;
 
 	len = 0;
+
+	if (cmd->content[i + 1] == '$')
+	{
+		len += write(fd, "$$", 2);
+		*j = i + 2;
+		return (len);
+	}
+	i++;
 	k = i;
 	while (cmd->content[k] && (ft_isalnum(cmd->content[k]) && !cm_strchr("\"'$",
 				cmd->content[k])))
@@ -98,10 +106,9 @@ int	appand_in_fille(lexer_t *cmd, int fd, char **env, char hold)
 			hold = cmd->content[i];
 		else if (cmd->content[i] == hold)
 			hold = 0;
-		if (hold != '\'' && cmd->content[i] == '$' && ft_isalnum(cmd->content[i
+		if (hold != '\'' && cmd->content[i] == '$' && cm_isalnum(cmd->content[i
 			+ 1]))
 		{
-			i++;
 			len += appand_u(&j, i, cmd, fd, env);
 			i = j;
 		}

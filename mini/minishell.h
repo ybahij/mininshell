@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/07 21:51:03 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/10 03:30:21 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ char					**ft_split(char *str);
 char					*ft_substr(char const *s, unsigned int start,
 							size_t len);
 char					*cm_strchr(const char *s, int c);
+int						cm_isalnum(char c);
 
 //------------added functions----------------//
 

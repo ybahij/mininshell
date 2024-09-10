@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/10 02:46:17 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/10 03:00:13 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ void	read_herdoc(int fd, char *delim)
 		{
 			free(str);
 			close(fd);
+			printf(RED"minishell: warning: here-document delimited by end-of-file (wanted `%s')\n"RESET, delim);
 			exit(0);
 		}
 		if (!ft_strncmp(str, delim, ft_strlen(str)))
