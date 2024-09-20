@@ -6,37 +6,22 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:48:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/10 06:07:05 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/19 16:56:15 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	print_error(char *input)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	j = 0;
-	while (input[i] && !ft_isdigit(input[i]))
-		i++;
-	j = i;
-	while (input[i] && ft_isdigit(input[i]))
-		i++;
-	i--;
-	printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
-		ft_substr(input, j, i - j + 1));
-}
-
 int	cheak_digit(char *input, int *i)
 {
 	int		j;
 	char	hold;
+	int		k;
 
 	j = *i;
 	hold = input[j];
 	j++;
+	k = j;
 	if (input[j] == hold)
 		j++;
 	while (input[j] && is_space(input[j]))
@@ -47,8 +32,9 @@ int	cheak_digit(char *input, int *i)
 			j++;
 		if (input[j] && cm_strchr("<>", input[j]))
 		{
-			print_error(input);
-			return (1);
+			exit_s(2);
+			return (printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
+					ft_substr(input, k, j - k)), 1);
 		}
 	}
 	return (0);
@@ -120,7 +106,9 @@ int	redir(char *input, int *i, lexer_t **head)
 	if (input[j] == '<')
 	{
 		if (redir_i(input, &j, head))
+		{
 			return (1);
+		}
 	}
 	if (input[j] == '>')
 	{
@@ -146,7 +134,9 @@ int	r_pipe(char *input, int *j, lexer_t **head)
 	if (input[i] == '<' || input[i] == '>')
 	{
 		if (redir(input, &i, head))
+		{
 			return (1);
+		}
 	}
 	*j = i;
 	return (0);

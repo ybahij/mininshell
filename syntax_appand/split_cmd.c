@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:56:18 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/10 04:34:29 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/19 17:52:47 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,7 @@ lexer_t	*spilt_(lexer_t *head, int i)
 	if (!head || !(str = ft_split(head->content)))
 		return (NULL);
 	while (str[i])
-	{
-		i++;}
+		i++;
 	if (i > 1)
 	{
 		if (head->prev && cm_strchr("+><", head->prev->type))
@@ -52,6 +51,7 @@ lexer_t	*spilt_(lexer_t *head, int i)
 				head->b_appand);
 			head->b_appand = NULL;
 			head->b_appand = ft_strdup("ambiguous redirect");
+			exit_s(1);
 			return (head);
 		}
 		return (split_1(head, str, i));
@@ -89,19 +89,19 @@ int	pars_parenthesis(lexer_t *tmp, char **g_env)
 	{
 		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,
 			tmp->content[0]);
-		return (0);
+		return (exit_s(2), 0);
 	}
 	if (tmp->content[ft_strlen(tmp->content) - 1] != ')')
 	{
 		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,
 			tmp->content[0]);
-		return (0);
+		return (exit_s(2), 0);
 	}
 	if (tmp->prev && !cm_strchr("|&o", tmp->prev->type))
 	{
 		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,
 			tmp->content[0]);
-		return (0);
+		return (exit_s(2), 0);
 	}
 	return (1);
 }

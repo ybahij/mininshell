@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/10 03:00:13 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/19 17:46:40 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void	count_herdoc(lexer_t *tmp)
 	}
 	if (i > 16)
 	{
+		printf(RED"minishell: maximum number of here-document exceeded\n"RESET);
 		exit(1);
 	}
 }
@@ -87,10 +88,10 @@ void	read_herdoc(int fd, char *delim)
 		{
 			free(str);
 			close(fd);
-			printf(RED"minishell: warning: here-document delimited by end-of-file (wanted `%s')\n"RESET, delim);
-			exit(0);
+			printf(RED"minishell: warning: here-document delimited by end-of-file (wanted `%s`)\n"RESET, delim);
+			exit(1);
 		}
-		if (!ft_strncmp(str, delim, ft_strlen(str)))
+		if (!ft_strncmp(str, delim, ft_strlen(delim)))
 			break;
 		write(fd, str, ft_strlen(str));
 		write(fd, "\n", 1);
@@ -104,17 +105,21 @@ char *read_file(char *fname)
 {
 	int fd;
 	char *content;
-	char str[2];
+	char *str;
 	char *tmp;
 	int r;
 
+	str = ft_malloc(2);
 	fd = open(fname, O_RDWR);
 	content = NULL;
 	while (1)
 	{
 		r = read(fd, str, 1);
-		if (r == 0)
+		if (r <= 0)
+		{
+			str[r] = '\0';
 			break;
+		}
 		str[r] = '\0';
 		tmp = ft_strdup(str);
 		content = ft_strjoin(content, tmp);
@@ -145,9 +150,15 @@ int	handle_heredoc(lexer_t *tmp, char **env)
 	if (pid == 0)
 		read_herdoc(fd, tmp->next->content);
 	waitpid(-1, &status, 0);
+	r = status;
 	ex_status = (status >> 8) & 0xFF;
-	if (ex_status == 1)
+	if (ex_status == 1 || ex_status == 2)
+
 	{
+		if (ex_status == 2)
+			exit_s(130);
+		else
+			exit_s(0);
 		close(fd);
 		unlink(fname);
 		return (0);

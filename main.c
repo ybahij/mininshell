@@ -6,11 +6,13 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/10 21:43:16 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/20 15:55:54 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+// int g_data;
 
 int	paranthesis__(lexer_t *cmd)
 {
@@ -21,6 +23,7 @@ int	paranthesis__(lexer_t *cmd)
 	{
 		if (tmp->type == '(' && tmp->next && cm_strchr("qw", tmp->next->type))
 		{
+			exit_s(2);
 			printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
 				tmp->next->content);
 			return (1);
@@ -107,6 +110,62 @@ int	token_cmd(char *line, lexer_t **cmd, char **env, char *newline)
 	return (0);
 }
 
+int	dblptr_len(char **dblptr)
+{
+	int	i;
+
+	i = 0;
+	while (dblptr[i])
+		i++;
+	return (i);
+}
+char	**new_envi(void)
+{
+	char	**new_env;
+
+	char	*PATH = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
+	new_env = malloc(sizeof(char *) * 2);
+	new_env[0] = cm_strdup(PATH);
+	new_env[1] = NULL;
+	return (new_env);
+}
+
+char	**get_copy_with_malloc(char **env)
+{
+	int	i;
+	char	**new_env;
+	if (env[0] == NULL)
+		return (new_envi());
+	new_env = malloc(sizeof(char *) * (dblptr_len(env) + 1));
+	if (!new_env)
+		return (NULL);
+	i = 0;
+	while (env[i])
+	{
+		new_env[i] = cm_strdup(env[i]);
+		i++;
+	}
+	new_env[i] = NULL;
+	return (new_env);
+}
+
+char    ***get_env(void)
+{
+	static char **env;
+
+	return (&env);
+}
+
+void	cm_free(char **ptr)
+{
+	int	i;
+
+	i = 0;
+	while (ptr[i])
+		free(ptr[i++]);
+	free(ptr);
+}
+
 int	main(int ac, char **av, char **env)
 {
 	char	*line;
@@ -114,23 +173,29 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
+	*get_env() = get_copy_with_malloc(env);
 	line = NULL;
 	while (1)
 	{
 		signal(SIGINT, handle_signal);
+		signal(SIGQUIT, SIG_IGN);
+		printf("status >> %d\n", ret_status());
 		line = readline("minishell$ ");
 		if (!line)
 		{
+			cm_free(*get_env());
+			clear_history();
 			printf("exit\n");
 			free_garbage();
 			exit(0);
 		}
-		add_garbage(line);
+ 		add_garbage(line);
 		if (*line)
 			add_history(line);
-		if (token_cmd(line, &cmd, env, "newline"))
+		if (token_cmd(line, &cmd, *get_env(), "newline"))
 			continue ;
-		print_tree(parse_and(cmd, env));
+		// print_tree(parse_and(cmd, *get_env()));
+		runcmd(parse_and(cmd, *get_env()), *get_env());
 		free_garbage();
 	}
 	return (0);

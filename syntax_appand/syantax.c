@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:49:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/07 21:53:32 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/19 17:49:55 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ int	pars_quote(char *content)
 				i++;
 			if (content[i] != quote)
 			{
+				exit_s(2);
 				printf(RED "minishell: syntax error unclosed quotes `%c'\n" RESET,
 					quote);
 				return (0);
@@ -49,19 +50,19 @@ int	pars_(lexer_t *tmp, char *newline)
 	{
 		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
 			newline);
-		return (0);
+		return (exit_s(2), 0);
 	}
 	if (cm_strchr("><+h|&o", tmp2->type) && !cm_strchr("&o", tmp->type))
 	{
 		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
 			tmp2->content);
-		return (0);
+		return (exit_s(2), 0);
 	}
 	if (cm_strchr("|&o", tmp->type) && cm_strchr("|&o", tmp2->type))
 	{
 		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
 			tmp2->content);
-		return (0);
+		return (exit_s(2), 0);
 	}
 	return (1);
 }

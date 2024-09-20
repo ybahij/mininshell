@@ -6,7 +6,7 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/10 18:55:27 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/19 15:31:03 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,6 @@ typedef struct lexer_s
 	char				*content;
 	char				type;
 	char				*b_appand;
-	int					j;
 	struct lexer_s		*next;
 }						lexer_t;
 
@@ -94,6 +93,12 @@ typedef struct s_garbage
 	void				*content;
 	struct s_garbage	*next;
 }						t_garbage;
+
+typedef	struct s_global
+{
+	int					status;
+	t_garbage			*garbage;
+}						t_global;
 
 # define RED "\033[0;31m"
 # define GREEN "\033[0;32m"
@@ -120,7 +125,6 @@ char					**ft_split(char *str);
 char					*ft_substr(char const *s, unsigned int start,
 							size_t len);
 char					*cm_strchr(const char *s, int c);
-int						cm_isalnum(char c);
 
 //------------added functions----------------//
 
@@ -200,5 +204,22 @@ void					handle_heredoc_signal(int sig);
 void					handel_signal_(void);
 int						handle_heredoc(lexer_t *tmp, char **g_env);
 void					handle_signal2(int sig);
+char	*ft_ft_strjoin(const char *s1, const char *s2);
+// char	*ft_ft_strdup(const char *s1);
+char	**ft_ft_split(const char *str, char c);
+void	ft_putstr(char *s);
+int		ft_strcmp(char *s1, char *s2);
+int	runcmd(t_cmd *cmd, char **env);
+int    builtins(t_exec *exec, char **env);
+char	*cm_strdup(const char *s1);
+char	**get_copy_with_malloc(char **env);
+int	dblptr_len(char **dblptr);
+char    ***get_env(void);
+int	ft_is_alpha(char c);
+char    *ft_get_env(char *name, char **env);
+void	cm_free(char **str);
+t_garbage   **get_head(void);
+void exit_s(int status);
+int ret_status(void);
 
 #endif

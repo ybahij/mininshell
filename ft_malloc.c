@@ -6,13 +6,20 @@
 /*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/30 14:22:20 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/31 21:37:34 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/19 15:21:47 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_garbage *g_head;
+
+
+// t_garbage   **get_head(void)
+// {
+//     static t_garbage *head;
+
+//     return (&head);
+// }
 
 void  free_g(t_garbage *head)
 {
@@ -33,20 +40,20 @@ void  *ft_malloc(size_t size)
     tmp2 = malloc(size);
     if (!tmp2)
     {
-        free_g(g_head);
+        free_g(*get_head());
         exit(1);
     }
     tmp = malloc(sizeof(t_garbage));
     if (!tmp)
     {
         free(tmp2);
-        free_g(g_head);
+        free_g(*get_head());
         printf(MAGENTA"Error: malloc failed\n"RESET);
         exit(1);
     }
     tmp->content = tmp2;
-    tmp->next = g_head;
-    g_head = tmp;
+    tmp->next = *get_head();
+    *get_head() = tmp;
     return (tmp2);
 }
 
@@ -57,27 +64,27 @@ void    add_garbage(void *content)
     tmp = malloc(sizeof(t_garbage));
     if (!tmp)
     {
-        free_g(g_head);
+        free_g(*get_head());
         printf(MAGENTA"Error: malloc failed\n"RESET);
         exit(1);
     }
     tmp->content = content;
-    tmp->next = g_head;
-    g_head = tmp;
+    tmp->next = *get_head();
+    *get_head() = tmp;
 }
 
 void    free_garbage(void)
 {
     t_garbage *tmp;
 
-    if (!g_head)
+    if (!*get_head())
         return ;
-    while (g_head)
+    while (*get_head())
     {
-        tmp = g_head->next;
-        if (g_head->content)
-          free(g_head->content);
-        free(g_head);
-        g_head = tmp;
+        tmp = (*get_head())->next;
+        if ((*get_head())->content)
+          free((*get_head())->content);
+        free(*get_head());
+        *get_head() = tmp;
     }
 }
