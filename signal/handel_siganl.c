@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handel_siganl.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:17:38 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/19 17:45:39 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/21 17:29:13 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	handle_signal(int sig)
   if (sig == SIGINT)
   {
     exit_s(130);
-    free_garbage();
+    free_g();
     printf("\n");
     rl_on_new_line();
     rl_replace_line("", 0);

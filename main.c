@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/20 15:55:54 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/21 17:27:06 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,20 +92,20 @@ int	token_cmd(char *line, lexer_t **cmd, char **env, char *newline)
 	tmp = NULL;
 	*cmd = ferst_s(line);
 	if (!(*cmd))
-		return (free_garbage(), 1);
+		return (free_g(), 1);
 	if (paranthesis__(*cmd))
-		return (free_garbage(), 1);
+		return (free_g(), 1);
 	if (cmd_syntax(*cmd, env, newline, tmp))
-		return (free_garbage(), 1);
+		return (free_g(), 1);
 	if (paranthesis_syntax(*cmd, env))
-		return (free_garbage(), 1);
+		return (free_g(), 1);
 	cheak_for_equal(*cmd);
 	if (expand(*cmd, env))
-		return (free_garbage(), 1);
+		return (free_g(), 1);
 	if (!(*cmd))
-		return (free_garbage(), 1);
+		return (free_g(), 1);
 	if (!split_cmd(*cmd))
-		return (free_garbage(), 1);
+		return (1);
 	del_quote(*cmd);
 	return (0);
 }
@@ -179,14 +179,13 @@ int	main(int ac, char **av, char **env)
 	{
 		signal(SIGINT, handle_signal);
 		signal(SIGQUIT, SIG_IGN);
-		printf("status >> %d\n", ret_status());
 		line = readline("minishell$ ");
 		if (!line)
 		{
 			cm_free(*get_env());
 			clear_history();
 			printf("exit\n");
-			free_garbage();
+			free_g();
 			exit(0);
 		}
  		add_garbage(line);
@@ -196,7 +195,7 @@ int	main(int ac, char **av, char **env)
 			continue ;
 		// print_tree(parse_and(cmd, *get_env()));
 		runcmd(parse_and(cmd, *get_env()), *get_env());
-		free_garbage();
+		free_g();
 	}
 	return (0);
 }

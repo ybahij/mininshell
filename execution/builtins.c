@@ -349,48 +349,81 @@ void    ft_env(char **env)
     }
 }
 
-// void    ft_unset(char **av, char **env)
-// {
-//     int i;
-//     int j;
-//     int index;
-//     char    **new_env;
 
-//     i = 1;
-//     while (av[i])
-//     {
-//         j = 0;
-//         while (env[j])
-//         {
-//             if (compaire(env[j], av[i]) == 0)
-//             {
-//                 index = j;
-//                 break ;
-//             }
-//             j++;
-//         }
-//         if (env[j] == NULL)
-//         {
-//             printf("unset: `%s': not a valid identifier\n", av[i]);
-//             i++;
-//             continue ;
-//         }
-//         new_env = malloc(sizeof(char *) * (dblptr_len(env)));
-//         j = 0;
-//         while (j < index)
-//         {
-//             new_env[j] = cm_strdup(env[j]);
-//             j++;
-//         }
-//         j++;
-//         while (env[j])
-//         {
-//             new_env[j - 1] = cm_strdup(env[j]);
-//             j++;
-//         }
-//         new_env[j - 1] = NULL;
-//     }
-// }
+int check_exist(char **av, char **env)
+{
+    int i;
+    int j;
+    int index;
+    int count;
+
+    count = 0;
+    i = 1;
+    index = 0;
+    while (av[i])
+    {
+        j = 0;
+        index = 0;
+        while (env[j])
+        {
+            while (av[i][index] == env[j][index])
+            {
+                printf("av[%d] ==> %c\n", index,av[i][index]);
+                index++;
+            }
+            if (av[i][index] == '\0' && env[j][index] == '=')
+            {
+                count++;
+                break ;
+            }
+            j++;
+
+        }
+        i++;
+    }
+    return (count);
+}
+
+int c_for_unset(char **av, char *env)
+{
+    int i;
+    int j;
+
+    i = 1;
+    while (av[i])
+    {
+        j = 0;
+        while (env[j] != '=' && av[i][j] != '\0' && av[i][j] == env[j])
+            j++;
+        if (av[i][j] == '\0' && env[j] == '=')
+            return (0);
+        i++;
+    }
+    return (1);
+}
+
+
+void    ft_unset(char **av, char **env)
+{
+    int i;
+    int j;
+    int counter;
+    char **new_env;
+
+    counter = check_exist(av, env);
+    new_env = malloc(sizeof(char *) * (dblptr_len(env) - (counter + 1)));
+    i = 0;
+    j = 0;
+    while (env[i])
+    {
+        if (c_for_unset(av, env[i]) == 1)
+            new_env[j++] = cm_strdup(env[i++]);
+        else
+            i++;
+    }
+    new_env[j] = NULL;
+    *get_env() = new_env;
+}
 
 int    builtins(t_exec *exec, char **env)
 {
@@ -402,13 +435,14 @@ int    builtins(t_exec *exec, char **env)
             ft_pwd();
         else if (ft_strcmp(exec->av[0], "export") == 0)
             ft_export(exec->av, env);
-        // else if (ft_strcmp(exec->av[0], "unset") == 0)
-        //     ft_unset(exec->av, env);
+        else if (ft_strcmp(exec->av[0], "unset") == 0)
+            ft_unset(exec->av, env);
         else if (ft_strcmp(exec->av[0], "env") == 0)
             ft_env(env);
         else if (ft_strcmp(exec->av[0], "exit") == 0)
         {
-            cm_free(env);
+            // cm_free(env);
+            // free_g();
             exit(0);
         }
         else

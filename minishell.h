@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/19 15:31:03 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/21 18:10:07 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <errno.h>
+# include <dirent.h>
+# include <sys/stat.h>
+# include <limits.h>
+
 
 # define PIPE 1
 # define REDIRECTION 2
@@ -111,6 +116,7 @@ typedef	struct s_global
 
 int						ft_isdigit(int c);
 int						ft_isalnum(int c);
+char	*ft_itoa(int n);
 size_t					ft_strlen(const char *s);
 void					*ft_memset(void *b, int c, size_t len);
 void					ft_bzero(void *s, size_t n);
@@ -193,7 +199,7 @@ int						parenthesis(char *input, int *i, lexer_t **head);
 void					free_garbage(void);
 void					add_garbage(void *content);
 void					*ft_malloc(size_t size);
-void					free_g(t_garbage *head);
+void					free_g(void);
 int						pars_parenthesis(lexer_t *tmp, char **g_env);
 t_cmd					*parenthesis_c(lexer_t *head, char **env);
 int						token_cmd(char *line, lexer_t **cmd, char **env,
@@ -221,5 +227,6 @@ void	cm_free(char **str);
 t_garbage   **get_head(void);
 void exit_s(int status);
 int ret_status(void);
+t_garbage   **get_head(void);
 
 #endif

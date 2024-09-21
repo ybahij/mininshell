@@ -74,7 +74,7 @@ char	**ft_ft_split(char const *s, char c)
 
 	if (!s)
 		return (NULL);
-	ptr = ft_malloc(sizeof(char *) * (count_strings(s, c) + 1));
+	ptr = malloc(sizeof(char *) * (count_strings(s, c) + 1));
 	if (!ptr)
 		return (NULL);
 	return (double_split(ptr, s, c));

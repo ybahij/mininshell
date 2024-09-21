@@ -70,6 +70,23 @@ int	check_exit_status(int status)
 	return (-1); // Return -1 for unknown status
 }
 
+int	check_dir(char *cmd)
+{
+	struct stat	buf;
+
+	if (stat(cmd, &buf) == -1)
+	{
+		perror("stat");
+		exit(1);
+	}
+	if (S_ISDIR(buf.st_mode))
+	{
+		printf("minishell: %s: is a directory\n", cmd);
+		exit(126);
+	}
+	return (1);
+}
+
 int	execute(t_exec *cmd, char **env)
 {
 	int		pid;
@@ -90,16 +107,31 @@ int	execute(t_exec *cmd, char **env)
 	{
 		signal(SIGQUIT, SIG_DFL);
         signal(SIGINT, SIG_DFL);
-		if (access(cmd->av[0], F_OK) == 0)
+		if ((cmd->av[0][0] == '.' && cmd->av[0][1] == '/') || cmd->av[0][0] == '/')
 		{
-			if (execve(cmd->av[0], cmd->av, env) == -1)
-			{
-				cm_free(env);
-				free(cmd);
-				perror("execve");
-				exit(1);
-			}
-			check = 1;
+			printf("test\n");
+				if (access(cmd->av[0], F_OK) == -1)
+				{
+					printf("minishell: %s: No such file or directory\n", cmd->av[0]);
+					exit(127);
+				}
+				if (check_dir(cmd->av[0]) == 0)
+					exit(126);
+				if (access(cmd->av[0], X_OK) == -1)
+				{
+					printf("minishell: %s: Permission denied\n", cmd->av[0]);
+					exit(126);
+				}
+				// check_dir(cmd->av[0]);
+				if (execve(cmd->av[0], cmd->av, env) == -1)
+				{
+					cm_free(env);
+					// free(cmd);
+					perror("execve");
+					free_g();
+					exit(1);
+				}
+				check = 1;
 		}
 		cmd_path = ft_get_env("PATH", env);
 		if (cmd_path == NULL)
@@ -136,7 +168,6 @@ int	execute(t_exec *cmd, char **env)
 	{
 		waitpid(pid, &status, 0);
 		exit_s(check_exit_status(status));
-		printf(">> %d\n", ret_status());
 	}
 	return (1);
 }
@@ -157,7 +188,7 @@ int	heredoc(t_heredoc *cmd, char **env)
 		write(fd[1], cmd->content, ft_strlen(cmd->content));
 		close(fd[1]);
 		free(cmd);
-		cm_free(env);
+		// cm_free(env);
 		exit(0);
 		// must free ga3 lkhra
 	}
@@ -184,7 +215,7 @@ int	ft_pipe(t_pipe *cmd, char **env)
 		dup2(fd[1], 1);
 		close(fd[1]);
 		status = runcmd(cmd->left, env);
-		cm_free(env);
+		// cm_free(env);
 		free(cmd);
 		exit(status);
 	}
