@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:52:24 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/21 15:33:40 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/22 22:41:23 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,18 +46,25 @@ int	expand_w(lexer_t *cmd, char **env)
 	int		len;
 	char	hold;
 
-	if (cmd->prev)
-	{
-		if (cmd->prev->type == 'h' && cmd->type == 'q')
-			return (0);
-	}
+	// if (cmd->prev)
+	// {
+	// 	if (cmd->prev->type == 'h' && cmd->type == 'q')
+	// 		return (0);
+	// }
 	len = 0;
 	hold = 0;
 	pipe(fd);
 	cmd->b_appand = ft_strdup(cmd->content);
+	if (cmd->b_appand == NULL)
+	{
+		close(fd[0]);
+		return (close(fd[1]), 1);
+	}
 	len = appand_in_fille(cmd, fd[1], env, hold);
 	close(fd[1]);
 	cmd->content = ft_malloc(len + 2);
+	if (cmd->content == NULL)
+		return (close(fd[0]), 1);
 	read(fd[0], cmd->content, len);
 	cmd->content[len] = '\0';
 	close(fd[0]);
@@ -80,9 +87,8 @@ int	appand_u(int *j, int i, lexer_t *cmd, int fd, char **env)
 	}
 	if (cmd->content[k] == '?')
 	{
-		len += write(fd, ft_itoa(ret_status()), ft_strlen(ft_itoa(ret_status())));
 		*j = k + 1;
-		return (len);
+		return (write(fd, ft_itoa(ret_status()), ft_strlen(ft_itoa(ret_status()))));
 	}
 	while (cmd->content[k] && (ft_isalnum(cmd->content[k]) && !cm_strchr("\"'$",
 				cmd->content[k])))

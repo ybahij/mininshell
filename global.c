@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 15:16:26 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/21 17:21:35 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/22 13:32:55 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,4 +28,13 @@ void exit_s(int status)
 int ret_status(void)
 {
   return (g_data.status);
+}
+
+int set_fd(int fd, int i)
+{
+  if (i == 0)
+    g_data.heredoc_fd = fd;
+  else if (i == 1)
+    return (g_data.heredoc_fd);
+  return (0);
 }

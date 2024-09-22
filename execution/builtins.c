@@ -78,7 +78,7 @@ char	*cm_strdup(const char *s1)
 
 	if (!s1)
 		return (ft_strdup(""));
-	dest = malloc ((ft_strlen(s1) + 1) * 1);
+	dest = ft_malloc ((ft_strlen(s1) + 1) * 1);
 	if (dest == NULL)
 		return (NULL);
 	i = 0;

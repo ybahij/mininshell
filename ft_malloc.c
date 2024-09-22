@@ -6,11 +6,13 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/30 14:22:20 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/21 17:27:29 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/22 21:02:03 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+extern t_global g_data;
 
 void  *ft_malloc(size_t size)
 {
@@ -19,16 +21,17 @@ void  *ft_malloc(size_t size)
     tmp2 = malloc(size);
     if (!tmp2)
     {
-        free_g();
-        exit(1);
+        g_data.fall = 1;
+        printf(MAGENTA"Error: malloc failed\n"RESET);
+        return (NULL);
     }
     tmp = malloc(sizeof(t_garbage));
     if (!tmp)
     {
         free(tmp2);
-        free_g();
+        g_data.fall = 1;
         printf(MAGENTA"Error: malloc failed\n"RESET);
-        exit(1);
+        return (NULL);
     }
     tmp->content = tmp2;
     tmp->next = *get_head();
@@ -43,9 +46,9 @@ void    add_garbage(void *content)
     tmp = malloc(sizeof(t_garbage));
     if (!tmp)
     {
-        free_g();
+        g_data.fall = 1;
         printf(MAGENTA"Error: malloc failed\n"RESET);
-        exit(1);
+        return ;
     }
     tmp->content = content;
     tmp->next = *get_head();

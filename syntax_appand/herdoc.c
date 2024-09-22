@@ -3,157 +3,63 @@
 /*                                                        :::      ::::::::   */
 /*   herdoc.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/19 17:46:40 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/22 23:19:00 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-char	*herdoc_appand1(char *content, char **g_env, char *str, int *i)
+extern t_global g_data;
+
+char *read_file(int fd)
 {
-	int		j;
-	char	*tmp2;
-	int		k;
-
-	j = *i;
-	j++;
-	k = j;
-	while (content[j] && (ft_isalnum(content[j])))
-		j++;
-	tmp2 = cheak_env(ft_substr(content, k, j - k), g_env);
-	if (tmp2)
-		str = ft_strjoin(str, tmp2);
-	*i = j;
-	return (str);
-}
-
-void	count_herdoc(lexer_t *tmp)
-{
-	int		i;
-
-	i = 0;
-	while (tmp)
-	{
-		if (tmp->type == 'h')
-		{
-			if (!tmp->next || tmp->next->type != 'w')
-				return ;
-			i++;
-		}
-		tmp = tmp->next;
-	}
-	if (i > 16)
-	{
-		printf(RED"minishell: maximum number of here-document exceeded\n"RESET);
-		exit(1);
-	}
-}
-
-char	*herdoc_appand(char *content, char type, char **g_env)
-{
-	char	*str;
-	int		i;
-
-	i = 0;
-	str = NULL;
-	if (type != 'w' || !cm_strchr(content, '$'))
-		return (content);
-	while (content[i])
-	{
-		if (content[i] == '$' && !cm_strchr("!@#\%^&*$()=+\\|[]{};\"\':/?.",
-				content[i + 1]))
-			str = herdoc_appand1(content, g_env, str, &i);
-		else
-		{
-			str = ft_strjoin(str, ft_substr(content, i, 1));
-			i++;
-		}
-	}
-	return (str);
-}
-
-void	read_herdoc(int fd, char *delim)
-{
-	char	*str;
-
-	str = NULL;
-	signal(SIGINT, handle_heredoc_signal);
-	while (1)
-	{
-		str = readline(">");
-		if (!str)
-		{
-			free(str);
-			close(fd);
-			printf(RED"minishell: warning: here-document delimited by end-of-file (wanted `%s`)\n"RESET, delim);
-			exit(1);
-		}
-		if (!ft_strncmp(str, delim, ft_strlen(delim)))
-			break;
-		write(fd, str, ft_strlen(str));
-		write(fd, "\n", 1);
-		free(str);
-	}
-	close(fd);
-	exit(0);
-}
-
-char *read_file(char *fname)
-{
-	int fd;
 	char *content;
 	char *str;
 	char *tmp;
 	int r;
 
 	str = ft_malloc(2);
-	fd = open(fname, O_RDWR);
+	if (!str)
+		return (NULL);
+	// fd = open(fname, O_RDWR);
+	// if (fd == -1)
+	// 	return(printf("minishell: open failed\n"), NULL);
 	content = NULL;
 	while (1)
 	{
+		
 		r = read(fd, str, 1);
+		printf("r = %d\n", r);
 		if (r <= 0)
 		{
 			str[r] = '\0';
 			break;
 		}
+		printf("test\n");
 		str[r] = '\0';
 		tmp = ft_strdup(str);
+		if (!tmp)
+			return (close(fd), NULL);
 		content = ft_strjoin(content, tmp);
+		if (!content)
+			return (close(fd), NULL);
 	}
 	close(fd);
 	return (content);
 }
 
-int	handle_heredoc(lexer_t *tmp, char **env)
+int	herdoc_ut(int fd, char *fname, lexer_t *tmp, char **env)
 {
-	char fname[11];
-	char *content;
-	int	status;
-	int pid;
-	int fd;
-	int	r;
 	int ex_status;
+	int status;
+	char *content;
 
-	if (tmp->next->type == 'q')
-		tmp->next->content = quote_(tmp->next->content);
-	fd = open("/dev/random", O_RDWR);
-	r = read(fd, fname, 10);
-	fname[r] = '\0';
-	close(fd);
-	fd = open(fname, O_RDWR | O_CREAT | O_TRUNC, 0644);
-	signal(SIGINT, SIG_IGN);
-	pid = fork();
-	if (pid == 0)
-		read_herdoc(fd, tmp->next->content);
 	waitpid(-1, &status, 0);
-	r = status;
 	ex_status = (status >> 8) & 0xFF;
 	if (ex_status == 1 || ex_status == 2)
-
 	{
 		if (ex_status == 2)
 			exit_s(130);
@@ -163,11 +69,58 @@ int	handle_heredoc(lexer_t *tmp, char **env)
 		unlink(fname);
 		return (0);
 	}
-	content = read_file(fname);
+	content = read_file(fd);
+	if (!content)
+		return (0);
 	tmp->next->content = herdoc_appand(content, tmp->next->type, env);
 	close(fd);
-	unlink(fname);
+	// unlink(fname);
 	return (1);
 }
+
+int handle_heredoc(lexer_t *tmp, char **env)
+{
+	char fname[11];
+	int pid;
+	int fd[2];
+	// int r;
+	
+	if (tmp->next->type == 'q')
+		tmp->next->content = quote_(tmp->next->content);
+	pipe(fd);
+	signal(SIGINT, SIG_IGN);
+	pid = fork();
+	if (pid == 0)
+	{
+		close(fd[0]);
+		read_herdoc(fd[1], tmp->next->content);
+	}
+	if (!herdoc_ut(fd[0], fname, tmp, env))
+		return (0);
+	return (1);
+}
+
+// int	handle_heredoc(lexer_t *tmp, char **env)
+// {
+// 	char fname[11];
+// 	int pid;
+// 	int fd;
+// 	int	r;
+
+// 	if (tmp->next->type == 'q')
+// 		tmp->next->content = quote_(tmp->next->content);
+// 	fd = open("/dev/random", O_RDWR);
+// 	r = read(fd, fname, 10);
+// 	fname[r] = '\0';
+// 	close(fd);
+// 	fd = open(fname, O_RDWR | O_CREAT | O_TRUNC, 0644);
+// 	signal(SIGINT, SIG_IGN);
+// 	pid = fork();
+// 	if (pid == 0)
+// 		read_herdoc(fd, tmp->next->content);
+// 	if (!herdoc_ut(fd, fname, tmp, env))
+// 		return (0);
+// 	return (1);
+// }
 
 

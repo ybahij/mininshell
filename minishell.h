@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/21 18:10:07 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/22 20:07:33 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,8 @@ typedef struct s_garbage
 typedef	struct s_global
 {
 	int					status;
+	int					fall;
+	int					heredoc_fd;
 	t_garbage			*garbage;
 }						t_global;
 
@@ -228,5 +230,7 @@ t_garbage   **get_head(void);
 void exit_s(int status);
 int ret_status(void);
 t_garbage   **get_head(void);
+int set_fd(int fd, int i);
+void	read_herdoc(int fd, char *delim);
 
 #endif

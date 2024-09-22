@@ -187,8 +187,8 @@ int	heredoc(t_heredoc *cmd, char **env)
 		close(fd[0]);
 		write(fd[1], cmd->content, ft_strlen(cmd->content));
 		close(fd[1]);
-		free(cmd);
-		// cm_free(env);
+		close(stdin_copy);
+		free_g();
 		exit(0);
 		// must free ga3 lkhra
 	}
@@ -196,6 +196,8 @@ int	heredoc(t_heredoc *cmd, char **env)
 	dup2(fd[0], 0);
 	status = runcmd(cmd->next, env);
 	dup2(stdin_copy, 0);
+	close(stdin_copy);
+	close(fd[0]);
 	waitpid(pid, NULL, 0);
 	return (status);
 }

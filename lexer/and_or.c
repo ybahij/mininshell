@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   and_or.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:47:40 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/03 02:25:35 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/22 21:07:11 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,16 @@ int	and_or(char *input, int *i, lexer_t **head)
 	if (input[j] == '|' && input[j + 1] == '|')
 	{
 		tmp = lexer(ft_substr(input, j, 2), 'o');
+		if (!tmp)
+			return (1);
 		ft_lstadd_back(head, tmp);
 		j += 2;
 	}
 	if (input[j] == '&' && input[j + 1] == '&')
 	{
 		tmp = lexer(ft_substr(input, j, 2), '&');
+		if (!tmp)
+			return (1);
 		ft_lstadd_back(head, tmp);
 		j += 2;
 	}

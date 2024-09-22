@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:42:29 by youssef           #+#    #+#             */
-/*   Updated: 2024/08/30 17:00:49 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/22 21:06:43 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ lexer_t	*lexer(char *input, char type)
 {
 	lexer_t	*head;
 
+	if (!input)
+		return (NULL);
 	head = ft_malloc(sizeof(lexer_t));
 	if (!head)
 		return (NULL);

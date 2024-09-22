@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   r_pipe.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:48:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/19 16:56:15 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/22 21:08:25 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ int	redir_o(char *input, int *j, lexer_t **head)
 			if (cheak_digit(input, &i))
 				return (1);
 			tmp = lexer(ft_substr(input, i, 2), '+');
+			if (!tmp)
+				return (1);
 			ft_lstadd_back(head, tmp);
 			i += 2;
 		}
@@ -61,6 +63,8 @@ int	redir_o(char *input, int *j, lexer_t **head)
 			if (cheak_digit(input, &i))
 				return (1);
 			tmp = lexer(ft_substr(input, i, 1), '>');
+			if (!tmp)
+				return (1);
 			ft_lstadd_back(head, tmp);
 			i++;
 		}
@@ -82,6 +86,8 @@ int	redir_i(char *input, int *j, lexer_t **head)
 			if (cheak_digit(input, &i))
 				return (1);
 			tmp = lexer(ft_substr(input, i, 2), 'h');
+			if (!tmp)
+				return (1);
 			ft_lstadd_back(head, tmp);
 			i += 2;
 		}
@@ -90,6 +96,8 @@ int	redir_i(char *input, int *j, lexer_t **head)
 			if (cheak_digit(input, &i))
 				return (1);
 			tmp = lexer(ft_substr(input, i, 1), '<');
+			if (!tmp)
+				return (1);
 			ft_lstadd_back(head, tmp);
 			i++;
 		}
@@ -128,6 +136,8 @@ int	r_pipe(char *input, int *j, lexer_t **head)
 	if (input[i] == '|')
 	{
 		tmp = lexer(ft_substr(input, i, 1), '|');
+		if (!tmp)
+			return (1);
 		ft_lstadd_back(head, tmp);
 		i++;
 	}

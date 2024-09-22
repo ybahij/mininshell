@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/21 17:27:06 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/22 23:00:35 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int	cheak_dollar_p(char *input)
 	return (1);
 }
 
-void	cheak_for_equal(lexer_t *cmd)
+int	cheak_for_equal(lexer_t *cmd)
 {
 	lexer_t	*tmp;
 
@@ -78,11 +78,16 @@ void	cheak_for_equal(lexer_t *cmd)
 			if (cheak_dollar_p(tmp->content))
 			{
 				tmp->content = ft_strjoin("\"", tmp->content);
+				if (!tmp->content)
+					return (1);
 				tmp->content = ft_strjoin(tmp->content, "\"");
+				if (!tmp->content)
+					return (1);
 			}
 		}
 		tmp = tmp->next;
 	}
+	return (0);
 }
 
 int	token_cmd(char *line, lexer_t **cmd, char **env, char *newline)
@@ -92,18 +97,19 @@ int	token_cmd(char *line, lexer_t **cmd, char **env, char *newline)
 	tmp = NULL;
 	*cmd = ferst_s(line);
 	if (!(*cmd))
-		return (free_g(), 1);
+		return (1);
 	if (paranthesis__(*cmd))
-		return (free_g(), 1);
+		return (1);
 	if (cmd_syntax(*cmd, env, newline, tmp))
-		return (free_g(), 1);
+		return (1);
 	if (paranthesis_syntax(*cmd, env))
-		return (free_g(), 1);
-	cheak_for_equal(*cmd);
+		return (1);
+	if (cheak_for_equal(*cmd))
+		return (1);
 	if (expand(*cmd, env))
-		return (free_g(), 1);
+		return (1);
 	if (!(*cmd))
-		return (free_g(), 1);
+		return (1);
 	if (!split_cmd(*cmd))
 		return (1);
 	del_quote(*cmd);
@@ -124,8 +130,12 @@ char	**new_envi(void)
 	char	**new_env;
 
 	char	*PATH = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
-	new_env = malloc(sizeof(char *) * 2);
+	new_env = ft_malloc(sizeof(char *) * 2);
+	if (!new_env)
+		return (NULL);
 	new_env[0] = cm_strdup(PATH);
+	if (!new_env[0])
+		return (NULL);
 	new_env[1] = NULL;
 	return (new_env);
 }
@@ -136,13 +146,13 @@ char	**get_copy_with_malloc(char **env)
 	char	**new_env;
 	if (env[0] == NULL)
 		return (new_envi());
-	new_env = malloc(sizeof(char *) * (dblptr_len(env) + 1));
+	new_env = ft_malloc(sizeof(char *) * (dblptr_len(env) + 1));
 	if (!new_env)
 		return (NULL);
 	i = 0;
 	while (env[i])
 	{
-		new_env[i] = cm_strdup(env[i]);
+		new_env[i] = ft_strdup(env[i]);
 		i++;
 	}
 	new_env[i] = NULL;
@@ -182,7 +192,6 @@ int	main(int ac, char **av, char **env)
 		line = readline("minishell$ ");
 		if (!line)
 		{
-			cm_free(*get_env());
 			clear_history();
 			printf("exit\n");
 			free_g();
@@ -193,9 +202,8 @@ int	main(int ac, char **av, char **env)
 			add_history(line);
 		if (token_cmd(line, &cmd, *get_env(), "newline"))
 			continue ;
-		// print_tree(parse_and(cmd, *get_env()));
-		runcmd(parse_and(cmd, *get_env()), *get_env());
-		free_g();
+		print_tree(parse_and(cmd, *get_env()));
+		// runcmd(parse_and(cmd, *get_env()), *get_env());
 	}
 	return (0);
 }
