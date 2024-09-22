@@ -1,38 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   handel_siganl.c                                    :+:      :+:    :+:   */
+/*   syntax_2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/06 17:17:38 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/23 00:21:30 by ybahij           ###   ########.fr       */
+/*   Created: 2024/09/23 00:27:38 by ybahij            #+#    #+#             */
+/*   Updated: 2024/09/23 00:28:14 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	handle_signal(int sig)
+int	pars_pipe_(lexer_t *tmp, char *newline)
 {
-  if (sig == SIGINT)
-  {
-    exit_s(130);
-    free_g();
-    printf("\n");
-    rl_on_new_line();
-    rl_replace_line("", 0);
-    rl_redisplay();
-  }
-  return ;
-}
-
-void	handle_heredoc_signal(int sig)
-{
-	if (sig == SIGINT)
+	if (!tmp->next)
 	{
-    close(set_fd(0, 1));
-    free_g();
-    write(1, "\n", 1);
-		exit(2);
+		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
+			newline);
+		return (exit_s(2), 0);
 	}
+	if (cm_strchr("|&o", tmp->next->type))
+	{
+		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
+			tmp->next->content);
+		return (exit_s(2), 0);
+	}
+	return (1);
 }

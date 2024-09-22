@@ -3,42 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   syantax1.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/19 17:50:19 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/23 00:28:09 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	pars_pipe_(lexer_t *tmp, char *newline)
-{
-	if (!tmp->next)
-	{
-		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
-			newline);
-		return (exit_s(2), 0);
-	}
-	if (cm_strchr("|&o", tmp->next->type))
-	{
-		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
-			tmp->next->content);
-		return (exit_s(2), 0);
-	}
-	return (1);
-}
 
-int	cmd_syntax(lexer_t *tmp, char **g_env, char *newline, lexer_t *tmp2)
+
+int 	cheak_syntax(lexer_t *tmp)
 {
-	if (!tmp)
-		return (0);
 	if (cm_strchr("|o&", tmp->type))
 	{
 		exit_s(2);
 		return (printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
 				tmp->content), 1);
 	}
+	return (0);
+}
+
+int	cmd_syntax(lexer_t *tmp, char **g_env, char *newline, lexer_t *tmp2)
+{
+	if (!tmp)
+		return (0);
+	if (cheak_syntax(tmp))
+		return (1);
 	count_herdoc(tmp);
 	while (tmp)
 	{

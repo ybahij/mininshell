@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 13:20:40 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/22 23:12:47 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/23 00:19:42 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,14 @@ char	*herdoc_appand(char *content, char type, char **g_env)
 	return (str);
 }
 
+void	exit_heredoc(int fd, char *str, char *delim)
+{
+	printf(RED"minishell: warning: here-document delimited by end-of-file (wanted `%s`)\n"RESET, delim);
+	free(str);
+	free_g();
+	close(fd);
+	exit(1);
+}
 void	read_herdoc(int fd, char *delim)
 {
 	char	*str;
@@ -86,16 +94,13 @@ void	read_herdoc(int fd, char *delim)
 	{
 		str = readline(">");
 		if (!str)
-		{
-			printf(RED"minishell: warning: here-document delimited by end-of-file (wanted `%s`)\n"RESET, delim);
-			free(str);
-			free_g();
-			close(fd);
-			exit(1);
-		}
+			exit_heredoc(fd, str, delim);
 		add_garbage(str);
 		if (!ft_strncmp(str, delim, ft_strlen(delim)))
+		{
+			write(fd, "\0", 1);
 			break;
+		}
 		write(fd, str, ft_strlen(str));
 		write(fd, "\n", 1);
 	}
