@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:47:40 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/22 21:07:11 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 11:00:12 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	and_or(char *input, int *i, lexer_t **head)
 	}
 	if (input[j] == '|' && input[j + 1] == '|')
 	{
-		tmp = lexer(ft_substr(input, j, 2), 'o');
+		tmp = lexer(ft_ft_substr(input, j, 2), 'o');
 		if (!tmp)
 			return (1);
 		ft_lstadd_back(head, tmp);
@@ -34,7 +34,7 @@ int	and_or(char *input, int *i, lexer_t **head)
 	}
 	if (input[j] == '&' && input[j + 1] == '&')
 	{
-		tmp = lexer(ft_substr(input, j, 2), '&');
+		tmp = lexer(ft_ft_substr(input, j, 2), '&');
 		if (!tmp)
 			return (1);
 		ft_lstadd_back(head, tmp);

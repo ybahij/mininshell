@@ -78,7 +78,7 @@ char	*cm_strdup(const char *s1)
 
 	if (!s1)
 		return (ft_strdup(""));
-	dest = ft_malloc ((ft_strlen(s1) + 1) * 1);
+	dest = ft_malloc((ft_strlen(s1) + 1) * 1);
 	if (dest == NULL)
 		return (NULL);
 	i = 0;
@@ -94,16 +94,17 @@ char	*cm_strdup(const char *s1)
 void    ft_pwd(void)
 {
     static char    *cwd;
-    static char *old_wd;
+    static char     *old_wd;
+    char            *holder;
 
     if (cwd != NULL)
     {
-        free(old_wd);
         old_wd = cm_strdup(cwd);
-        free(cwd);
         cwd = NULL;
     }
-    cwd = getcwd(NULL, 0);
+    holder = getcwd(NULL, 0);
+    cwd = cm_strdup(holder);
+    free(holder);
     if (cwd != NULL)
     {
         printf("%s\n", cwd);
@@ -231,7 +232,7 @@ char    **get_new_env(char **av, char **env)
     char    *holder;
 
     count = count_valid_av(av);
-    new_env = malloc(sizeof(char *) * (dblptr_len(env) + count + 1));
+    new_env = ft_malloc(sizeof(char *) * (dblptr_len(env) + count + 1));
     i = 0;
     while (env[i])
     {
@@ -252,7 +253,7 @@ char    **get_new_env(char **av, char **env)
         {
             if (check_sign(av[j]) == 1)
             {
-                free(new_env[temp]);
+                // free(new_env[temp]);
                 new_env[temp] = cm_strdup(av[j++]);
             }
             else if (check_sign(av[j]) == 0)
@@ -264,11 +265,11 @@ char    **get_new_env(char **av, char **env)
                 {
                     holder = new_env[temp];
                     new_env[temp] = ft_ft_strjoin(new_env[temp], "=");
-                    free(holder);
+                    // free(holder);
                 }
                 holder = new_env[temp];
                 new_env[temp] = ft_ft_strjoin(new_env[temp], &av[j++][index + 1]);
-                free(holder);
+                // free(holder);
             }
             else
                 j++;
@@ -326,12 +327,12 @@ void    ft_export(char **av, char **env)
             write(1, "\n", 1);
             i++;
         }
-        cm_free(copy_env);
+        // cm_free(copy_env);
     }
     else
     {
         copy_env = get_new_env(av, env);
-        cm_free(env);
+        // cm_free(env);
 		//TODO: dbl_free(env);
         *get_env() = copy_env;
     }
@@ -367,10 +368,7 @@ int check_exist(char **av, char **env)
         while (env[j])
         {
             while (av[i][index] == env[j][index])
-            {
-                printf("av[%d] ==> %c\n", index,av[i][index]);
                 index++;
-            }
             if (av[i][index] == '\0' && env[j][index] == '=')
             {
                 count++;
@@ -411,18 +409,36 @@ void    ft_unset(char **av, char **env)
     char **new_env;
 
     counter = check_exist(av, env);
-    new_env = malloc(sizeof(char *) * (dblptr_len(env) - (counter + 1)));
+    new_env = ft_malloc(sizeof(char *) * (dblptr_len(env) - (counter) + 1));
     i = 0;
     j = 0;
     while (env[i])
     {
         if (c_for_unset(av, env[i]) == 1)
-            new_env[j++] = cm_strdup(env[i++]);
+        {
+            new_env[j] = cm_strdup(env[i]);
+            j++;
+            i++;
+        }
         else
             i++;
     }
     new_env[j] = NULL;
     *get_env() = new_env;
+}
+
+void    ft_exit(char **av)
+{
+    (void)av;
+// exit only (exited) (status == last exit status) // exit\n
+// if (len(av) == 1)
+    // if (av[0] digit) (exited)(status == (unsinged char)digit) make sure to handle the overflow
+    // if (av[0] alpha) (exited)(status = 2 ) // exit\nbash: exit: asdasd: numeric argument required\n
+//else
+    // if (av[0] digit av[1] alpha) (not exited) (status = 1)exit\nbash: exit: too many arguments\n
+    // if (av[0] digit av[1] digit) (not exited) (status = 1) exit\nbash: exit: too many arguments\n
+    //if (av[0] alpha av[1] digit) (exited) (status = 2) exit\nbash: exit: dsfs: numeric argument required\n
+    //if (av[0] alpha av[1] alpha) (exited) (status = 2) exit\nbash: exit: too many arguments\n
 }
 
 int    builtins(t_exec *exec, char **env)
@@ -442,8 +458,9 @@ int    builtins(t_exec *exec, char **env)
         else if (ft_strcmp(exec->av[0], "exit") == 0)
         {
             // cm_free(env);
-            // free_g();
-            exit(0);
+            free_g();
+            ft_exit(exec->av);
+            // exit(ret_status());
         }
         else
             return (0);

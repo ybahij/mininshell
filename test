@@ -1,1 +1,15 @@
--nasad -nnnnn hello
+1 - BASH :
+ybahij@c3r8p8:~/Desktop/mininshell$ .
+bash: .: filename argument required
+.: usage: . filename [arguments]
+1 - mininshell
+minishell$ .
+execve: Permission denied
+minishell$ 
+
+2 - BASH:
+ybahij@c3r8p8:~/Desktop/mininshell$ ..
+..: command not found
+2 - MINISHELl
+ ..
+execve: Permission denied

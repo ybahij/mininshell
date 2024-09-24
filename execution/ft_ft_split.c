@@ -35,13 +35,13 @@ static int	count_strings(char const *str, char c)
 	return (count);
 }
 
-static char	**ft_free(char **ptr, int j)
-{
-	while (j >= 0)
-		free(ptr[j--]);
-	free(ptr);
-	return (NULL);
-}
+// static char	**ft_free(char **ptr, int j)
+// {
+// 	while (j >= 0)
+// 		free(ptr[j--]);
+// 	free(ptr);
+// 	return (NULL);
+// }
 
 static char	**double_split(char **ptr, const char *s, char c)
 {
@@ -58,7 +58,7 @@ static char	**double_split(char **ptr, const char *s, char c)
 		{
 			ptr[j] = ft_substr(s, i, ftstrlen(s + i, c));
 			if (ptr[j] == 0)
-				return (ft_free(ptr, j));
+				return (NULL);
 			j++;
 		}
 		while (s[i] && s[i] != c)
@@ -74,7 +74,7 @@ char	**ft_ft_split(char const *s, char c)
 
 	if (!s)
 		return (NULL);
-	ptr = malloc(sizeof(char *) * (count_strings(s, c) + 1));
+	ptr = ft_malloc(sizeof(char *) * (count_strings(s, c) + 1));
 	if (!ptr)
 		return (NULL);
 	return (double_split(ptr, s, c));

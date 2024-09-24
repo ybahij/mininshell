@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/22 20:07:33 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 18:01:27 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ typedef	struct s_global
 	int					fall;
 	int					heredoc_fd;
 	t_garbage			*garbage;
+	t_garbage			*p_garbage;
 }						t_global;
 
 # define RED "\033[0;31m"
@@ -123,7 +124,7 @@ size_t					ft_strlen(const char *s);
 void					*ft_memset(void *b, int c, size_t len);
 void					ft_bzero(void *s, size_t n);
 char					*ft_strrchr(const char *s, int c);
-int						ft_strncmp(const char *s1, const char *s2, size_t n);
+int						ft_strncmp( char *s1,  char *s2, size_t n);
 void					*ft_calloc(size_t count, size_t size);
 char					*ft_strdup(const char *s1);
 char					*ft_substr(char const *s, unsigned int start,
@@ -133,6 +134,9 @@ char					**ft_split(char *str);
 char					*ft_substr(char const *s, unsigned int start,
 							size_t len);
 char					*cm_strchr(const char *s, int c);
+char	*ft_ft_substr(char const *s, unsigned int start, size_t len);
+char	*ft_ft_strdup(const char *s1);
+char	*ft__strjoin(char *s1, char *s2);
 
 //------------added functions----------------//
 
@@ -226,11 +230,11 @@ char    ***get_env(void);
 int	ft_is_alpha(char c);
 char    *ft_get_env(char *name, char **env);
 void	cm_free(char **str);
-t_garbage   **get_head(void);
 void exit_s(int status);
 int ret_status(void);
 t_garbage   **get_head(void);
 int set_fd(int fd, int i);
 void	read_herdoc(int fd, char *delim);
+void    free_g_p(void);
 
 #endif

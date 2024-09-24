@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_redir_c.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:46:23 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/06 15:30:48 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/24 18:01:50 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ t_cmd   *herdoc_construct(lexer_t *token, lexer_t *head,char **env)
 
     heredoc = ft_malloc(sizeof(t_redir));
     heredoc->type = HEREDOC;
-    heredoc->content = ft_strdup(token->next->content);
+    heredoc->content = ft_ft_strdup(token->next->content);
     token->type = 'p';
     token->next->type = 'p';
     heredoc->next = parse_redir(head, env);

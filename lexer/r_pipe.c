@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:48:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/22 21:08:25 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 11:00:55 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	redir_i(char *input, int *j, lexer_t **head)
 		{
 			if (cheak_digit(input, &i))
 				return (1);
-			tmp = lexer(ft_substr(input, i, 2), 'h');
+			tmp = lexer(ft_ft_substr(input, i, 2), 'h');
 			if (!tmp)
 				return (1);
 			ft_lstadd_back(head, tmp);
@@ -95,7 +95,7 @@ int	redir_i(char *input, int *j, lexer_t **head)
 		{
 			if (cheak_digit(input, &i))
 				return (1);
-			tmp = lexer(ft_substr(input, i, 1), '<');
+			tmp = lexer(ft_ft_substr(input, i, 1), '<');
 			if (!tmp)
 				return (1);
 			ft_lstadd_back(head, tmp);
@@ -135,7 +135,7 @@ int	r_pipe(char *input, int *j, lexer_t **head)
 	i = *j;
 	if (input[i] == '|')
 	{
-		tmp = lexer(ft_substr(input, i, 1), '|');
+		tmp = lexer(ft_ft_substr(input, i, 1), '|');
 		if (!tmp)
 			return (1);
 		ft_lstadd_back(head, tmp);

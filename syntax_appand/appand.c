@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:52:24 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/22 22:41:23 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 18:02:17 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,15 +46,10 @@ int	expand_w(lexer_t *cmd, char **env)
 	int		len;
 	char	hold;
 
-	// if (cmd->prev)
-	// {
-	// 	if (cmd->prev->type == 'h' && cmd->type == 'q')
-	// 		return (0);
-	// }
 	len = 0;
 	hold = 0;
 	pipe(fd);
-	cmd->b_appand = ft_strdup(cmd->content);
+	cmd->b_appand = ft_ft_strdup(cmd->content);
 	if (cmd->b_appand == NULL)
 	{
 		close(fd[0]);
@@ -93,7 +88,7 @@ int	appand_u(int *j, int i, lexer_t *cmd, int fd, char **env)
 	while (cmd->content[k] && (ft_isalnum(cmd->content[k]) && !cm_strchr("\"'$",
 				cmd->content[k])))
 		k++;
-	tmp2 = cheak_env(ft_substr(cmd->content, i, k - i), env);
+	tmp2 = cheak_env(ft_ft_substr(cmd->content, i, k - i), env);
 	if (tmp2)
 		len += write(fd, tmp2, ft_strlen(tmp2));
 	*j = k;
@@ -144,7 +139,9 @@ char	*cheak_env(char *str, char **env)
 			continue ;
 		}
 		if (env[i][ft_strlen(str)] == '=')
-			tmp = ft_strdup(&env[i][ft_strlen(str) + 1]);
+		{
+			tmp = ft_ft_strdup(&env[i][ft_strlen(str) + 1]);
+		}
 		if (tmp)
 			break ;
 		i++;

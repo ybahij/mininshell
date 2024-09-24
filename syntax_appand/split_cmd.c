@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   split_cmd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:56:18 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/19 17:52:47 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/24 11:15:47 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+extern t_global g_data;
 
 lexer_t	*split_1(lexer_t *head, char **str, int i)
 {
@@ -50,13 +52,13 @@ lexer_t	*spilt_(lexer_t *head, int i)
 			printf(RED "minishell: %s: ambiguous redirect\n" RESET,
 				head->b_appand);
 			head->b_appand = NULL;
-			head->b_appand = ft_strdup("ambiguous redirect");
+			head->b_appand = ft_ft_strdup("ambiguous redirect");
 			exit_s(1);
 			return (head);
 		}
 		return (split_1(head, str, i));
 	}
-	head->content = ft_strdup(str[0]);
+	head->content = ft_ft_strdup(str[0]);
 	return (head->next);
 }
 
@@ -70,6 +72,8 @@ int	split_cmd(lexer_t *head)
 		if (tmp->content && cm_strchr(tmp->content, ' ') && tmp->type != '(')
 		{
 			tmp = spilt_(tmp, 0);
+			if (g_data.fall)
+				return (0);
 			if (tmp && !ft_strncmp(tmp->b_appand, "ambiguous redirect", 18))
 			{
 				tmp->b_appand = NULL;

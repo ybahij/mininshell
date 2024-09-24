@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 14:42:29 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/22 21:06:43 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 18:01:55 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ lexer_t	*lexer(char *input, char type)
 	head = ft_malloc(sizeof(lexer_t));
 	if (!head)
 		return (NULL);
-	head->content = ft_strdup(input);
+	head->content = ft_ft_strdup(input);
 	head->type = type;
 	head->b_appand = NULL;
 	head->next = NULL;

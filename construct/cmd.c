@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:47:48 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/06 16:18:17 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/24 18:01:45 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ char **get_cmd_args(lexer_t *token)
   {
     if (tmp->type == 'w' || tmp->type == 'q')
     {
-      str[i] = ft_strdup(tmp->content);
+      str[i] = ft_ft_strdup(tmp->content);
       i++;
     }
     tmp = tmp->next;

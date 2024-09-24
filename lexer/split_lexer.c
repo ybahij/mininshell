@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/29 20:05:15 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/22 22:54:34 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 11:01:42 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,9 @@ int	n_cmd(char *input, int *j, lexer_t **head)
 	t = 'w';
 	holder = 0;
 	cmd__(&i, input, &t, holder);
-	str = ft_substr(input, *j, i - *j);
+	str = ft_ft_substr(input, *j, i - *j);
+	if (!str)
+		return (1);
 	tmp = lexer(str, t);
 	if (!tmp)
 		return (1);
@@ -69,7 +71,7 @@ int	parenthesis(char *input, int *i, lexer_t **head)
 		j++;
 	if (input[j] && cm_strchr("()", input[j]))
 		j++;
-	str = ft_substr(input, *i, j - *i);
+	str = ft_ft_substr(input, *i, j - *i);
 	if (!str)
 		return (1);
 	tmp = lexer(str, '(');

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   syantax.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:49:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/19 17:49:55 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/24 12:19:20 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ lexer_t	*syntax_error(lexer_t *tmp, char **g_env, char *newline)
 		{
 			if (!handle_heredoc(tmp, g_env))
 			{
-				tmp->b_appand = ft_strdup("end_of_file");
+				tmp->b_appand = ft_ft_strdup("end_of_file");
 			}
 			return (tmp);
 		}

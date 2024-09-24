@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/22 23:00:35 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 18:01:04 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,10 +77,10 @@ int	cheak_for_equal(lexer_t *cmd)
 		{
 			if (cheak_dollar_p(tmp->content))
 			{
-				tmp->content = ft_strjoin("\"", tmp->content);
+				tmp->content = ft__strjoin("\"", tmp->content);
 				if (!tmp->content)
 					return (1);
-				tmp->content = ft_strjoin(tmp->content, "\"");
+				tmp->content = ft__strjoin(tmp->content, "\"");
 				if (!tmp->content)
 					return (1);
 			}
@@ -194,16 +194,19 @@ int	main(int ac, char **av, char **env)
 		{
 			clear_history();
 			printf("exit\n");
+			free(line);
 			free_g();
-			exit(0);
+			exit(ret_status());
 		}
  		add_garbage(line);
 		if (*line)
 			add_history(line);
 		if (token_cmd(line, &cmd, *get_env(), "newline"))
-			continue ;
-		print_tree(parse_and(cmd, *get_env()));
-		// runcmd(parse_and(cmd, *get_env()), *get_env());
+		{	
+			free(line);
+			continue ;}
+		// print_tree(parse_and(cmd, *get_env()));
+		runcmd(parse_and(cmd, *get_env()), *get_env());
 	}
 	return (0);
 }

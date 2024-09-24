@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/23 00:22:47 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 18:02:21 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ char *read_file(int fd)
 		if (r <= 0)
 			break;
 		str[r] = '\0';
-		tmp = ft_strdup(str);
-		content = ft_strjoin(content, tmp);
+		tmp = ft_ft_strdup(str);
+		content = ft__strjoin(content, tmp);
 	}
 	close(fd);
 	return (content);

@@ -6,14 +6,13 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 15:16:26 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/22 13:32:55 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 17:59:39 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 t_global	g_data;
-
 
 t_garbage   **get_head(void)
 {

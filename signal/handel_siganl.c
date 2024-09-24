@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 17:17:38 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/23 00:21:30 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 17:48:17 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void	handle_signal(int sig)
   if (sig == SIGINT)
   {
     exit_s(130);
-    free_g();
     printf("\n");
     rl_on_new_line();
     rl_replace_line("", 0);

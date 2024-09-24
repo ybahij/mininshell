@@ -2,6 +2,7 @@
 
 // extern t_struct	g_data;
 // extern int	g_data;
+extern t_global g_data;
 
 int	redirection(t_redir *cmd, char **env)
 {
@@ -34,7 +35,7 @@ char	*ft_get_env(char *name, char **env)
 	{
 		j = 0;
 		k = 0;
-		while (env[i][j] && env[i][j] == name[k])
+		while (env[i][j] && name[k] && (env[i][j] == name[k]))
 		{
 			j++;
 			k++;
@@ -109,7 +110,6 @@ int	execute(t_exec *cmd, char **env)
         signal(SIGINT, SIG_DFL);
 		if ((cmd->av[0][0] == '.' && cmd->av[0][1] == '/') || cmd->av[0][0] == '/')
 		{
-			printf("test\n");
 				if (access(cmd->av[0], F_OK) == -1)
 				{
 					printf("minishell: %s: No such file or directory\n", cmd->av[0]);
@@ -125,7 +125,7 @@ int	execute(t_exec *cmd, char **env)
 				// check_dir(cmd->av[0]);
 				if (execve(cmd->av[0], cmd->av, env) == -1)
 				{
-					cm_free(env);
+					// cm_free(env);
 					// free(cmd);
 					perror("execve");
 					free_g();
@@ -133,10 +133,17 @@ int	execute(t_exec *cmd, char **env)
 				}
 				check = 1;
 		}
+		if (cmd->av[0][0] == '.' && !cmd->av[0][1] &&!cmd->av[1])
+		{
+			printf("minishell: .: filename argument required\n.: usage: . filename [arguments]\n");
+			free_g();
+			exit(2);
+		}
 		cmd_path = ft_get_env("PATH", env);
 		if (cmd_path == NULL)
 		{
 			printf("minishell: %s: command not found\n", cmd->av[0]);
+			free_g();
 			exit(127);
 		}
 		path = ft_ft_split(cmd_path, ':');
@@ -146,10 +153,13 @@ int	execute(t_exec *cmd, char **env)
 			path[i] = ft_ft_strjoin(path[i], cmd->av[0]);
 			if (access(path[i], F_OK) == 0)
 			{
+				if (cmd->av[0][0] == '.' && cmd->av[0][1] == '.' &&!cmd->av[1])
+					break;
 				if (execve(path[i], cmd->av, env) == -1)
 				{
-					cm_free(env);
+					// cm_free(env);
 					perror("execve");
+					free_g();
 					exit(126);
 				}
 				check = 1;
@@ -159,9 +169,11 @@ int	execute(t_exec *cmd, char **env)
 		if (check == 0)
 		{
 			printf("minishell: %s: command not found\n", cmd->av[0]);
+			free_g();
 			exit(127);
 		}
-		cm_free(env);
+		free_g();
+		// cm_free(env);
 		exit(0);
 	}
 	else
@@ -169,7 +181,8 @@ int	execute(t_exec *cmd, char **env)
 		waitpid(pid, &status, 0);
 		exit_s(check_exit_status(status));
 	}
-	return (1);
+	// printf("status = %d\n", status);
+	return (status);
 }
 
 int	heredoc(t_heredoc *cmd, char **env)
@@ -188,6 +201,7 @@ int	heredoc(t_heredoc *cmd, char **env)
 		write(fd[1], cmd->content, ft_strlen(cmd->content));
 		close(fd[1]);
 		close(stdin_copy);
+		// free_g_p();
 		free_g();
 		exit(0);
 		// must free ga3 lkhra
@@ -216,9 +230,11 @@ int	ft_pipe(t_pipe *cmd, char **env)
 		close(fd[0]);
 		dup2(fd[1], 1);
 		close(fd[1]);
+		close(stdin_copy);
 		status = runcmd(cmd->left, env);
 		// cm_free(env);
-		free(cmd);
+		// free(cmd);
+		free_g();
 		exit(status);
 	}
 	close(fd[1]);
@@ -235,12 +251,12 @@ int	runcmd(t_cmd *cmd, char **env)
 {
 	if (cmd->type == AND)
 	{
-		if (runcmd(((t_and *)cmd)->left, env))
+		if (runcmd(((t_and *)cmd)->left, env) == 0)
 			runcmd(((t_and *)cmd)->right, env);
 	}
 	else if (cmd->type == OR)
 	{
-		if (runcmd(((t_or *)cmd)->left, env) == 0)
+		if (runcmd(((t_or *)cmd)->left, env))
 			runcmd(((t_or *)cmd)->right, env);
 	}
 	else if (cmd->type == PIPE)

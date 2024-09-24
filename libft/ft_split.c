@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 20:05:03 by ybahij            #+#    #+#             */
-/*   Updated: 2024/08/30 16:50:51 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/24 18:01:58 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ char	**ft_split(char *str)
 		i = ft_word(str, i, &k);
 		if (k == i)
 			break ;
-		arr[j] = ft_substr(str, k, i - k);
+		arr[j] = ft_ft_substr(str, k, i - k);
 		j++;
 		while (str[i] && ft_isspace(str[i]))
 			i++;

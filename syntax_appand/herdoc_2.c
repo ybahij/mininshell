@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 13:20:40 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/23 00:19:42 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/24 18:04:26 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ char	*herdoc_appand1(char *content, char **g_env, char *str, int *i)
 	k = j;
 	while (content[j] && (ft_isalnum(content[j])))
 		j++;
-	tmp2 = cheak_env(ft_substr(content, k, j - k), g_env);
+	tmp2 = cheak_env(ft_ft_substr(content, k, j - k), g_env);
 	if (tmp2)
-		str = ft_strjoin(str, tmp2);
+		str = ft__strjoin(str, tmp2);
 	*i = j;
 	return (str);
 }
@@ -48,7 +48,7 @@ void	count_herdoc(lexer_t *tmp)
 	if (i > 16)
 	{
 		printf(RED"minishell: maximum number of here-document exceeded\n"RESET);
-		exit(1);
+		exit(2);
 	}
 }
 
@@ -68,7 +68,7 @@ char	*herdoc_appand(char *content, char type, char **g_env)
 			str = herdoc_appand1(content, g_env, str, &i);
 		else
 		{
-			str = ft_strjoin(str, ft_substr(content, i, 1));
+			str = ft__strjoin(str, ft_ft_substr(content, i, 1));
 			i++;
 		}
 	}
@@ -77,8 +77,8 @@ char	*herdoc_appand(char *content, char type, char **g_env)
 
 void	exit_heredoc(int fd, char *str, char *delim)
 {
+	(void)str;
 	printf(RED"minishell: warning: here-document delimited by end-of-file (wanted `%s`)\n"RESET, delim);
-	free(str);
 	free_g();
 	close(fd);
 	exit(1);
@@ -96,7 +96,7 @@ void	read_herdoc(int fd, char *delim)
 		if (!str)
 			exit_heredoc(fd, str, delim);
 		add_garbage(str);
-		if (!ft_strncmp(str, delim, ft_strlen(delim)))
+		if (!ft_strncmp(str, delim, ft_strlen(str)))
 		{
 			write(fd, "\0", 1);
 			break;
