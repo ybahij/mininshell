@@ -10,16 +10,27 @@ void    ft_cd(char **av)
     if (i > 2)
     {
         printf("too many arguments\n");
+        exit_s(1);
         return;
     }
     if (av[1] == NULL)
     {
         // chdir(ft_get_env("HOME", *get_env()));
         if (chdir(ft_get_env("HOME", *get_env())) == -1)
+        {
             perror("cd");
+            exit_s(1);
+        }
+        else
+            exit_s(0);
     }
     else if (chdir(av[1]) == -1)
+    {
         perror("cd");
+        exit_s(1);
+    }
+    else
+        exit_s(0);
 }
 
 int    check_n(char **av, int *i)
@@ -68,7 +79,12 @@ void    ft_echo(char **av)
         i++;
     }
     if (check_nbr_n(av) == 0)
+    {
         ft_putstr("\n");
+        exit_s(0);
+    }
+    else
+        exit_s(0);
 }
 
 char	*cm_strdup(const char *s1)
@@ -103,15 +119,19 @@ void    ft_pwd(void)
         cwd = NULL;
     }
     holder = getcwd(NULL, 0);
-    cwd = cm_strdup(holder);
+    if (holder == NULL)
+        cwd = NULL;
+    else
+        cwd = cm_strdup(holder);
     free(holder);
     if (cwd != NULL)
     {
         printf("%s\n", cwd);
-        return ;
     }
     else if (old_wd != NULL)
+    {
         printf("%s\n", old_wd);
+    }
 }
 
 char **sorting(char **str)
@@ -427,9 +447,9 @@ void    ft_unset(char **av, char **env)
     *get_env() = new_env;
 }
 
-void    ft_exit(char **av)
-{
-    (void)av;
+//void    ft_exit(char **av)
+//{
+   // (void)av;
 // exit only (exited) (status == last exit status) // exit\n
 // if (len(av) == 1)
     // if (av[0] digit) (exited)(status == (unsinged char)digit) make sure to handle the overflow
@@ -439,6 +459,99 @@ void    ft_exit(char **av)
     // if (av[0] digit av[1] digit) (not exited) (status = 1) exit\nbash: exit: too many arguments\n
     //if (av[0] alpha av[1] digit) (exited) (status = 2) exit\nbash: exit: dsfs: numeric argument required\n
     //if (av[0] alpha av[1] alpha) (exited) (status = 2) exit\nbash: exit: too many arguments\n
+//}
+
+int str_digit(char *str)
+{
+    int i;
+
+    i = 0;
+    if (str[i] == '-' || str[i] == '+')
+        i++;
+    while (str[i])
+    {
+        if (ft_isdigit(str[i]) == 0)
+            return (1);
+        i++;
+    }
+    return (0);
+}
+
+long long    ft_atoll(const char *str)
+{
+    long long    res;
+    int                    sign;
+    int                    i;
+
+    i = 0;
+    res = 0;
+    sign = 1;
+    if (str[i] == '-')
+    {
+        sign = -1;
+        i++;
+    }
+    if (str[i] == '+')
+        i++;
+    while (str[i])
+    {
+        res = res * 10 + str[i] - '0';
+        i++;
+    }
+    return (res * sign);
+}
+
+void    ft_exit(char **av)
+{
+    char    **str;
+    long long   res;
+
+    res = 0;
+    str = NULL;
+    if (!av[1])
+        exit(ret_status());
+    if (av[2] == NULL)
+    {
+        str = ft_split(av[1]);
+        if (str_digit(av[1]) == 0 && str[1] == NULL && (ft_atoll(str[0]) < LLONG_MAX && ft_atoll(str[0]) > LLONG_MIN))
+        {
+            res = ft_atoll(str[0]);
+            free_g();
+            printf("exit\n");
+            exit(res);
+        }
+        else
+        {    
+            printf("exit\nminishell: exit: %s: numeric argument required\n", av[1]);
+            exit(2);
+        }
+    }
+    else 
+    {
+        if (str_digit(av[1]) == 0 && str_digit(av[2]) == 0)
+        {
+            printf("exit\nminishell: exit: too many arguments\n");
+            exit_s(1);
+            return ;
+        }
+        else if ( str_digit(av[1]) == 0 && str_digit(av[2]) == 1)
+        {
+            printf("exit\nminishell: exit: too many arguments\n");
+            exit_s(1);
+            return ;
+        }
+        else if (str_digit(av[1]) == 1 && str_digit(av[2]) == 0)
+        {
+            printf("exit\nminishell: exit: %s: numeric argument required\n", av[1]);
+            exit(2);
+        }
+        else
+        {
+            printf("exit\nminishell: exit: %s: numeric argument required\n", av[1]);
+            exit(2);
+        }
+    }
+
 }
 
 int    builtins(t_exec *exec, char **env)
@@ -456,12 +569,7 @@ int    builtins(t_exec *exec, char **env)
         else if (ft_strcmp(exec->av[0], "env") == 0)
             ft_env(env);
         else if (ft_strcmp(exec->av[0], "exit") == 0)
-        {
-            // cm_free(env);
-            free_g();
             ft_exit(exec->av);
-            // exit(ret_status());
-        }
         else
             return (0);
     return (1);
