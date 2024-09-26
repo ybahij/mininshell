@@ -6,13 +6,14 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/24 18:01:04 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/26 16:32:20 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // int g_data;
+extern t_global g_data;
 
 int	paranthesis__(lexer_t *cmd)
 {
@@ -180,11 +181,15 @@ int	main(int ac, char **av, char **env)
 {
 	char	*line;
 	lexer_t	*cmd;
+	char	*holder;
 
 	(void)ac;
 	(void)av;
 	*get_env() = get_copy_with_malloc(env);
 	line = NULL;
+	holder = getcwd(NULL, 0);
+	g_data.pwd = ft_strdup(holder);
+	free(holder);
 	while (1)
 	{
 		signal(SIGINT, handle_signal);
@@ -203,7 +208,7 @@ int	main(int ac, char **av, char **env)
 			add_history(line);
 		if (token_cmd(line, &cmd, *get_env(), "newline"))
 		{	
-			free(line);
+			// free(line);
 			continue ;}
 		// print_tree(parse_and(cmd, *get_env()));
 		runcmd(parse_and(cmd, *get_env()), *get_env());

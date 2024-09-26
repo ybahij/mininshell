@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/24 18:01:27 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/26 21:52:24 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,8 @@ typedef	struct s_global
 	int					heredoc_fd;
 	t_garbage			*garbage;
 	t_garbage			*p_garbage;
+	char				*pwd;
+	char				*old_pwd;
 }						t_global;
 
 # define RED "\033[0;31m"
@@ -236,5 +238,7 @@ t_garbage   **get_head(void);
 int set_fd(int fd, int i);
 void	read_herdoc(int fd, char *delim);
 void    free_g_p(void);
+void    ft_unset(char **av, char **env);
+
 
 #endif

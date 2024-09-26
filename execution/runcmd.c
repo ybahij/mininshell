@@ -153,11 +153,12 @@ int	execute(t_exec *cmd, char **env)
 			path[i] = ft_ft_strjoin(path[i], cmd->av[0]);
 			if (access(path[i], F_OK) == 0)
 			{
-				if (cmd->av[0][0] == '.' && cmd->av[0][1] == '.' &&!cmd->av[1])
+				if ((cmd->av[0][0] == '.' && cmd->av[0][1] == '.' && !cmd->av[1]) || !cmd->av[0][0])
 					break;
 				if (execve(path[i], cmd->av, env) == -1)
 				{
 					// cm_free(env);
+					// printf("here\n");
 					perror("execve");
 					free_g();
 					exit(126);
