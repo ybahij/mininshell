@@ -283,6 +283,7 @@ char    **get_new_env(char **av, char **env, int *flag)
     int index;
     char    *holder;
 
+    holder = NULL;
     count = count_valid_av(av);
     new_env = ft_malloc(sizeof(char *) * (dblptr_len(env) + count + 1));
     i = 0;
@@ -555,13 +556,13 @@ void    ft_exit(char **av)
             exit(res);
         }
         else
-        {    
+        {
             printf("exit\nminishell: exit: %s: numeric argument required\n", av[1]);
             free_g();
             exit(2);
         }
     }
-    else 
+    else
     {
         if (str_digit(av[1]) == 0 && str_digit(av[2]) == 0)
         {

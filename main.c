@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
+/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/27 16:33:06 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/27 23:51:03 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,7 +207,7 @@ int	main(int ac, char **av, char **env)
 		if (*line)
 			add_history(line);
 		if (token_cmd(line, &cmd, *get_env(), "newline"))
-		{	
+		{
 			// free(line);
 			continue ;}
 		// print_tree(parse_and(cmd, *get_env()));
