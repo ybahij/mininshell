@@ -1,0 +1,24 @@
+minishell$ cat << 1 | << ls | << l
+>1
+>l
+>ls
+>l
+minishell$ cat << 1 | << ls | << l
+>ls
+>l
+>1
+>l
+>l
+minishell$ cat << 1 | << ls | << l
+>l
+>l
+>
+>ll
+>l
+>l
+>ls
+>
+>ls
+>1
+>l
+>l

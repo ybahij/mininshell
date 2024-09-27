@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 13:20:40 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/24 18:04:26 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/27 19:44:11 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	count_herdoc(lexer_t *tmp)
 	}
 	if (i > 16)
 	{
-		printf(RED"minishell: maximum number of here-document exceeded\n"RESET);
+		ft_putstr_fd("minishell: maximum number of here-document exceeded\n", 2);
 		exit(2);
 	}
 }
@@ -78,7 +78,9 @@ char	*herdoc_appand(char *content, char type, char **g_env)
 void	exit_heredoc(int fd, char *str, char *delim)
 {
 	(void)str;
-	printf(RED"minishell: warning: here-document delimited by end-of-file (wanted `%s`)\n"RESET, delim);
+	ft_putstr_fd("minishell: warning: here-document delimited by end-of-file (wanted `", 2);
+	ft_putstr_fd(delim, 2);
+	ft_putstr_fd("')\n", 2);
 	free_g();
 	close(fd);
 	exit(1);

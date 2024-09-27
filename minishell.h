@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/26 21:52:24 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/27 19:39:54 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ typedef struct lexer_s
 	struct lexer_s		*prev;
 	char				*content;
 	char				type;
+	
 	char				*b_appand;
 	struct lexer_s		*next;
 }						lexer_t;
@@ -107,6 +108,7 @@ typedef	struct s_global
 	t_garbage			*garbage;
 	t_garbage			*p_garbage;
 	char				*pwd;
+	int					flag;
 	char				*old_pwd;
 }						t_global;
 
@@ -119,6 +121,7 @@ typedef	struct s_global
 # define WHITE "\033[0;37m"
 # define RESET "\033[0m"
 
+void	ft_putstr_fd(char *s, int fd);
 int						ft_isdigit(int c);
 int						ft_isalnum(int c);
 char	*ft_itoa(int n);
@@ -239,6 +242,7 @@ int set_fd(int fd, int i);
 void	read_herdoc(int fd, char *delim);
 void    free_g_p(void);
 void    ft_unset(char **av, char **env);
+void    ft_export(char **av, char **env);
 
 
 #endif

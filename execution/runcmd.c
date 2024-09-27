@@ -56,7 +56,7 @@ int	check_exit_status(int status)
 		signal_number = (status)&0x7f;
 		if (signal_number == SIGQUIT)
 		{
-			printf("Quit (core dumped)\n");
+			ft_putstr_fd("Quit (core dumped)\n", 2);
 			return (((status) & 0x7f) + 128);
 		}
 		else if (signal_number == SIGINT)
@@ -82,10 +82,20 @@ int	check_dir(char *cmd)
 	}
 	if (S_ISDIR(buf.st_mode))
 	{
-		printf("minishell: %s: is a directory\n", cmd);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": is a directory\n", 2);
 		exit(126);
 	}
 	return (1);
+}
+
+void	sig_handel(int sig)
+{
+	if (sig == SIGINT)
+	{
+		printf("\n");
+	}
 }
 
 int	execute(t_exec *cmd, char **env)
@@ -104,6 +114,7 @@ int	execute(t_exec *cmd, char **env)
 		return (1);
 	pid = fork();
 	i = 0;
+	signal(SIGINT, sig_handel);
 	if (pid == 0)
 	{
 		signal(SIGQUIT, SIG_DFL);
@@ -112,21 +123,22 @@ int	execute(t_exec *cmd, char **env)
 		{
 				if (access(cmd->av[0], F_OK) == -1)
 				{
-					printf("minishell: %s: No such file or directory\n", cmd->av[0]);
+					ft_putstr_fd("minishell: ", 2);
+					ft_putstr_fd(cmd->av[0], 2);
+					ft_putstr_fd(": No such file or directory\n", 2);
 					exit(127);
 				}
 				if (check_dir(cmd->av[0]) == 0)
 					exit(126);
 				if (access(cmd->av[0], X_OK) == -1)
 				{
-					printf("minishell: %s: Permission denied\n", cmd->av[0]);
+					ft_putstr_fd("minishell: ", 2);
+					ft_putstr_fd(cmd->av[0], 2);
+					ft_putstr_fd(": Permission denied\n", 2);
 					exit(126);
 				}
-				// check_dir(cmd->av[0]);
 				if (execve(cmd->av[0], cmd->av, env) == -1)
 				{
-					// cm_free(env);
-					// free(cmd);
 					perror("execve");
 					free_g();
 					exit(1);
@@ -135,14 +147,17 @@ int	execute(t_exec *cmd, char **env)
 		}
 		if (cmd->av[0][0] == '.' && !cmd->av[0][1] &&!cmd->av[1])
 		{
-			printf("minishell: .: filename argument required\n.: usage: . filename [arguments]\n");
+			ft_putstr_fd("minishell: .: filename argument required\n.: usage: . filename [arguments]\n", 2);
 			free_g();
 			exit(2);
 		}
 		cmd_path = ft_get_env("PATH", env);
 		if (cmd_path == NULL)
 		{
-			printf("minishell: %s: command not found\n", cmd->av[0]);
+			
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->av[0], 2);
+			ft_putstr_fd(": command not found\n", 2);
 			free_g();
 			exit(127);
 		}
@@ -157,8 +172,6 @@ int	execute(t_exec *cmd, char **env)
 					break;
 				if (execve(path[i], cmd->av, env) == -1)
 				{
-					// cm_free(env);
-					// printf("here\n");
 					perror("execve");
 					free_g();
 					exit(126);
@@ -167,14 +180,28 @@ int	execute(t_exec *cmd, char **env)
 			}
 			i++;
 		}
+		if (cmd->av[0][0] == '"' || cmd->av[0][0] == '\'')
+		{
+			ft_putstr_fd("minishell: '':: command not found\n", 2);
+			free_g();
+			exit(127);
+			check = 1;
+		}
+		if (cmd->av[0][0] == '\0')
+		{
+			free_g();
+			exit(127);
+			check = 1;
+		}
 		if (check == 0)
 		{
-			printf("minishell: %s: command not found\n", cmd->av[0]);
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->av[0], 2);
+			ft_putstr_fd(": command not found\n", 2);
 			free_g();
 			exit(127);
 		}
 		free_g();
-		// cm_free(env);
 		exit(0);
 	}
 	else
@@ -182,7 +209,6 @@ int	execute(t_exec *cmd, char **env)
 		waitpid(pid, &status, 0);
 		exit_s(check_exit_status(status));
 	}
-	// printf("status = %d\n", status);
 	return (status);
 }
 
@@ -221,11 +247,14 @@ int	ft_pipe(t_pipe *cmd, char **env)
 	int	fd[2];
 	int	status;
 	int	pid;
+	int pid2;
 	int	stdin_copy;
+	// t_exec *tmp;
 
 	pipe(fd);
 	pid = fork();
 	stdin_copy = dup(0);
+	status = 0;
 	if (pid == 0)
 	{
 		close(fd[0]);
@@ -233,18 +262,36 @@ int	ft_pipe(t_pipe *cmd, char **env)
 		close(fd[1]);
 		close(stdin_copy);
 		status = runcmd(cmd->left, env);
-		// cm_free(env);
-		// free(cmd);
 		free_g();
 		exit(status);
 	}
-	close(fd[1]);
-	dup2(fd[0], 0);
+	else
+	{
+		pid2 = fork();
+		if (pid2 == 0)
+		{
+			close(fd[1]);
+			dup2(fd[0], 0);
+			close(fd[0]);
+			close(stdin_copy);
+			status = runcmd(cmd->right, env);
+			free_g();
+			exit(status);
+		}
+		// else
+		// {
+		// 	close(fd[0]);
+		// 	close(fd[1]);
+		// 	waitpid(pid, NULL, 0);
+		// 	waitpid(pid2, NULL, 0);
+		// }
+	}
 	close(fd[0]);
-	status = runcmd(cmd->right, env);
+	close(fd[1]);
+	waitpid(pid, NULL, 0);
+	waitpid(pid2, NULL, 0);
 	dup2(stdin_copy, 0);
 	close(stdin_copy);
-	waitpid(pid, NULL, 0);
 	return (status);
 }
 

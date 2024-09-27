@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/24 11:21:10 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/27 15:32:03 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,10 +95,18 @@ char	*dellt_q(lexer_t *cmd, int i)
 
 int	del_quote(lexer_t *cmd)
 {
+	int i;
+
+	i = 0;
 	while (cmd)
 	{
 		if (!cm_strchr("|<>oh+&(", cmd->type))
 		{
+			if ((cmd->content[0] == '"' && cmd->content[1] == '"')|| (cmd->content[0] == '\'' && cmd->content[1] == '\''))
+			{
+				cmd = cmd->next;
+				continue ;
+			}
 			if ((cmd->prev && cmd->prev->type != 'h') || !cmd->prev)
 				cmd->content = dellt_q(cmd, 0);
 		}

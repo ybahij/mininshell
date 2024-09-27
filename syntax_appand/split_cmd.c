@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:56:18 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/24 11:15:47 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/27 15:27:45 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,11 @@ int	pars_parenthesis(lexer_t *tmp, char **g_env)
 	{
 		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,
 			tmp->content[0]);
+		return (exit_s(2), 0);
+	}
+	if (tmp->content[0] == '(' && tmp->content[1] == ')')
+	{
+		printf(RED "minishell: syntax error near unexpected token `)'\n" RESET);
 		return (exit_s(2), 0);
 	}
 	return (1);

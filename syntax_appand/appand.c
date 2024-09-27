@@ -6,11 +6,13 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:52:24 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/24 18:02:17 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/27 10:27:32 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+extern t_global g_data;
 
 int	expand(lexer_t *cmd, char **env)
 {
@@ -146,5 +148,9 @@ char	*cheak_env(char *str, char **env)
 			break ;
 		i++;
 	}
+	if (!ft_strcmp(str, "PWD") && !tmp)
+		tmp = ft_ft_strdup(g_data.pwd);
+	else if (!ft_strcmp(str, "OLDPWD") && !tmp)
+		tmp = ft_ft_strdup(g_data.old_pwd);
 	return (tmp);
 }

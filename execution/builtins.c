@@ -2,14 +2,47 @@
 
 extern t_global g_data;
 
+
+
+void    change_pwd(char *name)
+{
+    char *holder;
+    char **tmp;
+
+    // tmp = NULL;
+    tmp = ft_malloc(sizeof(char *) * 3);
+    if (ft_strcmp(name, "PWD") ==  0 && ft_get_env("PWD", *get_env()))
+    {
+        holder = getcwd(NULL, 0);
+        tmp [0] = ft_strjoin("PWD=", holder);
+        tmp [1] = ft__strjoin("PWD=", holder);
+        tmp [2] = NULL;
+        g_data.pwd = ft_strdup(holder);
+        free(holder);
+        ft_export(tmp, *get_env());
+    }
+    else if (ft_strcmp(name, "OLDPWD") == 0 && ft_get_env("OLDPWD", *get_env()))
+    {
+        tmp [0] = ft_strjoin("OLDPWD=", g_data.pwd);
+        tmp [1] = ft__strjoin("OLDPWD=", g_data.pwd);
+        tmp [2] = NULL;
+        g_data.old_pwd = ft_strdup(g_data.pwd);
+        ft_export(tmp, *get_env());
+    }
+    else
+        return ;
+}
+
 void    ft_cd(char **av)
 {
     int i;
-    char tmp[1000];
     char *holder;
+    // char **tmp;
+
     i = 0;
     while (av[i])
         i++;
+    change_pwd("OLDPWD");
     if (i > 2)
     {
         printf("too many arguments\n");
@@ -25,6 +58,7 @@ void    ft_cd(char **av)
         }
         else
         {
+            g_data.old_pwd = ft_strdup(g_data.pwd);
             g_data.pwd = ft_strdup(ft_get_env("HOME", *get_env()));
             exit_s(0);
         }
@@ -32,17 +66,17 @@ void    ft_cd(char **av)
     else if (chdir(av[1]) == -1)
     {
         printf("minishell: cd: %s: No such file or directory\n", av[1]);
-        // perror("cd");
         exit_s(1);
     }
     else
-    {  
-        g_data.oldpwd = ft_strdup(g_data.pwd);
+    {
         holder = getcwd(NULL, 0);
+        g_data.old_pwd = ft_strdup(g_data.pwd);
         g_data.pwd = ft_strdup(holder);
         free(holder);
         exit_s(0);
     }
+    change_pwd("PWD");
 }
 
 int    check_n(char **av, int *i)
@@ -83,20 +117,22 @@ void    ft_echo(char **av)
 
     i = 1;
     check_n(av, &i);
+    if (av[1] == NULL)
+    {
+        ft_putstr("\n");
+        exit_s(0);
+        return ;
+    }
     while (av[i])
     {
         ft_putstr(av[i]);
-        if (av[i + 1])
+        if (av[i + 1] && av[i][0] != '\0')
             ft_putstr(" ");
         i++;
     }
     if (check_nbr_n(av) == 0)
-    {
         ft_putstr("\n");
-        exit_s(0);
-    }
-    else
-        exit_s(0);
+    exit_s(0);
 }
 
 char	*cm_strdup(const char *s1)
@@ -121,33 +157,8 @@ char	*cm_strdup(const char *s1)
 
 void    ft_pwd(void)
 {
-    // static char    *cwd;
-    // static char     *old_wd;
-    // char            *holder;
-
-    // if (cwd != NULL)
-    // {
-    //     old_wd = cm_strdup(cwd);
-    //     cwd = NULL;
-    // }
-    // holder = getcwd(NULL, 0);
-    // printf(">>: %s\n", holder);
-    // if (holder == NULL)
-    //     cwd = NULL;
-    // else
-    //     cwd = cm_strdup(holder);
-    // free(holder);
-    // if (cwd != NULL)
-    // {
-    //     printf("%s\n", cwd);
-    //     exit_s(0);
-    // }
-    // else if (old_wd != NULL)
-    // {
-    //     printf("%s\n", old_wd);
-    //     exit_s(0);
-    // }
     printf("%s\n", g_data.pwd);
+    exit_s(0);
 }
 
 char **sorting(char **str)
@@ -223,7 +234,6 @@ int already_exist(char *str)
         {
             return (i);
         }
-            // printf("i = %d\n", i);
         i++;
     }
     return (-1);
@@ -263,7 +273,7 @@ int check_sign(char *av)
     return (-1);
 }
 
-char    **get_new_env(char **av, char **env)
+char    **get_new_env(char **av, char **env, int *flag)
 {
     int i;
     int j;
@@ -288,10 +298,11 @@ char    **get_new_env(char **av, char **env)
 		{
             printf("export: `%s': not a valid identifier\n", av[j]);
 			j++;
+            exit_s(1);
+            *flag = 1;
             continue ;
 		}
         temp = already_exist(av[j]);
-        // printf("im here\n");
         if (temp != -1)
         {
 
@@ -337,80 +348,18 @@ char    **get_new_env(char **av, char **env)
     return (new_env);
 }
 
-// void    ft_delenv(int index, char **env)
-// {
-//     int i;
-//     int j;
-//     char    **new_env;
-
-//     i = 0;
-//     j = 0;
-//     new_env = ft_malloc(sizeof(char *) * (dblptr_len(env)));
-//     // printf("dblptr_len(env) = %d\n", dblptr_len(env));
-//     // printf("index = %d\n", index);
-//     // printf("env[index] = %s\n", env[index]);
-//     // printf("env[index + 1] = %s\n", env[index + 1]);
-//     while (i < index)
-//     {
-//         new_env[j] = cm_strdup(env[i]);
-//         i++;
-//         j++;
-//     }
-//     i++;
-//     while (env[i])
-//     {
-//         new_env[j] = cm_strdup(env[i]);
-//         i++;
-//         j++;
-//     }
-//     new_env[j] = NULL;
-//     *get_env() = new_env;
-//      i = 0;
-//     while (new_env[i])
-//     {
-//         printf("new_env[%d] = %s\n", i, new_env[i]);
-//         i++;
-//     }
-// }
-
-// void    check_dupli(char **env)
-// {
-//     int i;
-//     int j;
-//     int index;
-//     // char    *holder;
-
-//     i = 0;
-//     while (env[i])
-//     {
-//         j = i + 1;
-//         while (env[j])
-//         {
-//             index = 0;
-//             while (env[i][index] == env[j][index] && ((env[i][index] != '\0' && env[j][index] != '=') || (env[i][index] != '=' && env[j][index] != '=') || (env[i][index] != '=' && env[j][index] != '\0')))
-//                 index++;
-//             if ((env[i][index] == '\0' && env[j][index] == '=') || (env[i][index] == '=' && env[j][index] == '='))
-//             {
-//                 printf("i = %d\n", i);
-//                 ft_delenv(i, env);
-//             }
-//             j++;
-//         }
-//         i++;
-//     }
-// }
-
 void    ft_export(char **av, char **env)
 {
     int i;
     int j;
     char    **copy_env;
+    int flag;
 
     i = 0;
+    flag = 0;
     if (av[1] == NULL)
     {
         int flag;
-        // copy_env = check_dupli(env);
         copy_env = get_copy_with_malloc(env);
         sorting(copy_env);
         while (copy_env[i])
@@ -433,16 +382,14 @@ void    ft_export(char **av, char **env)
             write(1, "\n", 1);
             i++;
         }
-        // cm_free(copy_env);
     }
     else
     {
-        copy_env = get_new_env(av, env);
-        // cm_free(env);
-		//TODO: dbl_free(env);
+        copy_env = get_new_env(av, env, &flag);
         *get_env() = copy_env;
     }
-    // check_dupli(env);
+    if (flag == 0)
+        exit_s(0);
 }
 
 void    ft_env(char **env)
@@ -475,10 +422,8 @@ int check_exist(char **av, char **env)
         index = 0;
         while (env[j])
         {
-            // printf ("av[1] = %s\n", av[i]);
             while ((av[i][index] == env[j][index]) && (av[i][index] && env[j][index]))
                 index++;
-            // printf ("env[j] = %s\n", env[j]);
             if ((av[i][index] == '\0' && env[j][index] == '=') || (av[i][index] == '\0' && env[j][index] == '\0'))
             {
                 count++;
@@ -507,6 +452,15 @@ int c_for_unset(char **av, char *env)
             return (0);
         i++;
     }
+    i = 1;
+    while (av[i])
+    {
+        if (ft_strcmp(av[i], "PWD") == 0)
+            g_data.pwd = NULL;
+        else if (ft_strcmp(av[i], "OLDPWD") == 0)
+            g_data.old_pwd = NULL;
+        i++;
+    }
     return (1);
 }
 
@@ -519,7 +473,6 @@ void    ft_unset(char **av, char **env)
     char **new_env;
 
     counter = check_exist(av, env);
-    // printf("counter = %d\n", counter);
     new_env = ft_malloc(sizeof(char *) * (dblptr_len(env) - (counter) + 1));
     i = 0;
     j = 0;
@@ -533,10 +486,10 @@ void    ft_unset(char **av, char **env)
         }
         else
             i++;
-        // printf("new_env[j] = %s\n", new_env[j]);
     }
     new_env[j] = NULL;
     *get_env() = new_env;
+    exit_s(0);
 }
 
 int str_digit(char *str)
@@ -587,7 +540,10 @@ void    ft_exit(char **av)
     res = 0;
     str = NULL;
     if (!av[1])
+    {
+        free_g();
         exit(ret_status());
+    }
     if (av[2] == NULL)
     {
         str = ft_split(av[1]);
@@ -601,6 +557,7 @@ void    ft_exit(char **av)
         else
         {    
             printf("exit\nminishell: exit: %s: numeric argument required\n", av[1]);
+            free_g();
             exit(2);
         }
     }
@@ -621,11 +578,13 @@ void    ft_exit(char **av)
         else if (str_digit(av[1]) == 1 && str_digit(av[2]) == 0)
         {
             printf("exit\nminishell: exit: %s: numeric argument required\n", av[1]);
+            free_g();
             exit(2);
         }
         else
         {
             printf("exit\nminishell: exit: %s: numeric argument required\n", av[1]);
+            free_g();
             exit(2);
         }
     }
