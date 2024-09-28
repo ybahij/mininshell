@@ -6,13 +6,11 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:56:18 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/27 15:27:45 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/28 14:12:34 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-extern t_global g_data;
 
 lexer_t	*split_1(lexer_t *head, char **str, int i)
 {

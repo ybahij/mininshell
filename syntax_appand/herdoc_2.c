@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   herdoc_2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 13:20:40 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/27 23:50:43 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/28 15:21:56 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ char	*herdoc_appand1(char *content, char **g_env, char *str, int *i)
 		j++;
 	tmp2 = cheak_env(ft_ft_substr(content, k, j - k), g_env);
 	if (tmp2)
-		str = ft__strjoin(str, tmp2);
+		str = ft_strjoin(str, tmp2);
 	*i = j;
 	return (str);
 }
@@ -68,7 +68,7 @@ char	*herdoc_appand(char *content, char type, char **g_env)
 			str = herdoc_appand1(content, g_env, str, &i);
 		else
 		{
-			str = ft__strjoin(str, ft_ft_substr(content, i, 1));
+			str = ft_strjoin(str, ft_ft_substr(content, i, 1));
 			i++;
 		}
 	}

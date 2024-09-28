@@ -6,13 +6,11 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/30 14:22:20 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/24 18:04:02 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/28 14:11:56 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern t_global g_data;
 
 // void *ft_malloc(size_t size)
 // {

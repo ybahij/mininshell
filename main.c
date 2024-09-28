@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/27 23:51:03 by youssef          ###   ########.fr       */
+/*   Updated: 2024/09/28 16:11:42 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// int g_data;
-extern t_global g_data;
 
 int	paranthesis__(lexer_t *cmd)
 {
@@ -78,10 +76,10 @@ int	cheak_for_equal(lexer_t *cmd)
 		{
 			if (cheak_dollar_p(tmp->content))
 			{
-				tmp->content = ft__strjoin("\"", tmp->content);
+				tmp->content = ft_strjoin("\"", tmp->content);
 				if (!tmp->content)
 					return (1);
-				tmp->content = ft__strjoin(tmp->content, "\"");
+				tmp->content = ft_strjoin(tmp->content, "\"");
 				if (!tmp->content)
 					return (1);
 			}
@@ -183,6 +181,15 @@ int	main(int ac, char **av, char **env)
 	lexer_t	*cmd;
 	char	*holder;
 
+	char 	*cwd;
+
+	cwd = getcwd(NULL, 0);
+	if (!cwd)
+	{
+		printf("shell-init: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n");
+		exit(1);
+	}
+	free(cwd);
 	(void)ac;
 	(void)av;
 	*get_env() = get_copy_with_malloc(env);

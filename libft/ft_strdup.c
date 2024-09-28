@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 23:24:17 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/24 18:02:03 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/28 14:11:03 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ char	*ft_strdup(const char *s1)
 		return (ft_strdup(""));
 	dest = ft_malloc ((ft_strlen(s1) + 1) * 1);
 	if (dest == NULL)
-		return (printf("minishell: malloc failed\n"), NULL);
+		return (NULL);
 	i = 0;
 	while (s1[i] != '\0')
 	{

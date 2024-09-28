@@ -1,9 +1,5 @@
 #include "../minishell.h"
 
-// extern t_struct	g_data;
-// extern int	g_data;
-extern t_global g_data;
-
 int	redirection(t_redir *cmd, char **env)
 {
 	int	fd;
@@ -93,9 +89,7 @@ int	check_dir(char *cmd)
 void	sig_handel(int sig)
 {
 	if (sig == SIGINT)
-	{
 		printf("\n");
-	}
 }
 
 int	execute(t_exec *cmd, char **env)
@@ -228,10 +222,8 @@ int	heredoc(t_heredoc *cmd, char **env)
 		write(fd[1], cmd->content, ft_strlen(cmd->content));
 		close(fd[1]);
 		close(stdin_copy);
-		// free_g_p();
 		free_g();
 		exit(0);
-		// must free ga3 lkhra
 	}
 	close(fd[1]);
 	dup2(fd[0], 0);
@@ -278,13 +270,6 @@ int	ft_pipe(t_pipe *cmd, char **env)
 			free_g();
 			exit(status);
 		}
-		// else
-		// {
-		// 	close(fd[0]);
-		// 	close(fd[1]);
-		// 	waitpid(pid, NULL, 0);
-		// 	waitpid(pid2, NULL, 0);
-		// }
 	}
 	close(fd[0]);
 	close(fd[1]);
@@ -297,17 +282,7 @@ int	ft_pipe(t_pipe *cmd, char **env)
 
 int	runcmd(t_cmd *cmd, char **env)
 {
-	if (cmd->type == AND)
-	{
-		if (runcmd(((t_and *)cmd)->left, env) == 0)
-			runcmd(((t_and *)cmd)->right, env);
-	}
-	else if (cmd->type == OR)
-	{
-		if (runcmd(((t_or *)cmd)->left, env))
-			runcmd(((t_or *)cmd)->right, env);
-	}
-	else if (cmd->type == PIPE)
+	if (cmd->type == PIPE)
 	{
 		return (ft_pipe((t_pipe *)cmd, env));
 	}

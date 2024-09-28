@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:37:20 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/24 18:02:07 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/28 15:11:14 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,10 @@ char	*ft_strjoin(char *s1, char *s2)
 	char	*str;
 
 	i = 0;
+	str = NULL;	
 	str = ft_malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!str)
-		return (printf("minishell: malloc failed\n"), NULL);
+		return (NULL);
 	if (s1)
 	{
 		cm_strcpy(str, s1, &i);

@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/27 15:32:03 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/28 15:02:51 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,12 +68,12 @@ char	*dellt_q_char(char *tmp)
 			i++;
 			while (tmp[i] && tmp[i] != hold)
 			{
-				str = ft__strjoin(str, ft_ft_substr(tmp, i, 1));
+				str = ft_strjoin(str, ft_ft_substr(tmp, i, 1));
 				i++;
 			}
 		}
 		else
-			str = ft__strjoin(str, ft_ft_substr(tmp, i, 1));
+			str = ft_strjoin(str, ft_ft_substr(tmp, i, 1));
 		if (tmp[i])
 			i++;
 	}

@@ -6,13 +6,11 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/24 18:02:21 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/28 20:17:52 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-extern t_global g_data;
 
 char *read_file(int fd)
 {
@@ -32,7 +30,7 @@ char *read_file(int fd)
 			break;
 		str[r] = '\0';
 		tmp = ft_ft_strdup(str);
-		content = ft__strjoin(content, tmp);
+		content = ft_strjoin(content, tmp);
 	}
 	close(fd);
 	return (content);
@@ -63,11 +61,47 @@ int	herdoc_ut(int fd, lexer_t *tmp, char **env)
 	return (1);
 }
 
+
+char	*cheak_delim(char *content)
+{
+	int	i;
+	char *tmp2;
+	char *tmp;
+	i = 0;
+	
+	tmp2 = NULL;
+	tmp = ft_malloc(2);
+	tmp[1] = '\0';
+	while (content[i])
+	{
+		if (content[i] == '$' && (content[i + 1] == '"' || content[i + 1] == '\'') && i > 0 && content[i - 1] != '$')
+			i++;
+		else
+		{
+			if (content[i] == '$' && content[i + 1] == '$' && i % 2 == 0)
+			{
+				tmp2 = ft__strjoin(tmp2, "$$");
+				i += 2;
+				content[i - 1] = 'p';
+			}
+			else
+			{
+				tmp[0] = content[i];
+				content[i] = 'p';
+				tmp2 = ft__strjoin(tmp2, tmp);
+				i++;
+			}
+		}
+	}
+	return (tmp2);
+}
+
 int handle_heredoc(lexer_t *tmp, char **env)
 {
 	int pid;
 	int fd[2];
 	
+	tmp->next->content = cheak_delim(tmp->next->content);
 	if (tmp->next->type == 'q')
 		tmp->next->content = quote_(tmp->next->content);
 	pipe(fd);

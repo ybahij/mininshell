@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 20:05:03 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/24 18:01:58 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/28 14:27:01 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,8 @@ char	**ft_split(char *str)
 		if (k == i)
 			break ;
 		arr[j] = ft_ft_substr(str, k, i - k);
+		if (!arr[j])
+			return(NULL);
 		j++;
 		while (str[i] && ft_isspace(str[i]))
 			i++;

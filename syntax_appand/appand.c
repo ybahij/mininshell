@@ -6,13 +6,13 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:52:24 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/27 10:27:32 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/28 16:01:48 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-extern t_global g_data;
+
 
 int	expand(lexer_t *cmd, char **env)
 {

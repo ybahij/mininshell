@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/27 19:39:54 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/28 14:11:46 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,8 @@ typedef	struct s_global
 	int					flag;
 	char				*old_pwd;
 }						t_global;
+
+extern t_global g_data;
 
 # define RED "\033[0;31m"
 # define GREEN "\033[0;32m"

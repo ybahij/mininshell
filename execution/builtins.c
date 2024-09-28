@@ -1,21 +1,16 @@
 #include "../minishell.h"
 
-extern t_global g_data;
-
-
-
 void    change_pwd(char *name)
 {
     char *holder;
     char **tmp;
 
-    // tmp = NULL;
     tmp = ft_malloc(sizeof(char *) * 3);
     if (ft_strcmp(name, "PWD") ==  0 && ft_get_env("PWD", *get_env()))
     {
         holder = getcwd(NULL, 0);
         tmp [0] = ft_strjoin("PWD=", holder);
-        tmp [1] = ft__strjoin("PWD=", holder);
+        tmp [1] = ft_strjoin("PWD=", holder);
         tmp [2] = NULL;
         g_data.pwd = ft_strdup(holder);
         free(holder);
@@ -24,7 +19,7 @@ void    change_pwd(char *name)
     else if (ft_strcmp(name, "OLDPWD") == 0 && ft_get_env("OLDPWD", *get_env()))
     {
         tmp [0] = ft_strjoin("OLDPWD=", g_data.pwd);
-        tmp [1] = ft__strjoin("OLDPWD=", g_data.pwd);
+        tmp [1] = ft_strjoin("OLDPWD=", g_data.pwd);
         tmp [2] = NULL;
         g_data.old_pwd = ft_strdup(g_data.pwd);
         ft_export(tmp, *get_env());
@@ -37,7 +32,6 @@ void    ft_cd(char **av)
 {
     int i;
     char *holder;
-    // char **tmp;
 
     i = 0;
     while (av[i])
@@ -65,6 +59,7 @@ void    ft_cd(char **av)
     }
     else if (chdir(av[1]) == -1)
     {
+
         printf("minishell: cd: %s: No such file or directory\n", av[1]);
         exit_s(1);
     }
@@ -76,7 +71,8 @@ void    ft_cd(char **av)
         free(holder);
         exit_s(0);
     }
-    change_pwd("PWD");
+    if (chdir(av[1]) != -1)
+        change_pwd("PWD");
 }
 
 int    check_n(char **av, int *i)
@@ -157,7 +153,15 @@ char	*cm_strdup(const char *s1)
 
 void    ft_pwd(void)
 {
-    printf("%s\n", g_data.pwd);
+    char *holder;
+    if (g_data.pwd == NULL || ft_strcmp(g_data.pwd, "") == 0)
+    {
+        holder = getcwd(NULL, 0);
+        printf("%s\n", holder);
+        free(holder);
+    }
+    else
+        printf("%s\n", g_data.pwd);
     exit_s(0);
 }
 
