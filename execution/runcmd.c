@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-int	redirection(t_redir *cmd, char **env)
+int	redirection(t_redir *cmd, char **env, int i)
 {
 	int	fd;
 	int	std_copy;
@@ -10,11 +10,12 @@ int	redirection(t_redir *cmd, char **env)
 	if (fd == -1)
 	{
 		perror(cmd->file);
+		exit_s(1);
 		return (0);
 	}
 	std_copy = dup(cmd->fd);
 	dup2(fd, cmd->fd);
-	status = runcmd(cmd->next, env);
+	status = runcmd(cmd->next, env , i);
 	dup2(std_copy, cmd->fd);
 	close(std_copy);
 	return (status);
@@ -120,6 +121,7 @@ int	execute(t_exec *cmd, char **env)
 					ft_putstr_fd("minishell: ", 2);
 					ft_putstr_fd(cmd->av[0], 2);
 					ft_putstr_fd(": No such file or directory\n", 2);
+					// ft_putstr_fd("here\n", 2);
 					exit(127);
 				}
 				if (check_dir(cmd->av[0]) == 0)
@@ -148,7 +150,30 @@ int	execute(t_exec *cmd, char **env)
 		cmd_path = ft_get_env("PATH", env);
 		if (cmd_path == NULL)
 		{
-			
+			if (access(cmd->av[0], F_OK) == -1)
+				{
+					ft_putstr_fd("minishell: ", 2);
+					ft_putstr_fd(cmd->av[0], 2);
+					ft_putstr_fd(": No such file or directory\n", 2);
+					// ft_putstr_fd("here\n", 2);
+					exit(127);
+				}
+				if (check_dir(cmd->av[0]) == 0)
+					exit(126);
+				if (access(cmd->av[0], X_OK) == -1)
+				{
+					ft_putstr_fd("minishell: ", 2);
+					ft_putstr_fd(cmd->av[0], 2);
+					ft_putstr_fd(": Permission denied\n", 2);
+					exit(126);
+				}
+				if (execve(cmd->av[0], cmd->av, env) == -1)
+				{
+					perror("execve");
+					free_g();
+					exit(1);
+				}
+			printf("here\n");
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(cmd->av[0], 2);
 			ft_putstr_fd(": command not found\n", 2);
@@ -203,10 +228,10 @@ int	execute(t_exec *cmd, char **env)
 		waitpid(pid, &status, 0);
 		exit_s(check_exit_status(status));
 	}
-	return (status);
+	return (ret_status());
 }
 
-int	heredoc(t_heredoc *cmd, char **env)
+int	heredoc(t_heredoc *cmd, char **env, int i)
 {
 	int	fd[2];
 	int	pid;
@@ -227,34 +252,37 @@ int	heredoc(t_heredoc *cmd, char **env)
 	}
 	close(fd[1]);
 	dup2(fd[0], 0);
-	status = runcmd(cmd->next, env);
+	status = runcmd(cmd->next, env, i);
 	dup2(stdin_copy, 0);
 	close(stdin_copy);
 	close(fd[0]);
 	waitpid(pid, NULL, 0);
 	return (status);
 }
-int	ft_pipe(t_pipe *cmd, char **env)
+int	ft_pipe(t_pipe *cmd, char **env, int i)
 {
 	int	fd[2];
 	int	status;
 	int	pid;
 	int pid2;
 	int	stdin_copy;
-	// t_exec *tmp;
 
+	// g_data.pipe__count++;
 	pipe(fd);
 	pid = fork();
 	stdin_copy = dup(0);
 	status = 0;
 	if (pid == 0)
 	{
+		signal(SIGINT, heandl_signal_child);
 		close(fd[0]);
 		dup2(fd[1], 1);
 		close(fd[1]);
 		close(stdin_copy);
-		status = runcmd(cmd->left, env);
+		i++;
+		status = runcmd(cmd->left, env, i);
 		free_g();
+		// g_data.pipe__count--;
 		exit(status);
 	}
 	else
@@ -262,15 +290,21 @@ int	ft_pipe(t_pipe *cmd, char **env)
 		pid2 = fork();
 		if (pid2 == 0)
 		{
+			signal(SIGINT, heandl_signal_child);
 			close(fd[1]);
 			dup2(fd[0], 0);
 			close(fd[0]);
 			close(stdin_copy);
-			status = runcmd(cmd->right, env);
+			i++;
+			status = runcmd(cmd->right, env, i);
 			free_g();
+			// g_data.pipe__count--;
 			exit(status);
 		}
 	}
+	if (i == 0)
+		signal(SIGINT, sig_handel);
+	// signal(SIGINT, handle_signal);
 	close(fd[0]);
 	close(fd[1]);
 	waitpid(pid, NULL, 0);
@@ -280,18 +314,18 @@ int	ft_pipe(t_pipe *cmd, char **env)
 	return (status);
 }
 
-int	runcmd(t_cmd *cmd, char **env)
+int	runcmd(t_cmd *cmd, char **env, int i)
 {
 	if (cmd->type == PIPE)
 	{
-		return (ft_pipe((t_pipe *)cmd, env));
+		return (ft_pipe((t_pipe *)cmd, env, i));
 	}
 	else if (cmd->type == HEREDOC)
 	{
-		return (heredoc((t_heredoc *)cmd, env));
+		return (heredoc((t_heredoc *)cmd, env, i));
 	}
 	if (cmd->type == REDIRECTION)
-		return (redirection((t_redir *)cmd, env));
+		return (redirection((t_redir *)cmd, env, i));
 	if (cmd->type == EXEC)
 		return (execute((t_exec *)cmd, env));
 	return (1);

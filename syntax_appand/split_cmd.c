@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:56:18 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/28 14:12:34 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/29 13:38:36 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ lexer_t	*spilt_(lexer_t *head, int i)
 	char	**str;
 
 	i = 0;
-	if (!head || !(str = ft_split(head->content)))
+	str = ft_split(head->content);
+	if (!head || !str)
 		return (NULL);
 	while (str[i])
 		i++;
@@ -67,7 +68,7 @@ int	split_cmd(lexer_t *head)
 	tmp = head;
 	while (tmp)
 	{
-		if (tmp->content && cm_strchr(tmp->content, ' ') && tmp->type != '(')
+		if (tmp->content && cm_strchr(tmp->content, ' '))
 		{
 			tmp = spilt_(tmp, 0);
 			if (g_data.fall)
@@ -84,31 +85,3 @@ int	split_cmd(lexer_t *head)
 	return (1);
 }
 
-int	pars_parenthesis(lexer_t *tmp, char **g_env)
-{
-	(void)g_env;
-	if (tmp->content[0] != '(')
-	{
-		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,
-			tmp->content[0]);
-		return (exit_s(2), 0);
-	}
-	if (tmp->content[ft_strlen(tmp->content) - 1] != ')')
-	{
-		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,
-			tmp->content[0]);
-		return (exit_s(2), 0);
-	}
-	if (tmp->prev && !cm_strchr("|&o", tmp->prev->type))
-	{
-		printf(RED "minishell: syntax error near unexpected token `%c'\n" RESET,
-			tmp->content[0]);
-		return (exit_s(2), 0);
-	}
-	if (tmp->content[0] == '(' && tmp->content[1] == ')')
-	{
-		printf(RED "minishell: syntax error near unexpected token `)'\n" RESET);
-		return (exit_s(2), 0);
-	}
-	return (1);
-}

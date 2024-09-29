@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 13:20:40 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/28 15:21:56 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/29 13:21:39 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ char	*herdoc_appand1(char *content, char **g_env, char *str, int *i)
 
 void	count_herdoc(lexer_t *tmp)
 {
-	int		i;
+	int	i;
 
 	i = 0;
 	while (tmp)
@@ -47,7 +47,8 @@ void	count_herdoc(lexer_t *tmp)
 	}
 	if (i > 16)
 	{
-		ft_putstr_fd("minishell: maximum number of here-document exceeded\n", 2);
+		ft_putstr_fd("minishell: maximum number of here-document exceeded\n",
+			2);
 		exit(2);
 	}
 }
@@ -78,19 +79,21 @@ char	*herdoc_appand(char *content, char type, char **g_env)
 void	exit_heredoc(int fd, char *str, char *delim)
 {
 	(void)str;
-	ft_putstr_fd("minishell: warning: here-document delimited by end-of-file (wanted `", 2);
+	ft_putstr_fd("minishell: warning: ", 2);
+	ft_putstr_fd("here-document delimited by end-of-file (wanted `", 2);
 	ft_putstr_fd(delim, 2);
 	ft_putstr_fd("')\n", 2);
 	free_g();
 	close(fd);
 	exit(1);
 }
+
 void	read_herdoc(int fd, char *delim)
 {
 	char	*str;
 
 	str = NULL;
-	set_fd(fd,0);
+	set_fd(fd, 0);
 	signal(SIGINT, handle_heredoc_signal);
 	while (1)
 	{
@@ -98,10 +101,10 @@ void	read_herdoc(int fd, char *delim)
 		if (!str)
 			exit_heredoc(fd, str, delim);
 		add_garbage(str);
-		if (!ft_strncmp(str, delim, ft_strlen(str)))
+		if (!ft_strncmp1(str, delim, ft_strlen(str)))
 		{
 			write(fd, "\0", 1);
-			break;
+			break ;
 		}
 		write(fd, str, ft_strlen(str));
 		write(fd, "\n", 1);

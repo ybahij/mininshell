@@ -6,27 +6,27 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/28 15:02:51 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/29 15:24:00 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-
-
-int 	cheak_syntax(lexer_t *tmp)
+int	cheak_syntax(lexer_t *tmp)
 {
-	if (cm_strchr("|o&", tmp->type))
+	if (cm_strchr("|", tmp->type))
 	{
 		exit_s(2);
-		return (printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
-				tmp->content), 1);
+		printf(RED "minishell: syntax error near unexpected token `%s'\n"
+			RESET, tmp->content);
+		return (1);
 	}
 	return (0);
 }
 
 int	cmd_syntax(lexer_t *tmp, char **g_env, char *newline, lexer_t *tmp2)
 {
+	(void)g_env;
 	if (!tmp)
 		return (0);
 	if (cheak_syntax(tmp))
@@ -40,12 +40,12 @@ int	cmd_syntax(lexer_t *tmp, char **g_env, char *newline, lexer_t *tmp2)
 			if (!pars_quote(tmp->next->content))
 				return (1);
 		}
-		tmp = syntax_error(tmp, g_env, newline);
+		tmp = syntax_error(tmp, newline);
 		if (tmp != tmp2)
 			continue ;
 		if (tmp && !ft_strncmp(tmp->b_appand, "end_of_file", 11))
 			return (1);
-		else if (syntax_error_(tmp, g_env, newline))
+		else if (syntax_error_(tmp, newline))
 			return (1);
 		tmp = tmp->next;
 	}
@@ -95,14 +95,15 @@ char	*dellt_q(lexer_t *cmd, int i)
 
 int	del_quote(lexer_t *cmd)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (cmd)
 	{
-		if (!cm_strchr("|<>oh+&(", cmd->type))
+		if (!cm_strchr("|<>h+", cmd->type))
 		{
-			if ((cmd->content[0] == '"' && cmd->content[1] == '"')|| (cmd->content[0] == '\'' && cmd->content[1] == '\''))
+			if ((cmd->content[0] == '"' && cmd->content[1] == '"')
+				|| (cmd->content[0] == '\'' && cmd->content[1] == '\''))
 			{
 				cmd = cmd->next;
 				continue ;

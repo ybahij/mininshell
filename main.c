@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/28 16:11:42 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/29 14:40:23 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,24 +26,6 @@ int	paranthesis__(lexer_t *cmd)
 			printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
 				tmp->next->content);
 			return (1);
-		}
-		tmp = tmp->next;
-	}
-	return (0);
-}
-
-int	paranthesis_syntax(lexer_t *cmd, char **env)
-{
-	lexer_t	*tmp;
-	lexer_t	*tmp2;
-
-	tmp = cmd;
-	while (tmp)
-	{
-		if (tmp->type == '(')
-		{
-			if (token_cmd(remaove_parenthesis(tmp->content), &tmp2, env, "("))
-				return (1);
 		}
 		tmp = tmp->next;
 	}
@@ -97,15 +79,11 @@ int	token_cmd(char *line, lexer_t **cmd, char **env, char *newline)
 	*cmd = ferst_s(line);
 	if (!(*cmd))
 		return (1);
-	if (paranthesis__(*cmd))
-		return (1);
 	if (cmd_syntax(*cmd, env, newline, tmp))
-		return (1);
-	if (paranthesis_syntax(*cmd, env))
 		return (1);
 	if (cheak_for_equal(*cmd))
 		return (1);
-	if (expand(*cmd, env))
+	if (expand(*cmd))
 		return (1);
 	if (!(*cmd))
 		return (1);
@@ -127,16 +105,64 @@ int	dblptr_len(char **dblptr)
 char	**new_envi(void)
 {
 	char	**new_env;
-
-	char	*PATH = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
-	new_env = ft_malloc(sizeof(char *) * 2);
+	char	*pwd;
+	
+	new_env = ft_malloc(sizeof(char *) * 4);
 	if (!new_env)
 		return (NULL);
-	new_env[0] = cm_strdup(PATH);
+	pwd = getcwd(NULL, 0);
+	if (!pwd)
+	{
+		printf("shell-init: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n");
+		exit(1);
+	}
+	new_env[0] = ft_strjoin("PWD=", pwd);
+	free(pwd);
+	new_env[1] = ft_strdup("SHLVL=1");
+	new_env[2] = ft_strdup("_=/usr/bin/env");
+	new_env[3] = NULL;
 	if (!new_env[0])
 		return (NULL);
 	new_env[1] = NULL;
 	return (new_env);
+}
+
+void	shell_lvl(char **env)
+{
+	int		i;
+	int		lvl;
+	char	*shlvl;
+	char	*new_shlvl;
+
+	i = 0;
+	lvl = 0;
+	while (env[i])
+	{
+		if (ft_strncmp(env[i], "SHLVL=", 6) == 0)
+		{
+			shlvl = ft_strdup(env[i] + 6);
+			if (!shlvl)
+				return ;
+			lvl = ft_atoi(shlvl);
+			break ;
+		}
+		i++;
+	}
+	if (lvl >= 1000)
+	{	
+		ft_putstr_fd("minishell: warning: shell level (", 2);
+		ft_putstr_fd(ft_itoa(lvl + 1), 2);
+		ft_putstr_fd(") too high, resetting to 1\n", 2);
+		lvl = 1;
+	}
+	else if (lvl < 0)
+		lvl = 0;
+	else
+		lvl++;
+	new_shlvl = ft_itoa(lvl);
+	if (!new_shlvl)
+		return ;
+	env[i] = ft_strjoin("SHLVL=", new_shlvl);
 }
 
 char	**get_copy_with_malloc(char **env)
@@ -183,6 +209,7 @@ int	main(int ac, char **av, char **env)
 
 	char 	*cwd;
 
+	// g_data.pipe__count = 0;
 	cwd = getcwd(NULL, 0);
 	if (!cwd)
 	{
@@ -193,6 +220,7 @@ int	main(int ac, char **av, char **env)
 	(void)ac;
 	(void)av;
 	*get_env() = get_copy_with_malloc(env);
+	shell_lvl(*get_env());
 	line = NULL;
 	holder = getcwd(NULL, 0);
 	g_data.pwd = ft_strdup(holder);
@@ -217,8 +245,8 @@ int	main(int ac, char **av, char **env)
 		{
 			// free(line);
 			continue ;}
-		// print_tree(parse_and(cmd, *get_env()));
-		runcmd(parse_and(cmd, *get_env()), *get_env());
+		// print_tree(parse_pipe(cmd, *get_env()));
+		runcmd(parse_pipe(cmd, *get_env()), *get_env(), 0);
 	}
 	return (0);
 }

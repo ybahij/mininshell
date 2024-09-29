@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/28 14:11:46 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/29 14:29:39 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,12 @@ typedef struct s_garbage
 	struct s_garbage	*next;
 }						t_garbage;
 
+typedef struct s_pid
+{
+	int					pid;
+	struct s_pid		*next;
+}						t_pid;
+
 typedef	struct s_global
 {
 	int					status;
@@ -110,6 +116,8 @@ typedef	struct s_global
 	char				*pwd;
 	int					flag;
 	char				*old_pwd;
+	t_pid				*pid;
+	int 			   pipe__count;
 }						t_global;
 
 extern t_global g_data;
@@ -126,6 +134,7 @@ extern t_global g_data;
 void	ft_putstr_fd(char *s, int fd);
 int						ft_isdigit(int c);
 int						ft_isalnum(int c);
+int	ft_atoi(const char *str);
 char	*ft_itoa(int n);
 size_t					ft_strlen(const char *s);
 void					*ft_memset(void *b, int c, size_t len);
@@ -144,6 +153,7 @@ char					*cm_strchr(const char *s, int c);
 char	*ft_ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_ft_strdup(const char *s1);
 char	*ft__strjoin(char *s1, char *s2);
+int	ft_strncmp1(char *s1, char *s2, size_t n);
 
 //------------added functions----------------//
 
@@ -176,11 +186,10 @@ int						heandal_herdoc(lexer_t *tmp, char **g_env);
 int						cmd_syntax(lexer_t *tmp, char **g_env, char *newline,
 							lexer_t *tmp2);
 void					free_(lexer_t *cmd);
-int						appand_in_fille(lexer_t *cmd, int fd, char **env,
-							char hold);
+int						appand_in_fille(lexer_t *cmd, int fd, char hold);
 void					free_array(char **str);
-int						expand_w(lexer_t *cmd, char **env);
-int						expand(lexer_t *cmd, char **env);
+int						expand_w(lexer_t *cmd);
+int						expand(lexer_t *cmd);
 char					*dellt_q(lexer_t *cmd, int i);
 int						del_quote(lexer_t *cmd);
 lexer_t					*split_1(lexer_t *head, char **str, int i);
@@ -199,14 +208,11 @@ t_cmd					*parse_pipe(lexer_t *head, char **env);
 t_cmd					*parse_or(lexer_t *head, char **env);
 t_cmd					*parse_and(lexer_t *head, char **env);
 lexer_t					*peek(lexer_t *head, char type);
-int						appand_u(int *j, int i, lexer_t *cmd, int fd,
-							char **env);
+int						appand_u(int *j, int i, lexer_t *cmd, int fd);
 char					*herdoc_appand1(char *content, char **g_env, char *str,
 							int *i);
-int						syntax_error_(lexer_t *tmp, char **g_env,
-							char *newline);
-lexer_t					*syntax_error(lexer_t *tmp, char **g_env,
-							char *newline);
+int						syntax_error_(lexer_t *tmp, char *newline);
+lexer_t					*syntax_error(lexer_t *tmp, char *newline);
 int						pars_pipe_(lexer_t *tmp, char *newline);
 int						parenthesis(char *input, int *i, lexer_t **head);
 void					free_garbage(void);
@@ -228,7 +234,7 @@ char	*ft_ft_strjoin(const char *s1, const char *s2);
 char	**ft_ft_split(const char *str, char c);
 void	ft_putstr(char *s);
 int		ft_strcmp(char *s1, char *s2);
-int	runcmd(t_cmd *cmd, char **env);
+int	runcmd(t_cmd *cmd, char **env, int i);
 int    builtins(t_exec *exec, char **env);
 char	*cm_strdup(const char *s1);
 char	**get_copy_with_malloc(char **env);
@@ -245,6 +251,7 @@ void	read_herdoc(int fd, char *delim);
 void    free_g_p(void);
 void    ft_unset(char **av, char **env);
 void    ft_export(char **av, char **env);
+void heandl_signal_child(int status);
 
 
 #endif

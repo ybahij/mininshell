@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:49:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/27 15:26:23 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/29 14:30:40 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ int	pars_quote(char *content)
 			if (content[i] != quote)
 			{
 				exit_s(2);
-				printf(RED "minishell: syntax error unclosed quotes `%c'\n" RESET,
-					quote);
+				printf(RED "minishell: syntax error unclosed quotes `%c'\n"
+					RESET, quote);
 				return (0);
 			}
 		}
@@ -52,7 +52,7 @@ int	pars_(lexer_t *tmp, char *newline)
 			newline);
 		return (exit_s(2), 0);
 	}
-	if (cm_strchr("><+h|&o", tmp2->type) && !cm_strchr("&o", tmp->type))
+	if (cm_strchr("><+h|", tmp2->type) && !cm_strchr("&o", tmp->type))
 	{
 		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
 			tmp2->content);
@@ -67,9 +67,9 @@ int	pars_(lexer_t *tmp, char *newline)
 	return (1);
 }
 
-int	syntax_error_(lexer_t *tmp, char **g_env, char *newline)
+int	syntax_error_(lexer_t *tmp, char *newline)
 {
-	if (cm_strchr("<>oh+&", tmp->type))
+	if (cm_strchr("<>h+", tmp->type))
 	{
 		if (!pars_(tmp, newline))
 			return (1);
@@ -84,11 +84,6 @@ int	syntax_error_(lexer_t *tmp, char **g_env, char *newline)
 		if (!pars_quote(tmp->content))
 			return (1);
 	}
-	if (tmp->type == '(')
-	{
-		if (!pars_parenthesis(tmp, g_env))
-			return (1);
-	}
 	return (0);
 }
 
@@ -100,8 +95,9 @@ char	*quote_(char *content)
 	return (content);
 }
 
-lexer_t	*syntax_error(lexer_t *tmp, char **g_env, char *newline)
+lexer_t	*syntax_error(lexer_t *tmp, char *newline)
 {
+	(void)newline;
 	if (tmp->prev && tmp->prev->type == 'h')
 	{
 		if (tmp->type == 'w' || tmp->type == 'q')
@@ -109,9 +105,9 @@ lexer_t	*syntax_error(lexer_t *tmp, char **g_env, char *newline)
 	}
 	else if (tmp->type == 'h' && tmp->next)
 	{
-		if ((tmp->next->type == 'w' || tmp->next->type == 'q') && ft_strncmp(newline, "(", 1))
+		if ((tmp->next->type == 'w' || tmp->next->type == 'q'))
 		{
-			if (!handle_heredoc(tmp, g_env))
+			if (!handle_heredoc(tmp, *get_env()))
 			{
 				tmp->b_appand = ft_ft_strdup("end_of_file");
 			}

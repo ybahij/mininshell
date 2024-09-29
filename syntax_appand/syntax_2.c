@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 00:27:38 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/23 00:28:14 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/29 13:34:40 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	pars_pipe_(lexer_t *tmp, char *newline)
 			newline);
 		return (exit_s(2), 0);
 	}
-	if (cm_strchr("|&o", tmp->next->type))
+	if (cm_strchr("|", tmp->next->type))
 	{
 		printf(RED "minishell: syntax error near unexpected token `%s'\n" RESET,
 			tmp->next->content);

@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/30 14:22:20 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/28 14:11:56 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/29 11:32:24 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,8 @@ void  *ft_malloc(size_t size)
     {
         g_data.fall = 1;
         printf(MAGENTA"Error: malloc failed\n"RESET);
-        return (NULL);
+        free_g();
+        exit(1);
     }
     tmp = malloc(sizeof(t_garbage));
     if (!tmp)
@@ -73,7 +74,9 @@ void  *ft_malloc(size_t size)
         free(tmp2);
         g_data.fall = 1;
         printf(MAGENTA"Error: malloc failed\n"RESET);
-        return (NULL);
+        free_g();
+        exit(1);
+        // return (NULL);
     }
     tmp->content = tmp2;
     tmp->next = *get_head();
