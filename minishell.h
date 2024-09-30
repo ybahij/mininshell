@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/29 14:29:39 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/30 15:04:08 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ typedef	struct s_global
 	t_garbage			*garbage;
 	t_garbage			*p_garbage;
 	char				*pwd;
+	char				*cp_pwd;
 	int					flag;
 	char				*old_pwd;
 	t_pid				*pid;

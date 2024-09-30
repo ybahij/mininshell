@@ -66,6 +66,7 @@ void    ft_cd(char **av)
     else
     {
         holder = getcwd(NULL, 0);
+        g_data.cp_pwd = ft_strdup(holder);
         g_data.old_pwd = ft_strdup(g_data.pwd);
         g_data.pwd = ft_strdup(holder);
         free(holder);
@@ -156,10 +157,14 @@ void    ft_pwd(void)
     char *holder;
     if (g_data.pwd == NULL || ft_strcmp(g_data.pwd, "") == 0)
     {
-        printf("here\n");
         holder = getcwd(NULL, 0);
-        printf("%s\n", holder);
-        free(holder);
+        if  (holder == NULL)
+            printf("%s\n", g_data.cp_pwd);
+        else
+        {
+            printf("%s\n", holder);
+            free(holder);
+        }
     }
     else
         printf("%s\n", g_data.pwd);
