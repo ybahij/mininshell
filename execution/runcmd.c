@@ -112,7 +112,7 @@ int	execute(t_exec *cmd, char **env)
 	signal(SIGINT, SIG_IGN);
 	if (pid == 0)
 	{
-		signal(SIGQUIT, SIG_DFL);
+				signal(SIGQUIT, SIG_DFL);
         signal(SIGINT, SIG_DFL);
 		if ((cmd->av[0][0] == '.' && cmd->av[0][1] == '/') || cmd->av[0][0] == '/')
 		{
@@ -121,7 +121,6 @@ int	execute(t_exec *cmd, char **env)
 					ft_putstr_fd("minishell: ", 2);
 					ft_putstr_fd(cmd->av[0], 2);
 					ft_putstr_fd(": No such file or directory\n", 2);
-					// ft_putstr_fd("here\n", 2);
 					exit(127);
 				}
 				if (check_dir(cmd->av[0]) == 0)
@@ -155,7 +154,6 @@ int	execute(t_exec *cmd, char **env)
 					ft_putstr_fd("minishell: ", 2);
 					ft_putstr_fd(cmd->av[0], 2);
 					ft_putstr_fd(": No such file or directory\n", 2);
-					// ft_putstr_fd("here\n", 2);
 					exit(127);
 				}
 				if (check_dir(cmd->av[0]) == 0)
@@ -225,7 +223,6 @@ int	execute(t_exec *cmd, char **env)
 	}
 	else
 	{
-		signal(SIGINT, sig_handel);
 		waitpid(pid, &status, 0);
 		exit_s(check_exit_status(status));
 	}
@@ -273,7 +270,6 @@ int	ft_pipe(t_pipe *cmd, char **env, int i)
 	pid = fork();
 	stdin_copy = dup(0);
 	status = 0;
-	signal(SIGINT, sig_handel);
 	if (pid == 0)
 	{
 		signal(SIGINT, heandl_signal_child);

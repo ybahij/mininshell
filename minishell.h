@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
+/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/30 15:04:08 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/30 19:26:43 by youssef          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ typedef struct lexer_s
 	struct lexer_s		*prev;
 	char				*content;
 	char				type;
-	
+
 	char				*b_appand;
 	struct lexer_s		*next;
 }						lexer_t;
@@ -118,7 +118,7 @@ typedef	struct s_global
 	int					flag;
 	char				*old_pwd;
 	t_pid				*pid;
-	int 			   pipe__count;
+	int 			   pipe;
 }						t_global;
 
 extern t_global g_data;
