@@ -156,6 +156,7 @@ void    ft_pwd(void)
     char *holder;
     if (g_data.pwd == NULL || ft_strcmp(g_data.pwd, "") == 0)
     {
+        printf("here\n");
         holder = getcwd(NULL, 0);
         printf("%s\n", holder);
         free(holder);
