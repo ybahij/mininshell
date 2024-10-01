@@ -14,6 +14,7 @@ void    change_pwd(char *name)
         tmp [2] = NULL;
         g_data.pwd = ft_strdup(holder);
         free(holder);
+        g_data.flag_f_export = 1;
         ft_export(tmp, *get_env());
     }
     else if (ft_strcmp(name, "OLDPWD") == 0 && ft_get_env("OLDPWD", *get_env()))
@@ -22,9 +23,10 @@ void    change_pwd(char *name)
         tmp [1] = ft_strjoin("OLDPWD=", g_data.pwd);
         tmp [2] = NULL;
         g_data.old_pwd = ft_strdup(g_data.pwd);
+        g_data.flag_f_export = 1;
         ft_export(tmp, *get_env());
     }
-    else
+        // g_data.flag_f_export = 0;
         return ;
 }
 
@@ -32,10 +34,11 @@ void    ft_cd(char **av)
 {
     int i;
     char *holder;
-
+    char **tmp;
     i = 0;
     while (av[i])
         i++;
+    tmp = ft_malloc(sizeof(char *) * 3);
     change_pwd("OLDPWD");
     if (i > 2)
     {
@@ -47,7 +50,8 @@ void    ft_cd(char **av)
     {
         if (chdir(ft_get_env("HOME", *get_env())) == -1)
         {
-            perror("cd");
+            // perror("cd");
+            ft_putstr_fd("minishell: cd: HOME not set\n", 2);
             exit_s(1);
         }
         else
@@ -56,10 +60,10 @@ void    ft_cd(char **av)
             g_data.pwd = ft_strdup(ft_get_env("HOME", *get_env()));
             exit_s(0);
         }
+        return;
     }
     else if (chdir(av[1]) == -1)
     {
-
         printf("minishell: cd: %s: No such file or directory\n", av[1]);
         exit_s(1);
     }
@@ -69,6 +73,13 @@ void    ft_cd(char **av)
         g_data.cp_pwd = ft_strdup(holder);
         g_data.old_pwd = ft_strdup(g_data.pwd);
         g_data.pwd = ft_strdup(holder);
+        if (ft_strcmp(g_data.check_oldpwd, "1") == 0)
+        {
+            tmp[0] = ft_strjoin("OLDPWD=", g_data.old_pwd);
+            tmp[1] = ft_strjoin("OLDPWD=", g_data.old_pwd);
+            tmp[2] = NULL;
+            ft_export(tmp, *get_env());
+        }
         free(holder);
         exit_s(0);
     }
@@ -466,10 +477,15 @@ int c_for_unset(char **av, char *env)
     i = 1;
     while (av[i])
     {
+        if (ft_strcmp(av[i], "PATH") == 0)
+            g_data.path = NULL;
         if (ft_strcmp(av[i], "PWD") == 0)
             g_data.pwd = NULL;
         else if (ft_strcmp(av[i], "OLDPWD") == 0)
+        {
             g_data.old_pwd = NULL;
+            g_data.check_oldpwd = NULL;
+        }
         i++;
     }
     return (1);
@@ -500,6 +516,7 @@ void    ft_unset(char **av, char **env)
     }
     new_env[j] = NULL;
     *get_env() = new_env;
+
     exit_s(0);
 }
 

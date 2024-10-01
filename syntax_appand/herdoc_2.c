@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 13:20:40 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/29 13:21:39 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/09/30 23:44:59 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ void	count_herdoc(lexer_t *tmp)
 	{
 		ft_putstr_fd("minishell: maximum number of here-document exceeded\n",
 			2);
+		free_g();
 		exit(2);
 	}
 }

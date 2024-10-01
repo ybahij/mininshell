@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:57:28 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/29 15:24:00 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/10/01 16:56:03 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,14 @@ char	*dellt_q_char(char *tmp)
 
 	i = 0;
 	str = NULL;
+	i = 0;
 	while (tmp[i])
 	{
-		if (tmp[i] == '"' || tmp[i] == '\'')
+		if ((tmp[i] == '"' || tmp[i] == '\'') && (i == 0 || tmp[i - 1] != 1))
 		{
 			hold = tmp[i];
 			i++;
-			while (tmp[i] && tmp[i] != hold)
+			while (tmp[i] && ((tmp[i] != hold || tmp[i - 1] == 1)))
 			{
 				str = ft_strjoin(str, ft_ft_substr(tmp, i, 1));
 				i++;
@@ -100,7 +101,7 @@ int	del_quote(lexer_t *cmd)
 	i = 0;
 	while (cmd)
 	{
-		if (!cm_strchr("|<>h+", cmd->type))
+		if (!cm_strchr("|<>h+w", cmd->type))
 		{
 			if ((cmd->content[0] == '"' && cmd->content[1] == '"')
 				|| (cmd->content[0] == '\'' && cmd->content[1] == '\''))

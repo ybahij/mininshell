@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/31 21:37:50 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/30 15:02:46 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/10/01 18:51:43 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ int	token_cmd(char *line, lexer_t **cmd, char **env, char *newline)
 	if (!split_cmd(*cmd))
 		return (1);
 	del_quote(*cmd);
+	dellt__(*cmd);
 	return (0);
 }
 
@@ -114,8 +115,10 @@ char	**new_envi(void)
 	if (!pwd)
 	{
 		printf("shell-init: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n");
+		free_g();
 		exit(1);
 	}
+	// g_data.pwd = ft_strdup(pwd);
 	new_env[0] = ft_strjoin("PWD=", pwd);
 	free(pwd);
 	new_env[1] = ft_strdup("SHLVL=1");
@@ -124,6 +127,9 @@ char	**new_envi(void)
 	if (!new_env[0])
 		return (NULL);
 	new_env[1] = NULL;
+	g_data.path = ft_strdup("/usr/bin:/bin:/usr/sbin:/sbin");
+	// printf("here1\n");
+	g_data.check_oldpwd = ft_strdup("1");
 	return (new_env);
 }
 
@@ -165,13 +171,49 @@ void	shell_lvl(char **env)
 	env[i] = ft_strjoin("SHLVL=", new_shlvl);
 }
 
+
+int find_str(char **env, char *str)
+{
+	int	i;
+
+	i = 0;
+	while (env[i])
+	{
+		if (ft_strncmp(env[i], str, ft_strlen(str)) == 0)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+int	count_str(char **env)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 3;
+	while (env[i])
+	{
+		if (!ft_strncmp(env[i], "PWD=", 4))
+			j--;
+		if (!ft_strncmp(env[i], "_=", 2))
+			j--;
+		if (!ft_strncmp(env[i], "SHLVL=", 6))
+			j--;
+		i++;
+	}
+	return (j);
+}
+
 char	**get_copy_with_malloc(char **env)
 {
 	int	i;
 	char	**new_env;
+
 	if (env[0] == NULL)
 		return (new_envi());
-	new_env = ft_malloc(sizeof(char *) * (dblptr_len(env) + 1));
+	new_env = ft_malloc(sizeof(char *) * (dblptr_len(env) + count_str(env) + 1));
 	if (!new_env)
 		return (NULL);
 	i = 0;
@@ -180,7 +222,23 @@ char	**get_copy_with_malloc(char **env)
 		new_env[i] = ft_strdup(env[i]);
 		i++;
 	}
+	if (find_str(env, "SHLVL=") == 0 && g_data.flag_f_export == 0)
+	{
+		new_env[i] = ft_strdup("SHLVL=1");
+		i++;
+	}
+	if (find_str(env, "PWD=") == 0 && g_data.flag_f_export == 0)
+	{
+		new_env[i] = ft_strjoin("PWD=", g_data.pwd);
+		i++;
+	}
+	if (find_str(env, "_=") == 0 && g_data.flag_f_export == 0)
+	{
+		new_env[i] = ft_strdup("_=/usr/bin/env");
+		i++;
+	}
 	new_env[i] = NULL;
+	g_data.check_oldpwd = ft_strdup("1");
 	return (new_env);
 }
 
@@ -214,17 +272,18 @@ int	main(int ac, char **av, char **env)
 	if (!cwd)
 	{
 		printf("shell-init: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n");
+		free_g();
 		exit(1);
 	}
 	free(cwd);
+	holder = getcwd(NULL, 0);
+	g_data.pwd = ft_strdup(holder);
+	free(holder);
 	(void)ac;
 	(void)av;
 	*get_env() = get_copy_with_malloc(env);
 	shell_lvl(*get_env());
 	line = NULL;
-	holder = getcwd(NULL, 0);
-	g_data.pwd = ft_strdup(holder);
-	free(holder);
 	while (1)
 	{
 		signal(SIGINT, handle_signal);

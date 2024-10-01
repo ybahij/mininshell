@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:52:24 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/29 13:29:21 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/10/01 13:42:38 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ int	appand_in_fille(lexer_t *cmd, int fd, char hold)
 		else if (cmd->content[i] == hold)
 			hold = 0;
 		if (hold != '\'' && cmd->content[i] == '$' && (ft_isalnum(cmd->content[i
-						+ 1]) || cm_strchr("\"'$?", cmd->content[i + 1])))
+						+ 1]) || ft_strchr("\"'$?", cmd->content[i + 1])))
 		{
 			i++;
 			len += appand_u(&j, i, cmd, fd);

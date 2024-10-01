@@ -75,6 +75,7 @@ int	check_dir(char *cmd)
 	if (stat(cmd, &buf) == -1)
 	{
 		perror("stat");
+		free_g();
 		exit(1);
 	}
 	if (S_ISDIR(buf.st_mode))
@@ -82,6 +83,7 @@ int	check_dir(char *cmd)
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": is a directory\n", 2);
+		free_g();
 		exit(126);
 	}
 	return (1);
@@ -121,15 +123,19 @@ int	execute(t_exec *cmd, char **env)
 					ft_putstr_fd("minishell: ", 2);
 					ft_putstr_fd(cmd->av[0], 2);
 					ft_putstr_fd(": No such file or directory\n", 2);
+					free_g();
 					exit(127);
 				}
 				if (check_dir(cmd->av[0]) == 0)
-					exit(126);
+				{	
+					free_g();
+					exit(126);}
 				if (access(cmd->av[0], X_OK) == -1)
 				{
 					ft_putstr_fd("minishell: ", 2);
 					ft_putstr_fd(cmd->av[0], 2);
 					ft_putstr_fd(": Permission denied\n", 2);
+					free_g();
 					exit(126);
 				}
 				if (execve(cmd->av[0], cmd->av, env) == -1)
@@ -147,22 +153,26 @@ int	execute(t_exec *cmd, char **env)
 			exit(2);
 		}
 		cmd_path = ft_get_env("PATH", env);
-		if (cmd_path == NULL)
+		if (cmd_path == NULL && g_data.path == NULL)
 		{
 			if (access(cmd->av[0], F_OK) == -1)
 				{
 					ft_putstr_fd("minishell: ", 2);
 					ft_putstr_fd(cmd->av[0], 2);
 					ft_putstr_fd(": No such file or directory\n", 2);
+					free_g();
 					exit(127);
 				}
 				if (check_dir(cmd->av[0]) == 0)
-					exit(126);
+				{	
+					free_g();
+					exit(126);}
 				if (access(cmd->av[0], X_OK) == -1)
 				{
 					ft_putstr_fd("minishell: ", 2);
 					ft_putstr_fd(cmd->av[0], 2);
 					ft_putstr_fd(": Permission denied\n", 2);
+					free_g();
 					exit(126);
 				}
 				if (execve(cmd->av[0], cmd->av, env) == -1)
@@ -178,7 +188,9 @@ int	execute(t_exec *cmd, char **env)
 			free_g();
 			exit(127);
 		}
-		path = ft_ft_split(cmd_path, ':');
+		if (cmd_path)
+			g_data.path = cmd_path;
+		path = ft_ft_split(g_data.path, ':');
 		while (path[i])
 		{
 			path[i] = ft_ft_strjoin(path[i], "/");

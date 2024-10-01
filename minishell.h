@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: youssef <youssef@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 16:41:43 by ybahij            #+#    #+#             */
-/*   Updated: 2024/09/30 19:26:43 by youssef          ###   ########.fr       */
+/*   Updated: 2024/10/01 18:54:07 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,10 @@ typedef	struct s_global
 	int					flag;
 	char				*old_pwd;
 	t_pid				*pid;
+	char 				*path;
 	int 			   pipe;
+	char					*check_oldpwd;
+	int					flag_f_export;
 }						t_global;
 
 extern t_global g_data;
@@ -141,6 +144,7 @@ size_t					ft_strlen(const char *s);
 void					*ft_memset(void *b, int c, size_t len);
 void					ft_bzero(void *s, size_t n);
 char					*ft_strrchr(const char *s, int c);
+char *ft_strchr(const char *s, int c);
 int						ft_strncmp( char *s1,  char *s2, size_t n);
 void					*ft_calloc(size_t count, size_t size);
 char					*ft_strdup(const char *s1);
@@ -253,6 +257,8 @@ void    free_g_p(void);
 void    ft_unset(char **av, char **env);
 void    ft_export(char **av, char **env);
 void heandl_signal_child(int status);
+char *dellt_escap(char *str);
+void	dellt__(lexer_t *tmp);
 
 
 #endif

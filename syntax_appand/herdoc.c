@@ -6,7 +6,7 @@
 /*   By: ybahij <ybahij@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/28 16:50:59 by youssef           #+#    #+#             */
-/*   Updated: 2024/09/29 13:21:58 by ybahij           ###   ########.fr       */
+/*   Updated: 2024/10/01 13:49:53 by ybahij           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ char	*cheak_delim(char *content)
 	while (content[i])
 	{
 		if (content[i] == '$' && (content[i + 1] == '"' || content[i
-					+ 1] == '\'') && i > 0 && content[i - 1] != '$')
+					+ 1] == '\'') && ((i > 0 && content[i - 1] != '$') || i == 0))
 			i++;
 		else
 		{
