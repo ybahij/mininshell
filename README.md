@@ -84,17 +84,17 @@ The shell's execution process is typically broken down into a series of steps:
 
 Execute the `minishell` program from the repository root:
 
-    ```bash
+    bash
     ./minishell
-    ```
+    
 Example:
 
-    ```bash
+    bash
     minishell$ echo "Hello $USER"
     Hello <your-username>
     minishell$ ls -l | grep min
     minishell$ exit 0
-    ```
+    
 🤝 Authors:
     Youssef Bahij
     Omar Belhamid
